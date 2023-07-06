@@ -1,0 +1,828 @@
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>CV </title>
+	<style>
+		/* cspell:disable-file */
+		/* webkit printing magic: print all background colors */
+		html {
+			-webkit-print-color-adjust: exact;
+		}
+
+		* {
+			box-sizing: border-box;
+			-webkit-print-color-adjust: exact;
+		}
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+		}
+
+		@media only screen {
+			body {
+				margin: 2em auto;
+				max-width: 900px;
+				color: rgb(55, 53, 47);
+			}
+		}
+
+		body {
+			line-height: 1.5;
+			white-space: pre-wrap;
+		}
+
+		a,
+		a.visited {
+			color: inherit;
+			text-decoration: underline;
+		}
+
+		.pdf-relative-link-path {
+			font-size: 80%;
+			color: #444;
+		}
+
+		h1,
+		h2,
+		h3 {
+			letter-spacing: -0.01em;
+			line-height: 1.2;
+			font-weight: 600;
+			margin-bottom: 0;
+		}
+
+		.page-title {
+			font-size: 2.5rem;
+			font-weight: 700;
+			margin-top: 0;
+			margin-bottom: 0.75em;
+		}
+
+		h1 {
+			font-size: 1.875rem;
+			margin-top: 1.875rem;
+		}
+
+		h2 {
+			font-size: 1.5rem;
+			margin-top: 1.5rem;
+		}
+
+		h3 {
+			font-size: 1.25rem;
+			margin-top: 1.25rem;
+		}
+
+		.source {
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			padding: 1.5em;
+			word-break: break-all;
+		}
+
+		.callout {
+			border-radius: 3px;
+			padding: 1rem;
+		}
+
+		figure {
+			margin: 1.25em 0;
+			page-break-inside: avoid;
+		}
+
+		figcaption {
+			opacity: 0.5;
+			font-size: 85%;
+			margin-top: 0.5em;
+		}
+
+		mark {
+			background-color: transparent;
+		}
+
+		.indented {
+			padding-left: 1.5em;
+		}
+
+		hr {
+			background: transparent;
+			display: block;
+			width: 100%;
+			height: 1px;
+			visibility: visible;
+			border: none;
+			border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+		}
+
+		img {
+			max-width: 100%;
+		}
+
+		@media only print {
+			img {
+				max-height: 100vh;
+				object-fit: contain;
+			}
+		}
+
+		@page {
+			margin: 1in;
+		}
+
+		.collection-content {
+			font-size: 0.875rem;
+		}
+
+		.column-list {
+			display: flex;
+			justify-content: space-between;
+		}
+
+		.column {
+			padding: 0 1em;
+		}
+
+		.column:first-child {
+			padding-left: 0;
+		}
+
+		.column:last-child {
+			padding-right: 0;
+		}
+
+		.table_of_contents-item {
+			display: block;
+			font-size: 0.875rem;
+			line-height: 1.3;
+			padding: 0.125rem;
+		}
+
+		.table_of_contents-indent-1 {
+			margin-left: 1.5rem;
+		}
+
+		.table_of_contents-indent-2 {
+			margin-left: 3rem;
+		}
+
+		.table_of_contents-indent-3 {
+			margin-left: 4.5rem;
+		}
+
+		.table_of_contents-link {
+			text-decoration: none;
+			opacity: 0.7;
+			border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+		}
+
+		table,
+		th,
+		td {
+			border: 1px solid rgba(55, 53, 47, 0.09);
+			border-collapse: collapse;
+		}
+
+		table {
+			border-left: none;
+			border-right: none;
+		}
+
+		th,
+		td {
+			font-weight: normal;
+			padding: 0.25em 0.5em;
+			line-height: 1.5;
+			min-height: 1.5em;
+			text-align: left;
+		}
+
+		th {
+			color: rgba(55, 53, 47, 0.6);
+		}
+
+		ol,
+		ul {
+			margin: 0;
+			margin-block-start: 0.6em;
+			margin-block-end: 0.6em;
+		}
+
+		li>ol:first-child,
+		li>ul:first-child {
+			margin-block-start: 0.6em;
+		}
+
+		ul>li {
+			list-style: disc;
+		}
+
+		ul.to-do-list {
+			padding-inline-start: 0;
+		}
+
+		ul.to-do-list>li {
+			list-style: none;
+		}
+
+		.to-do-children-checked {
+			text-decoration: line-through;
+			opacity: 0.375;
+		}
+
+		ul.toggle>li {
+			list-style: none;
+		}
+
+		ul {
+			padding-inline-start: 1.7em;
+		}
+
+		ul>li {
+			padding-left: 0.1em;
+		}
+
+		ol {
+			padding-inline-start: 1.6em;
+		}
+
+		ol>li {
+			padding-left: 0.2em;
+		}
+
+		.mono ol {
+			padding-inline-start: 2em;
+		}
+
+		.mono ol>li {
+			text-indent: -0.4em;
+		}
+
+		.toggle {
+			padding-inline-start: 0em;
+			list-style-type: none;
+		}
+
+		/* Indent toggle children */
+		.toggle>li>details {
+			padding-left: 1.7em;
+		}
+
+		.toggle>li>details>summary {
+			margin-left: -1.1em;
+		}
+
+		.selected-value {
+			display: inline-block;
+			padding: 0 0.5em;
+			background: rgba(206, 205, 202, 0.5);
+			border-radius: 3px;
+			margin-right: 0.5em;
+			margin-top: 0.3em;
+			margin-bottom: 0.3em;
+			white-space: nowrap;
+		}
+
+		.collection-title {
+			display: inline-block;
+			margin-right: 1em;
+		}
+
+		.page-description {
+			margin-bottom: 2em;
+		}
+
+		.simple-table {
+			margin-top: 1em;
+			font-size: 0.875rem;
+			empty-cells: show;
+		}
+
+		.simple-table td {
+			height: 29px;
+			min-width: 120px;
+		}
+
+		.simple-table th {
+			height: 29px;
+			min-width: 120px;
+		}
+
+		.simple-table-header-color {
+			background: rgb(247, 246, 243);
+			color: black;
+		}
+
+		.simple-table-header {
+			font-weight: 500;
+		}
+
+		time {
+			opacity: 0.5;
+		}
+
+		.icon {
+			display: inline-block;
+			max-width: 1.2em;
+			max-height: 1.2em;
+			text-decoration: none;
+			vertical-align: text-bottom;
+			margin-right: 0.5em;
+		}
+
+		img.icon {
+			border-radius: 3px;
+		}
+
+		.user-icon {
+			width: 1.5em;
+			height: 1.5em;
+			border-radius: 100%;
+			margin-right: 0.5rem;
+		}
+
+		.user-icon-inner {
+			font-size: 0.8em;
+		}
+
+		.text-icon {
+			border: 1px solid #000;
+			text-align: center;
+		}
+
+		.page-cover-image {
+			display: block;
+			object-fit: cover;
+			width: 100%;
+			max-height: 30vh;
+		}
+
+		.page-header-icon {
+			font-size: 3rem;
+			margin-bottom: 1rem;
+		}
+
+		.page-header-icon-with-cover {
+			margin-top: -0.72em;
+			margin-left: 0.07em;
+		}
+
+		.page-header-icon img {
+			border-radius: 3px;
+		}
+
+		.link-to-page {
+			margin: 1em 0;
+			padding: 0;
+			border: none;
+			font-weight: 500;
+		}
+
+		p>.user {
+			opacity: 0.5;
+		}
+
+		td>.user,
+		td>time {
+			white-space: nowrap;
+		}
+
+		input[type="checkbox"] {
+			transform: scale(1.5);
+			margin-right: 0.6em;
+			vertical-align: middle;
+		}
+
+		p {
+			margin-top: 0.5em;
+			margin-bottom: 0.5em;
+		}
+
+		.image {
+			border: none;
+			margin: 1.5em 0;
+			padding: 0;
+			border-radius: 0;
+			text-align: center;
+		}
+
+		.code,
+		code {
+			background: rgba(135, 131, 120, 0.15);
+			border-radius: 3px;
+			padding: 0.2em 0.4em;
+			border-radius: 3px;
+			font-size: 85%;
+			tab-size: 2;
+		}
+
+		code {
+			color: #eb5757;
+		}
+
+		.code {
+			padding: 1.5em 1em;
+		}
+
+		.code-wrap {
+			white-space: pre-wrap;
+			word-break: break-all;
+		}
+
+		.code>code {
+			background: none;
+			padding: 0;
+			font-size: 100%;
+			color: inherit;
+		}
+
+		blockquote {
+			font-size: 1.25em;
+			margin: 1em 0;
+			padding-left: 1em;
+			border-left: 3px solid rgb(55, 53, 47);
+		}
+
+		.bookmark {
+			text-decoration: none;
+			max-height: 8em;
+			padding: 0;
+			display: flex;
+			width: 100%;
+			align-items: stretch;
+		}
+
+		.bookmark-title {
+			font-size: 0.85em;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			height: 1.75em;
+			white-space: nowrap;
+		}
+
+		.bookmark-text {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.bookmark-info {
+			flex: 4 1 180px;
+			padding: 12px 14px 14px;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+		}
+
+		.bookmark-image {
+			width: 33%;
+			flex: 1 1 180px;
+			display: block;
+			position: relative;
+			object-fit: cover;
+			border-radius: 1px;
+		}
+
+		.bookmark-description {
+			color: rgba(55, 53, 47, 0.6);
+			font-size: 0.75em;
+			overflow: hidden;
+			max-height: 4.5em;
+			word-break: break-word;
+		}
+
+		.bookmark-href {
+			font-size: 0.75em;
+			margin-top: 0.25em;
+		}
+
+		.sans {
+			font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+		}
+
+		.code {
+			font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace;
+		}
+
+		.serif {
+			font-family: Lyon-Text, Georgia, ui-serif, serif;
+		}
+
+		.mono {
+			font-family: iawriter-mono, Nitti, Menlo, Courier, monospace;
+		}
+
+		.pdf .sans {
+			font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP';
+		}
+
+		.pdf:lang(zh-CN) .sans {
+			font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC';
+		}
+
+		.pdf:lang(zh-TW) .sans {
+			font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC';
+		}
+
+		.pdf:lang(ko-KR) .sans {
+			font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR';
+		}
+
+		.pdf .code {
+			font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP';
+		}
+
+		.pdf:lang(zh-CN) .code {
+			font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC';
+		}
+
+		.pdf:lang(zh-TW) .code {
+			font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC';
+		}
+
+		.pdf:lang(ko-KR) .code {
+			font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR';
+		}
+
+		.pdf .serif {
+			font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP';
+		}
+
+		.pdf:lang(zh-CN) .serif {
+			font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC';
+		}
+
+		.pdf:lang(zh-TW) .serif {
+			font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC';
+		}
+
+		.pdf:lang(ko-KR) .serif {
+			font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR';
+		}
+
+		.pdf .mono {
+			font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP';
+		}
+
+		.pdf:lang(zh-CN) .mono {
+			font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC';
+		}
+
+		.pdf:lang(zh-TW) .mono {
+			font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC';
+		}
+
+		.pdf:lang(ko-KR) .mono {
+			font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR';
+		}
+
+		.highlight-default {
+			color: rgba(55, 53, 47, 1);
+		}
+
+		.highlight-gray {
+			color: rgba(120, 119, 116, 1);
+			fill: rgba(120, 119, 116, 1);
+		}
+
+		.highlight-brown {
+			color: rgba(159, 107, 83, 1);
+			fill: rgba(159, 107, 83, 1);
+		}
+
+		.highlight-orange {
+			color: rgba(217, 115, 13, 1);
+			fill: rgba(217, 115, 13, 1);
+		}
+
+		.highlight-yellow {
+			color: rgba(203, 145, 47, 1);
+			fill: rgba(203, 145, 47, 1);
+		}
+
+		.highlight-teal {
+			color: rgba(68, 131, 97, 1);
+			fill: rgba(68, 131, 97, 1);
+		}
+
+		.highlight-blue {
+			color: rgba(51, 126, 169, 1);
+			fill: rgba(51, 126, 169, 1);
+		}
+
+		.highlight-purple {
+			color: rgba(144, 101, 176, 1);
+			fill: rgba(144, 101, 176, 1);
+		}
+
+		.highlight-pink {
+			color: rgba(193, 76, 138, 1);
+			fill: rgba(193, 76, 138, 1);
+		}
+
+		.highlight-red {
+			color: rgba(212, 76, 71, 1);
+			fill: rgba(212, 76, 71, 1);
+		}
+
+		.highlight-gray_background {
+			background: rgba(241, 241, 239, 1);
+		}
+
+		.highlight-brown_background {
+			background: rgba(244, 238, 238, 1);
+		}
+
+		.highlight-orange_background {
+			background: rgba(251, 236, 221, 1);
+		}
+
+		.highlight-yellow_background {
+			background: rgba(251, 243, 219, 1);
+		}
+
+		.highlight-teal_background {
+			background: rgba(237, 243, 236, 1);
+		}
+
+		.highlight-blue_background {
+			background: rgba(231, 243, 248, 1);
+		}
+
+		.highlight-purple_background {
+			background: rgba(244, 240, 247, 0.8);
+		}
+
+		.highlight-pink_background {
+			background: rgba(249, 238, 243, 0.8);
+		}
+
+		.highlight-red_background {
+			background: rgba(253, 235, 236, 1);
+		}
+
+		.block-color-default {
+			color: inherit;
+			fill: inherit;
+		}
+
+		.block-color-gray {
+			color: rgba(120, 119, 116, 1);
+			fill: rgba(120, 119, 116, 1);
+		}
+
+		.block-color-brown {
+			color: rgba(159, 107, 83, 1);
+			fill: rgba(159, 107, 83, 1);
+		}
+
+		.block-color-orange {
+			color: rgba(217, 115, 13, 1);
+			fill: rgba(217, 115, 13, 1);
+		}
+
+		.block-color-yellow {
+			color: rgba(203, 145, 47, 1);
+			fill: rgba(203, 145, 47, 1);
+		}
+
+		.block-color-teal {
+			color: rgba(68, 131, 97, 1);
+			fill: rgba(68, 131, 97, 1);
+		}
+
+		.block-color-blue {
+			color: rgba(51, 126, 169, 1);
+			fill: rgba(51, 126, 169, 1);
+		}
+
+		.block-color-purple {
+			color: rgba(144, 101, 176, 1);
+			fill: rgba(144, 101, 176, 1);
+		}
+
+		.block-color-pink {
+			color: rgba(193, 76, 138, 1);
+			fill: rgba(193, 76, 138, 1);
+		}
+
+		.block-color-red {
+			color: rgba(212, 76, 71, 1);
+			fill: rgba(212, 76, 71, 1);
+		}
+
+		.block-color-gray_background {
+			background: rgba(241, 241, 239, 1);
+		}
+
+		.block-color-brown_background {
+			background: rgba(244, 238, 238, 1);
+		}
+
+		.block-color-orange_background {
+			background: rgba(251, 236, 221, 1);
+		}
+
+		.block-color-yellow_background {
+			background: rgba(251, 243, 219, 1);
+		}
+
+		.block-color-teal_background {
+			background: rgba(237, 243, 236, 1);
+		}
+
+		.block-color-blue_background {
+			background: rgba(231, 243, 248, 1);
+		}
+
+		.block-color-purple_background {
+			background: rgba(244, 240, 247, 0.8);
+		}
+
+		.block-color-pink_background {
+			background: rgba(249, 238, 243, 0.8);
+		}
+
+		.block-color-red_background {
+			background: rgba(253, 235, 236, 1);
+		}
+
+		.select-value-color-interactiveBlue {
+			background-color: rgba(35, 131, 226, .07);
+		}
+
+		.select-value-color-pink {
+			background-color: rgba(245, 224, 233, 1);
+		}
+
+		.select-value-color-purple {
+			background-color: rgba(232, 222, 238, 1);
+		}
+
+		.select-value-color-green {
+			background-color: rgba(219, 237, 219, 1);
+		}
+
+		.select-value-color-gray {
+			background-color: rgba(227, 226, 224, 1);
+		}
+
+		.select-value-color-translucentGray {
+			background-color: rgba(255, 255, 255, 0.0375);
+		}
+
+		.select-value-color-orange {
+			background-color: rgba(250, 222, 201, 1);
+		}
+
+		.select-value-color-brown {
+			background-color: rgba(238, 224, 218, 1);
+		}
+
+		.select-value-color-red {
+			background-color: rgba(255, 226, 221, 1);
+		}
+
+		.select-value-color-yellow {
+			background-color: rgba(253, 236, 200, 1);
+		}
+
+		.select-value-color-blue {
+			background-color: rgba(211, 229, 239, 1);
+		}
+
+		.select-value-color-pageGlass {
+			background-color: undefined;
+		}
+
+		.select-value-color-washGlass {
+			background-color: undefined;
+		}
+
+		.checkbox {
+			display: inline-flex;
+			vertical-align: text-bottom;
+			width: 16;
+			height: 16;
+			background-size: 16px;
+			margin-left: 2px;
+			margin-right: 5px;
+		}
+
+		.checkbox-on {
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+		}
+
+		.checkbox-off {
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+		}
+	</style>
+</head>
+
+<body>
+<article id="365df528-8e9d-49e7-ae92-275af674a9be" class="page serif">
+<header><div class="page-header-icon undefined"><img class="icon" src="https://www.notion.so/icons/news_blue.svg" /></div><h1 class="page-title">CV </h1><p class="page-description"></p><table class="properties"><tbody></tbody></table></header>
+<div class="page-body"><h1 id="f4c545bf-8deb-44d8-8db8-a1998c557f2b" class="">Adithya Balaji</h1><h2 id="c31d29ca-225d-4bce-9dd5-d99e7fb0aa54" class="">Research Engineer - AI and Robotics</h2><div id="029d3b04-a7ad-4ddd-bdfb-2f356904b93f" class="column-list"><div id="a00fa06e-f824-47af-9337-1957874dfc14" style="width:50%" class="column"><p id="27cd6d88-b0d5-49f4-a0ff-e626fc700033" class="">💼 Huber Automotive AG, Germany</p><p id="c0441d4b-7b1e-4172-80fc-cf3100617a59" class="">🎓 Msc in Advanced Robotics, Centrale Nantes,France</p><p id="49a01f38-30e5-4d03-be49-01b8d2a3b23d" class=""><span style="border-bottom:0.05em solid"><strong>Download CV as pdf :</strong></span></p><div><figure id="20e9a02a-ee2f-4768-8cbf-15044e5ad51a"><div class="source"><a href="Adithya_CV.pdf">Adithya_CV.pdf</a></div></figure></div></div><div id="cecaaae5-aecb-4c20-86d5-43b33a4c2ce8" style="width:50%" class="column"><p id="4d7b4cb2-cb85-4cd9-b3f0-9237663094c1" class="">Github: @<a href="https://github.com/adithyab94">adithyb94</a></p><p id="5811d914-01c2-4723-ac4a-38cc5b982c7c" class="">Linkedin: @<a href="https://www.linkedin.com/in/adithya-balaji">adithya-balaji</a></p></div></div><h2 id="276b0d46-b60e-48d6-8c04-d340ff64108b" class="">Expertise</h2><hr id="f0080f5c-a033-4694-b274-539d6e800197" /><p id="349264de-b7b0-4510-9e2c-1814011d9a95" class="">Experienced software engineer with internationalexposure and commitment to detail oriented, accurate work and background in diverse areas such as Artificial Intelligence, Computer vision, Data Engineering, Robotics and DevOps </p><h2 id="8b6c532d-3b62-4f16-a524-3a20ea8c807d" class="">Skills</h2><hr id="094fe3ca-b328-4499-b9e5-8421fc946805" /><div id="e22d0f80-8f27-469f-8b57-a110effbf7d4" class="column-list"><div id="9addd6df-4057-4d41-ab32-e4eb5791ab94" style="width:50%" class="column"><p id="44a5d1ac-9ae7-4195-990e-406ee14d792a" class="">Python</p><p id="809e0d5a-dbb8-4df0-93dc-4db5ae7e2ef3" class=""><strong>★★★★★</strong></p><p id="f06192c6-f3e1-42c4-9419-c6e9d1827dcb" class="">Computer vision and Robotics</p><p id="10ed2cbc-d5a7-4536-956c-af9037ca3619" class=""><strong>★★★★☆</strong></p><p id="a8027216-fc8d-4f46-95a2-768b26097795" class="">CI/ CD, Devops</p><p id="d5cccdf6-89f6-44e3-b529-e75d1e0414bf" class=""><strong>★★★★☆</strong></p></div><div id="769fc050-a3a3-413d-8683-cc0cb8837360" style="width:49.99999999999998%" class="column"><p id="64f72f9a-8b59-481c-b0ea-611a01885ce4" class="">Machine Learning</p><p id="080da62e-5111-4ec2-8589-4c41c82d5f91" class=""><strong>★★★★★</strong></p><p id="7dcbb2aa-d232-4c83-a19c-89df4a418110" class="">Data Engineering</p><p id="de14542e-4e5e-4a01-a93c-79fb84057594" class=""><strong>★★★★☆</strong></p><p id="dee98140-43da-4b8f-be13-876a51f5b885" class="">C++, Linux and ROS</p><p id="67ace42d-2667-4ceb-bb9f-634357fd639f" class=""><strong>★★★☆☆</strong></p></div></div><h2 id="609c4260-eb68-4948-a36e-39133d8ffc7f" class="">Relevant work experience</h2><hr id="28f9bc89-3e64-43eb-aab5-2ffade7f332a" /><div id="d5770d77-c2ff-414c-9ffa-5da5d655434c" class="column-list"><div id="632804c4-dddc-493b-af66-2f106f49eadc" style="width:18.75%" class="column"><p id="963b86b6-9599-46c0-8c45-571eb9ba7dca" class="">Jan 2023 - now</p></div>
+<div id="6b5a82f6-a0e7-42d8-8427-36fc5c20bb42" style="width:81.25%" class="column">
+<p id="fca631ac-ad48-40fe-920a-7da0367a699e" class=""><strong>Embedded</strong> <strong>AI Engineer - R&amp;D @</strong><a href="https://www.huber-automotive.com/"><strong> Huber Automotive AG</strong></a></p><p id="1935c35f-4831-4ef7-9c6d-a056b4adfea4" class="">Ulm, Germany</p><ul id="d90a5cb8-302f-4bbf-a256-832f373e40e1" class="bulleted-list"><li style="list-style-type:disc">Developing edge AI models optimized for microcontrollers andprocessors, using frameworks such as TensorFlow Lite, PyTorch, and Explainable AI (XAI)techniques to improve transparency and accountability of models</li></ul><ul id="27f55e19-655f-4ec4-b648-6dddc097ead3" class="bulleted-list"><li style="list-style-type:disc">Utilized computer vision techniques, including object detectionand tracking, to enable intelligent perception in robotics and edge AI applications</li></ul><ul id="64dffa91-4184-48a0-9470-36cc91ceb460" class="bulleted-list"><li style="list-style-type:disc">Conducted sensor calibration and simulation to enable accurateand reliable perception in robotics and edge AI applications Integrated with the RobotOperating System (ROS) to enable efficient development anddeployment of robotics and edge AI applications.</li></ul><ul id="e49c0fef-d9b1-436a-882d-a69b3b768c14" class="bulleted-list"><li style="list-style-type:disc">Possess experience with Adaptive Autosar, ASPICE, and ISO26262, enabling development of safety-critical systems for automotive and other industries.</li></ul></div></div><div id="51953d49-5eb2-4a7f-85aa-3ca65e1e4b9c" class="column-list"><div id="375bda5b-0fa7-4bd2-9676-622abe4c2a29" style="width:18.75%" class="column"><p id="fe172a8c-7004-404e-a0b9-8d0854a68135" class="">Feb 2022- Sep 2022</p></div><div id="45ce836a-fcd7-44c1-a491-3265ff30c99f" style="width:81.25%" class="column"><p id="b947fb40-4369-4316-b388-0d7dbf9d51af" class=""><strong>AI Research Intern @</strong><strong><a href="http://reliev.io">Reliev</a></strong><strong> (Master thesis: Feb 2022- Sep 2022)</strong></p><p id="a5aeaa20-333c-409b-a88f-696858abf190" class="">Nantes, France</p><ul id="d04599db-926b-432f-a6f3-0920d625e0ac" class="bulleted-list"><li style="list-style-type:disc">Bibliography research on Epilepsy detection.</li></ul><ul id="bbc93943-8227-418d-b134-bcf6f1c4a56f" class="bulleted-list"><li style="list-style-type:disc">Signal processing with real-time time series database anddevelop machine learning models to detect seizure in epileptic patients</li></ul><ul id="98be8b9d-3ca2-4519-90d0-4bb0c8662417" class="bulleted-list"><li style="list-style-type:disc">Experience with feature engineering, feature selection.</li></ul><ul id="4ef0b43b-7c65-49dd-ab13-58c327f61d10" class="bulleted-list"><li style="list-style-type:disc">Designing noise and seizure prediction algorithms withunsupervised learning models and neural networks</li></ul><ul id="396bc7e7-9d2f-4801-b913-23a9348764b5" class="bulleted-list"><li style="list-style-type:disc">Perform Unit tests and Build CI/CD Pipelines</li></ul><ul id="03f96c5f-9b00-4091-8dbc-2ef28be5ab0d" class="bulleted-list"><li style="list-style-type:disc">Git, DevOps, Docker and Linux based development</li></ul><ul id="8ddecdff-b0f8-4fff-a06f-9128da0ed0e3" class="bulleted-list"><li style="list-style-type:disc">Building visualizations and dashboards with Plotly and Dash</li></ul><div><p id="171249a6-6d9f-4157-9b53-7b9bee524791" class=""><strong>Download Master thesis :</strong></p><figure id="2a0400e3-f7a6-473d-bb3e-705316c593cd"><div class="source"><a href="https://drive.google.com/file/d/1LlJTn9ljQ1COVWdtw_0YW6JjSh2L-fRP/view?usp=drivesdk">MasterThesis - Adithya x Reliev</a></div></figure></div></div></div><div id="40627d1f-9a5d-4d61-aeac-349127bfbc1c" class="column-list"><div id="3b8109c7-1b75-4aae-95ba-d484c0b24d7a" style="width:18.75%" class="column"><p id="35d47c6f-669e-4539-bf6c-4877f28c38ce" class="">2017 - 2019</p></div><div id="8c4d47aa-4cab-4827-9165-ad69a145041e" style="width:81.25%" class="column"><p id="5e8cfd80-835e-4061-85bf-988727d39769" class=""><strong>Data and AI Engineer @ </strong><a href="https://www.emishealth.com/"><strong>EMIS Health</strong></a></p><p id="fb823b67-f0dc-4eca-a2f1-c45560b87385" class=""><em>Chennai, India</em></p><ul id="f1b29791-7730-4aea-b8a7-1272a25cdb66" class="bulleted-list"><li style="list-style-type:disc">Developed Machine Learning models to analyze speech input ofemergency calls for NHS, United Kingdom</li></ul><ul id="b2495a8c-12e8-4486-90eb-d404aa626d61" class="bulleted-list"><li style="list-style-type:disc">Worked on multiple Data Science and Analytics projects andintegrated them with Datalake, delivering actionable insights to customers.</li></ul><ul id="5faa3454-9e00-4ae0-bfaa-55ec5320af9e" class="bulleted-list"><li style="list-style-type:disc">Possess extensive experience with Big Data technologies such asApache Spark, Kafka, and Airflow, including testing data ingestion processes.</li></ul><ul id="f74b197f-3929-4ca0-8e81-8492c1b0658b" class="bulleted-list"><li style="list-style-type:disc">Proficient in working with both SQL and NoSQL databases,including SQL Server, Postgres, Presto, and DynamoDB.</li></ul><ul id="78a00be9-9259-4771-a95c-a19228a49300" class="bulleted-list"><li style="list-style-type:disc">Developed and implemented QA automation tests utilizing FlaUI,xUnit, Specflow, and Cucumber with C# for .NET applications.</li></ul><ul id="9384e386-7235-47ae-aa22-4d296a6e1b63" class="bulleted-list"><li style="list-style-type:disc">Skilled in working with various tools and platforms includingAWS, Docker, Azure DevOps, CI/CD, Atlassian, and JIRA X-Ray</li></ul></div></div><div id="775938cf-1603-47ef-954f-34955dcaf381" class="column-list"><div id="1c7eb5c1-49e2-4d50-93a4-ccf10fd35287" style="width:18.75%" class="column"><p id="eebfca20-e800-4bc0-84fe-1677aefa04d5" class="">2016 - 2017</p></div><div id="35cb4b06-fda1-4dc1-bab6-4bd22b7626fd" style="width:81.25%" class="column"><p id="6f5614cf-44d5-40bd-bd1f-fc2f20b72fa2" class=""><strong>Associate Software Engineer @</strong><a href="http://accenture.com"><strong>Accenture</strong></a></p><ul id="e02f5773-5ce0-4d8a-b5da-583d2868edea" class="bulleted-list"><li style="list-style-type:disc">Analysis of large scale telecommunications data using DataWarehousing and ETL</li></ul><ul id="5bad2209-3ad0-49b6-8e1a-c1ac36e5017a" class="bulleted-list"><li style="list-style-type:disc">Creating automation framework using Python and Selenium</li></ul><ul id="df07f560-aaf0-4262-923b-484e418cf200" class="bulleted-list"><li style="list-style-type:disc"> Experience with tools like Splunk, Tableau etc</li></ul><ul id="fbe97dbf-6331-413a-970d-c5e59799c96c" class="bulleted-list"><li style="list-style-type:disc">HP ALM for project management.</li></ul></div></div><h2 id="e07f0a22-25bb-447d-81d4-2b581bddd380" class=""><strong>Education</strong></h2><hr id="5841e3d2-8812-449e-a3b7-9c9d8e29dca9" /><div id="c244d46d-b37c-430f-bc61-a9829c31474a" class="column-list"><div id="1c93ff4a-3b34-4530-b809-9c8cb7cb936a" style="width:18.75%" class="column"><p id="227759e2-3306-4a67-819c-cbd8025e169b" class="">2020 - 2022</p></div><div id="8ae4ceb1-9313-4110-88e8-ef06047703fa" style="width:81.25%" class="column"><p id="2724f3aa-d468-47b4-92d8-c650e4083ddc" class=""><strong>Ecole Centrale de Nantes</strong></p><p id="e2b08b28-0d1c-4b2e-aa64-9909cf7a553f" class="">Nantes<em>, France</em></p><p id="307e6ee7-6155-4479-9be9-ea15898977f5" class=""><strong>MS in Advanced Robotics</strong></p></div></div><div id="aa6d53a9-03c7-4fea-8a40-b69093f0d46c" class="column-list"><div id="38fa8bae-1246-4ecb-9bfd-6f28732338b9" style="width:18.75%" class="column"><p id="e6ced14a-a137-480b-860b-19927a721f77" class="">2012 - 2016</p></div><div id="19ee1ea4-c247-4a8a-a5ea-aa03905ac372" style="width:81.25%" class="column"><p id="20573ff2-d02f-45f0-8163-7785f42ecd77" class=""><strong>Anna University</strong></p><p id="d60688e8-aa75-418a-9a6f-afcf0b06f642" class="">Chennai, India</p><p id="e0e69326-7ad3-4835-9f10-93b4f1ad9419" class=""><strong>Bachelors in AutomobileEngineering</strong></p></div></div></div><h2 id="030f6c60-9640-412a-a3cf-215694b4bfcc" class="">Languages</h2><hr id="7f8ba633-2588-4885-bdc8-afbe5b73b9c5" /><ul id="c74325e6-1813-456f-8e59-4170b762b479" class="bulleted-list"><li style="list-style-type:disc">English - Advanced / Fluent</li></ul><ul id="3e6b4d9f-b36a-4e88-abf7-2ccd42d72c01" class="bulleted-list"><li style="list-style-type:disc">French - Intermediate</li></ul><ul id="c9401ff4-8079-49c8-8e13-a3f9cc2e97eb" class="bulleted-list"><li style="list-style-type:disc">German - Elementary</li></ul><ul id="45d1c698-ff5b-46fa-a679-6fa08c49f9f3" class="bulleted-list"><li style="list-style-type:disc">Tamil - Native / Bilingual proficiency</li></ul><ul id="1e99d876-1961-4db1-95e2-12e03b41eca4" class="bulleted-list"><li style="list-style-type:disc">Kannada - Native / Bilingual proficiency</li></ul><ul id="3c35c664-520d-48a8-8156-7e63ff696dc9" class="bulleted-list"><li style="list-style-type:disc">Hindi - Elementary Proficiency</li></ul><div><hr id="06c810ec-7320-4088-a181-17c4b1ec7a4b" /><div id="3b60e895-5cbc-4da1-8925-75dd3962eeb6" class="column-list"><div id="516b5711-afe3-4319-a679-f3624b5de9d6" style="width:108.33333333333333%" class="column">
