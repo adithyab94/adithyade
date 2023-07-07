@@ -20,15 +20,6 @@
          ul {
          list-style-type: none;
          }
-         @media (prefers-color-scheme: dark) {
-         body {
-         background-color: #000000;
-         color: #ffffff;
-         }
-         a {
-         color: #ffffff;
-         }
-         }
          .night-mode {
          background-color: #000000;
          color: #ffffff;
@@ -195,17 +186,12 @@
       </center>
       <hr/>
       <script>
-         // Check if the system color scheme is set to dark
          window.addEventListener('load', () => {
              if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                 // If it is, set the checkbox to checked
                  document.getElementById('toggle-switch').checked = true;
-                 // And manually trigger the change event to switch the colors
-                 changeColorScheme();
+                 document.body.classList.add('night-mode');
              }
          });
-         
-         // Toggle between light and dark mode
          function changeColorScheme() {
              if (document.getElementById('toggle-switch').checked) {
                  document.body.classList.add('night-mode');
@@ -213,7 +199,6 @@
                  document.body.classList.remove('night-mode');
              }
          }
-         
          const toggleSwitch = document.querySelector('#toggle-switch');
          toggleSwitch.addEventListener('change', changeColorScheme);
       </script>
