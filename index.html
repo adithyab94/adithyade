@@ -21,23 +21,26 @@
          list-style-type: none;
          }
          .night-mode {
-         background-color: #2c3e50;
-         color: #ecf0f1;
+            background-color: #2c3e50;
+            color: #ecf0f1;
          }
-         #toggle-switch {
-         position: absolute;
-         top: 10px;
-         right: 10px;
-         }
-         /* You can also add styles for other elements in night mode, e.g., for links: */
          .night-mode a {
-         color: #3498db;
+            color: #3498db;
+         }
+
+         /* Styles for Checkbox and label container */
+         #toggle-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
          }
       </style>
    </head>
    <body>
-      <input type="checkbox" id="toggle-switch" />
-      <label for="toggle-switch">Toggle Night Mode</label>
+      <div id="toggle-container">
+         <input type="checkbox" id="toggle-switch" />
+         <label for="toggle-switch">Night Mode 🌙</label>
+      </div>
       <h1 align="center">Adithya Balaji</h1>
       <h2 align="center">Research Engineer - AI and Robotics</h2>
       <hr>
