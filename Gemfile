@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 
-# The same Jekyll + plugins GitHub Pages uses, so what you preview is what gets published.
-gem "github-pages", group: :jekyll_plugins
-gem "webrick"
+gem "jekyll", "~> 4.3"
+gem "jekyll-feed", "~> 0.17"
+gem "webrick", "~> 1.8"
+gem "kramdown-parser-gfm", "~> 1.1"
