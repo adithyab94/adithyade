@@ -17,12 +17,9 @@
   <meta name="twitter:card" content="summary_large_image">
   {%- endif %}
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%23232220'/><text x='50%' y='58%' font-family='Georgia,serif' font-size='40' fill='%23f2f6ea' text-anchor='middle' dominant-baseline='middle'>a</text></svg>">
-  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=gambarino@400&display=swap">
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,400i,500i&display=swap">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="preload" href="{{ '/assets/fonts/gambarino-400.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ '/assets/fonts/switzer-400.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{ '/assets/fonts/fonts.css' | relative_url }}">
   <link rel="stylesheet" href="{{ '/style.css' | relative_url }}">
   {%- if page.layout == 'post' or page.collection == 'offline' %}
   <link rel="stylesheet" href="{{ '/post.css' | relative_url }}">
