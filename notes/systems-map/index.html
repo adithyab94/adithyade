@@ -1,0 +1,97 @@
+<!doctype html><html><head>
+<script>(function(){var ok=false;try{ok=localStorage.getItem("pai-notes")==="unlocked"}catch(e){ok=true}if(!ok)location.replace("../../blog/#physical-ai-notes")})();</script>
+<meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=gambarino@400&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700,400i&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/notes.css">
+<link rel="stylesheet" href="../assets/theme-map.css">
+</head><body>
+<div class="pai-bar"><a class="pai-bar__name" href="../../">Adithya Balaji</a><nav><a href="../../blog/#physical-ai-notes">Physical-AI notes</a><a href="../../blog/">Blog</a></nav></div>
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Physical AI Systems Map</title>
+<meta name="description" content="Interactive reference of the physical AI pipeline from problem definition to fleet deployment, verified October 2026.">
+<script>try{var t=localStorage.getItem("pai.theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body data-page="index" data-id="index" data-root="">
+<a class="skip" href="#content">Skip to content</a>
+<div class="app">
+<aside class="rail" id="rail" aria-label="Site navigation"></aside>
+<div class="maincol">
+<header class="topbar" id="topbar"></header>
+<main class="page" id="content">
+<header class="hero">
+<div class="eyebrow">Systems map · v1.0.0 · verified 2026-10-07</div>
+<h1>Physical AI, from task spec to fleet</h1>
+<p>Fifteen pipeline stages and the interfaces between them: what each stage consumes and produces, at which rates and in which formats, which methods and tools are current as of October 2026, and how the pieces connect into one running robot. Written for engineers who know the parts and want the whole.</p>
+</header>
+<section class="sec" id="map" style="border-top:0;margin-top:0;padding-top:.5rem"><header><span class="num">··</span><h2>Master pipeline</h2></header>
+<div data-render="pipeline-master"><noscript><p>The interactive diagram needs JavaScript. Stage pages are in <code>stages/</code>.</p></noscript></div></section>
+<section class="sec" id="how"><header><span class="num">··</span><h2>How to read this site</h2></header>
+<div class="twocol">
+<div class="prose">
+<p><b>Stage pages</b> follow one template with 16 sections: where you are, purpose, interface contract, mental model, methods, decision guide, tool table, where it runs, technique tags, reference stacks, running example, pitfalls, numbers, papers, open problems and a self-check.</p>
+<p><b>Integration views</b> cut across stages: an end-to-end trace of two systems, the what-goes-where matrix, the modality × annotation matrix, the on-robot runtime architecture, a paradigm comparison, three reference architectures, the frontier scan, a learning roadmap, a capstone self-test and a glossary.</p>
+<p><b>Filters</b> in the top bar (Cloud, Sim, Edge, RL, IL, Classical, Frontier, Open-source only) apply to every table, method list and diagram on the current page. <b>Search</b> (press <kbd>/</kbd>) covers all stages, tools, papers, terms and questions.</p>
+</div>
+<div class="panel"><h3>Conventions</h3>
+<dl class="kv">
+<dt>FRONTIER</dt><dd>Method or tool that became important in 2025-04 → 2026-10; linked to the frontier entry.</dd>
+<dt>Maturity</dt><dd><span class="mat mat-research">research</span> · <span class="mat mat-pilot">pilot</span> · <span class="mat mat-production">production</span></dd>
+<dt>Release dates</dt><dd>From official release pages; “year inferred” marks GitHub listings without a year; “rolling” means no tagged releases.</dd>
+<dt>Claims</dt><dd>Company-reported numbers are labelled; disputed or unverified claims say so.</dd>
+<dt>Superseded</dt><dd>Kept and struck through in tool tables, so the history stays visible.</dd>
+</dl></div>
+</div></section>
+<section class="sec" id="stages"><header><span class="num">··</span><h2>The fifteen stages</h2></header>
+<div data-render="stage-cards"><noscript><p>Stage list needs JavaScript.</p></noscript></div></section>
+<section class="sec" id="views"><header><span class="num">··</span><h2>Integration views</h2></header>
+<div class="cards3">
+<a class="linkcard" href="views/traces.html"><b>End-to-end traces</b><span>MB-1 connector mating and H-1 humanoid through every stage, with artifacts and rates.</span></a>
+<a class="linkcard" href="views/what-goes-where.html"><b>What goes where</b><span>Stages × cloud, sim, edge, RL, IL, classical, sim2real, real2sim, WAM, ICL.</span></a>
+<a class="linkcard" href="views/modality-annotation.html"><b>Modality × annotation</b><span>What gets labelled for each sensor, how, and in which format.</span></a>
+<a class="linkcard" href="views/runtime-architecture.html"><b>Runtime architecture</b><span>Every on-robot process with rate, compute target and safety layer.</span></a>
+<a class="linkcard" href="views/paradigms.html"><b>Paradigm comparison</b><span>VLA, WAM, diffusion policy, RL policy and classical pipeline side by side.</span></a>
+<a class="linkcard" href="views/reference-architectures.html"><b>Reference architectures</b><span>Solo open source, startup and industry stacks per stage.</span></a>
+<a class="linkcard" href="views/frontier.html"><b>Frontier scan</b><span>Timeline and verdicts for what changed in the last 18 months.</span></a>
+<a class="linkcard" href="views/roadmap.html"><b>Learning roadmap</b><span>Fourteen projects that build up to the full pipeline.</span></a>
+<a class="linkcard" href="views/self-test.html"><b>Capstone self-test</b><span>Twenty system-design questions with model answers.</span></a>
+</div></section>
+<section class="sec" id="changelog"><header><span class="num">··</span><h2>Changelog</h2></header>
+<p class="small muted" style="margin-bottom:.6rem">Maintained in <code>data/meta.js</code>. See <code>MAINTENANCE.md</code> for how to update stages, tools and frontier entries, and <code>sources.md</code> for all sources by stage.</p>
+<div data-render="changelog"></div></section>
+<div data-pager></div>
+</main>
+<footer class="foot" id="pagefoot"></footer>
+</div>
+</div>
+<script src="data/meta.js"></script>
+<script src="data/stage-00.js"></script>
+<script src="data/stage-01.js"></script>
+<script src="data/stage-02.js"></script>
+<script src="data/stage-03.js"></script>
+<script src="data/stage-04.js"></script>
+<script src="data/stage-05.js"></script>
+<script src="data/stage-06.js"></script>
+<script src="data/stage-07.js"></script>
+<script src="data/stage-08.js"></script>
+<script src="data/stage-09.js"></script>
+<script src="data/stage-10.js"></script>
+<script src="data/stage-11.js"></script>
+<script src="data/stage-12.js"></script>
+<script src="data/stage-13.js"></script>
+<script src="data/stage-14.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
+
+</body></html>

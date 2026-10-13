@@ -1,0 +1,11 @@
+{%- comment -%}
+  An image with a caption.
+    {% include figure.html src="/assets/blog/my-post/photo.jpg" alt="What it shows" caption="Markdown *works* here." %}
+  Optional: size="wide" breaks out of the text column; class="..." adds a class.
+{%- endcomment -%}
+<figure class="figure{% if include.size %} figure--{{ include.size }}{% endif %}{% if include.class %} {{ include.class }}{% endif %}">
+  <img src="{{ include.src | relative_url }}" alt="{{ include.alt | escape }}" loading="lazy" decoding="async">
+  {%- if include.caption %}
+  <figcaption>{{ include.caption | markdownify | remove: '<p>' | remove: '</p>' | strip }}</figcaption>
+  {%- endif %}
+</figure>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){var ok=false;try{ok=localStorage.getItem("pai-notes")==="unlocked"}catch(e){ok=true}if(!ok)location.replace("../../../blog/#physical-ai-notes")})();</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Modality × annotation · Physical AI Systems Map</title>
+<meta name="description" content="What is labelled per modality, with methods, tools, formats and consumers.">
+<script>try{var t=localStorage.getItem("pai.theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=gambarino@400&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700,400i&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/notes.css">
+<link rel="stylesheet" href="../../assets/theme-map.css">
+</head>
+<body data-page="view" data-id="view-modality" data-root="../">
+<div class="pai-bar"><a class="pai-bar__name" href="../../../">Adithya Balaji</a><nav><a href="../../../blog/#physical-ai-notes">Physical-AI notes</a><a href="../../../blog/">Blog</a></nav></div>
+
+<a class="skip" href="#content">Skip to content</a>
+<div class="app">
+<aside class="rail" id="rail" aria-label="Site navigation"></aside>
+<div class="maincol">
+<header class="topbar" id="topbar"></header>
+<main class="page" id="content">
+<div data-crumbs></div>
+<header class="phead"><div class="eyebrow">Integration view</div><h1>Modality × annotation matrix</h1><p class="lede">For each sensor modality: what gets labelled, how, with which tools, in which storage format and who consumes it. Source: <code>annotation_matrix</code> in <code>data/stage-04.js</code>. Click the Modality header to sort.</p></header>
+<div data-render="modality-matrix"><noscript><p>This view renders from the files in <code>data/</code> with JavaScript.</p></noscript></div>
+<div class="callout" style="margin-top:1.25rem"><h4>Two patterns to notice</h4><div class="prose"><p>Dense visual labels (masks, poses, captions, segments) are now mostly model-generated (SAM 3.1, VLMs, FoundationPose) with human audits. Contact modalities (F/T, tactile, audio) are labelled as <b>events</b> with timestamps rather than dense annotations, and they often provide the most reliable success evidence for contact-rich tasks. See <a href="../stages/04-curation-annotation.html">stage 04</a>.</p></div></div>
+<div data-pager></div>
+</main>
+<footer class="foot" id="pagefoot"></footer>
+</div>
+</div>
+<script src="../data/meta.js"></script>
+<script src="../data/stage-04.js"></script>
+<script src="../assets/app.js"></script>
+</body>
+</html>

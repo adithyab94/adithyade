@@ -1,0 +1,41 @@
+---
+layout: default
+---
+{%- assign words = content | strip_html | number_of_words -%}
+{%- assign minutes = words | divided_by: 230 | plus: 1 -%}
+<article class="post">
+  <header class="post__head">
+    <p class="post__kicker"><a href="{{ '/blog/' | relative_url }}">Blog</a></p>
+    <h1 class="post__title">{{ page.title }}</h1>
+    {%- if page.subtitle %}
+    <p class="post__subtitle">{{ page.subtitle }}</p>
+    {%- endif %}
+    <dl class="post__meta">
+      <dt>Published</dt><dd><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %-d, %Y" }}</time></dd>
+      <dt>Reading</dt><dd>{{ minutes }} min</dd>
+      {%- for link in page.links %}
+      <dt>{{ link.label }}</dt><dd><a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.text }}</a></dd>
+      {%- endfor %}
+    </dl>
+  </header>
+
+  {%- if page.hero %}
+  {% include figure.html src=page.hero alt=page.hero_alt caption=page.hero_caption size="wide" class="post__hero" %}
+  {%- endif %}
+
+  <div class="post__body">
+{{ content }}
+  </div>
+
+  <footer class="post__foot">
+    <nav class="post__pager" aria-label="More posts">
+      {%- if page.previous %}
+      <a class="post__pager-link" href="{{ page.previous.url | relative_url }}"><span>Older</span>{{ page.previous.title }}</a>
+      {%- endif %}
+      {%- if page.next %}
+      <a class="post__pager-link post__pager-link--next" href="{{ page.next.url | relative_url }}"><span>Newer</span>{{ page.next.title }}</a>
+      {%- endif %}
+    </nav>
+    <a class="text-link" href="{{ '/blog/' | relative_url }}">← All posts</a>
+  </footer>
+</article>

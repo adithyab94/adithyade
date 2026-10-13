@@ -1,0 +1,12 @@
+{%- comment -%}
+  An inline SVG chart from _includes/charts/<name>.svg, so it picks up the site's fonts and colours.
+    {% include chart.html name="my-chart" caption="What the reader should take away." %}
+  Optional: size="wide".
+{%- endcomment -%}
+{%- assign chart_path = 'charts/' | append: include.name | append: '.svg' -%}
+<figure class="figure figure--chart{% if include.size %} figure--{{ include.size }}{% endif %}">
+  {% include {{ chart_path }} %}
+  {%- if include.caption %}
+  <figcaption>{{ include.caption | markdownify | remove: '<p>' | remove: '</p>' | strip }}</figcaption>
+  {%- endif %}
+</figure>

@@ -1,0 +1,32 @@
+/* Dark course shell -> site light theme */
+:root:root:root{--bg:#f2f6ea;--panel:#fbfcf8;--panel2:#e8ede0;--line:#d5d9cb;--text:#232220;--muted:#6f6e66;
+  --accent:#3e6fb0;--green:#2f7d5f;--amber:#a8701a;--red:#b8452f;--purple:#6b4fa8;--cyan:#1f7f86;--pink:#a8366f;--code:#f7f9f2;
+  color-scheme:light}
+body{font-family:"Switzer",system-ui,sans-serif;font-size:15px;line-height:1.6}
+h1,h2,.model-card h3{font-family:"Gambarino",Georgia,serif;font-weight:400;letter-spacing:-.02em}
+h1{font-size:clamp(34px,4.4vw,48px);line-height:1.04}
+h2{font-size:28px;line-height:1.1}
+h3{font-weight:500}
+.brand{font-family:"Gambarino",Georgia,serif;font-weight:400;font-size:20px}
+.brand b{color:var(--text);font-weight:400}
+.top,aside,.detail,.search-results{background:#f2f6ea}
+.top input,.file-filter input,.code-head input{background:#fff}
+.pill:hover,.pill.active{background:#e6ecd8;color:var(--text)}
+.step-chip.active{background:#dfece9}
+.debug-case .symptom{color:#8a4a12}
+.code-line .ln{color:#a3a296;border-right-color:#e1e5d6}
+.code-line.mark{background:#f6ecc9}
+.code-line.focus{background:#dfe8f4}
+.callout{background:#f4ead2}
+.detail .refs{grid-template-columns:minmax(0,1fr)}
+#drawerCode,.drawer-code{min-width:0;max-width:100%}
+.overlay{background:rgba(35,34,32,.22)}
+.detail{box-shadow:-24px 0 48px rgba(35,34,32,.08)}
+.stage,.card,.math-card,.fact,.model-card,.debug-case,.quiz button,.stepper{box-shadow:none}
+.lane-title,.nav-group,th,.badge,.eyebrow,.fam,.stage em,code,.code-scroll,.drawer-code,.file-btn,.ref-row code,.formula .note,.step-shape{font-family:"Fragment Mono",ui-monospace,monospace}
+.formula{font-family:"Switzer",system-ui,sans-serif}
+.code-line.omit .txt{color:#85847c;font-style:italic}
+::-webkit-scrollbar-track{background:#eef2e6}
+::-webkit-scrollbar-thumb{background:#c9cdbd;border-color:#eef2e6}
+::-webkit-scrollbar-thumb:hover{background:#b0b4a3}
+*{scrollbar-color:#c9cdbd #eef2e6}

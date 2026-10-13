@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){var ok=false;try{ok=localStorage.getItem("pai-notes")==="unlocked"}catch(e){ok=true}if(!ok)location.replace("../../blog/#physical-ai-notes")})();</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fewer Bits, Same Robot · Physical-AI notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEF2F5; --paper2:#E3E9EE; --panel:#FFFFFF; --ink:#14202B; --ink2:#465563; --rule:#C5D0D9;
+  --grid:#2F5BD3; --grid-soft:rgba(47,91,211,.12); --err:#C2185B; --err-soft:rgba(194,24,91,.12);
+  --keep:#0F8A7E; --keep-soft:rgba(15,138,126,.13); --amber:#B7791F;
+  --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --cond:"IBM Plex Sans Condensed","Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1621; --paper2:#142030; --panel:#172536; --ink:#E4EBF2; --ink2:#9FB0C1; --rule:#2A3B50;
+    --grid:#7FA2FF; --grid-soft:rgba(127,162,255,.14); --err:#FF6FA8; --err-soft:rgba(255,111,168,.14);
+    --keep:#46D3C0; --keep-soft:rgba(70,211,192,.14); --amber:#F0B45A;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1621; --paper2:#142030; --panel:#172536; --ink:#E4EBF2; --ink2:#9FB0C1; --rule:#2A3B50;
+  --grid:#7FA2FF; --grid-soft:rgba(127,162,255,.14); --err:#FF6FA8; --err-soft:rgba(255,111,168,.14);
+  --keep:#46D3C0; --keep-soft:rgba(70,211,192,.14); --amber:#F0B45A;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 16px); scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+body{margin:0; background:var(--paper); color:var(--ink); font-family:var(--serif); font-size:18px; line-height:1.68;
+  background-image:linear-gradient(var(--grid-soft) 1px, transparent 1px),linear-gradient(90deg,var(--grid-soft) 1px, transparent 1px);
+  background-size:28px 28px; background-attachment:fixed;}
+a{color:var(--grid)}
+:focus-visible{outline:3px solid var(--grid); outline-offset:2px}
+#progress{position:fixed; top:0; left:0; height:3px; width:0; background:var(--grid); z-index:50}
+.layout{display:grid; grid-template-columns:260px minmax(0,1fr); max-width:1240px; margin:0 auto}
+nav.toc{position:sticky; top:env(safe-area-inset-top,0px); height:100vh; overflow-y:auto; padding:28px 18px 40px 22px; border-right:1px solid var(--rule); background:color-mix(in srgb,var(--paper) 88%, transparent); font-family:var(--cond); font-size:15px; line-height:1.35}
+nav.toc .brand{font-weight:700; font-size:19px; margin-bottom:4px}
+nav.toc .sub{color:var(--ink2); font-size:13.5px; margin-bottom:18px}
+nav.toc ol{list-style:none; padding:0; margin:0; counter-reset:ch}
+nav.toc li{counter-increment:ch}
+nav.toc li a{display:grid; grid-template-columns:26px 1fr; gap:4px; padding:6px 8px; border-radius:6px; color:var(--ink2); text-decoration:none}
+nav.toc li a::before{content:counter(ch); font-family:var(--mono); font-size:12px; color:var(--grid); padding-top:2px}
+nav.toc li a:hover{background:var(--paper2); color:var(--ink)}
+nav.toc li a.active{background:var(--grid-soft); color:var(--ink); font-weight:600}
+nav.toc .tools{display:flex; gap:8px; margin-top:18px}
+button,.btn{font-family:var(--cond); font-size:15px; font-weight:600; border:1.5px solid var(--ink); background:var(--panel); color:var(--ink); padding:6px 12px; border-radius:6px; cursor:pointer}
+button:hover{background:var(--paper2)}
+button.primary{background:var(--ink); color:var(--paper)}
+main{padding:0 40px 120px; min-width:0}
+.col{max-width:74ch}
+header.hero{padding:56px 0 30px}
+header.hero h1{font-family:var(--cond); font-weight:700; font-size:clamp(40px,6.2vw,76px); line-height:.98; letter-spacing:-.01em; margin:0 0 18px; max-width:15ch}
+header.hero p.lede{font-size:21px; color:var(--ink2); max-width:60ch; margin:0 0 26px}
+section.chapter{padding-top:56px; border-top:1px solid var(--rule); margin-top:40px}
+section.chapter > .chnum{font-family:var(--mono); font-size:14px; color:var(--grid)}
+h2{font-family:var(--cond); font-weight:700; font-size:clamp(30px,3.6vw,44px); line-height:1.06; margin:6px 0 16px}
+h3{font-family:var(--cond); font-weight:600; font-size:25px; line-height:1.2; margin:38px 0 8px}
+h4{font-family:var(--cond); font-weight:600; font-size:19px; margin:24px 0 4px}
+p{margin:0 0 16px}
+code,.m{font-family:var(--mono); font-size:.86em; background:var(--paper2); padding:1px 5px; border-radius:4px}
+pre{font-family:var(--mono); font-size:14px; line-height:1.55; background:var(--panel); border:1px solid var(--rule); border-left:4px solid var(--grid); padding:14px 16px; border-radius:6px; overflow-x:auto}
+.formula{font-family:var(--serif); font-size:20px; background:var(--panel); border:1px solid var(--rule); border-radius:8px; padding:14px 18px; margin:14px 0 18px; overflow-x:auto; line-height:1.8}
+.formula .note{display:block; font-size:15px; color:var(--ink2); font-family:var(--cond); margin-top:4px}
+.formula i{font-style:italic}
+.wrap{overflow-x:auto; margin:16px 0 22px}
+table{border-collapse:collapse; width:100%; font-size:16px; background:var(--panel)}
+th,td{border:1px solid var(--rule); padding:7px 10px; text-align:left; vertical-align:top}
+th{font-family:var(--cond); font-weight:600; background:var(--paper2)}
+td.num{font-family:var(--mono); font-size:14px; white-space:nowrap}
+.aside{border-left:4px solid var(--keep); background:var(--keep-soft); padding:12px 16px; border-radius:0 8px 8px 0; margin:18px 0}
+.aside.you{border-left-color:var(--amber); background:color-mix(in srgb,var(--amber) 13%, transparent)}
+.aside.trap{border-left-color:var(--err); background:var(--err-soft)}
+.aside b.tag{font-family:var(--cond); display:block; margin-bottom:2px}
+.say{font-style:italic; border:1px dashed var(--ink2); border-radius:8px; padding:12px 16px; margin:16px 0; background:var(--panel)}
+.say::before{content:"In short"; display:block; font-style:normal; font-family:var(--cond); font-weight:600; font-size:14px; color:var(--grid); margin-bottom:4px}
+/* bench = interactive panel */
+.bench{background:var(--panel); border:1.5px solid var(--ink); border-radius:10px; margin:24px 0 30px; box-shadow:5px 5px 0 var(--grid-soft); max-width:980px}
+.bench .bhead{display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding:10px 16px; border-bottom:1.5px solid var(--ink); font-family:var(--cond)}
+.bench .bhead b{font-size:18px}
+.bench .bhead span{font-size:14px; color:var(--ink2)}
+.bench .bbody{padding:14px 16px 16px}
+.controls{display:flex; flex-wrap:wrap; gap:12px 18px; align-items:center; font-family:var(--cond); font-size:15px; margin-bottom:12px}
+.controls label{display:flex; gap:8px; align-items:center}
+input[type=range]{accent-color:var(--grid); width:150px}
+input[type=number],input[type=text],select{font-family:var(--mono); font-size:15px; padding:5px 8px; border:1.5px solid var(--rule); border-radius:6px; background:var(--paper); color:var(--ink); max-width:100%}
+canvas{display:block; width:100%; height:auto; border:1px solid var(--rule); border-radius:6px; background:var(--paper)}
+.stats{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+.stat{font-family:var(--cond); font-size:14px; border:1px solid var(--rule); border-radius:6px; padding:4px 10px; background:var(--paper)}
+.stat b{font-family:var(--mono); font-weight:600}
+/* bit explorer */
+.bitrow{display:grid; grid-template-columns:120px 1fr 150px; gap:10px; align-items:center; padding:7px 0; border-bottom:1px dashed var(--rule)}
+.bitrow:last-child{border-bottom:none}
+.bitrow .fmt{font-family:var(--cond); font-weight:600}
+.bitrow .fmt small{display:block; font-weight:400; color:var(--ink2); font-size:13px}
+.bits{display:flex; flex-wrap:wrap; gap:2px}
+.bit{font-family:var(--mono); font-size:13px; width:17px; height:24px; display:grid; place-items:center; border-radius:3px; color:#fff}
+.bit.s{background:var(--err)} .bit.e{background:var(--grid)} .bit.mm{background:var(--keep)} .bit.i{background:var(--ink2)}
+.bitrow .val{font-family:var(--mono); font-size:13.5px; text-align:right}
+.bitrow .val small{display:block; color:var(--ink2)}
+.legend{display:flex; gap:14px; font-family:var(--cond); font-size:14px; color:var(--ink2); margin-top:8px}
+.legend span::before{content:""; display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:-1px}
+.legend .ls::before{background:var(--err)} .legend .le::before{background:var(--grid)} .legend .lm::before{background:var(--keep)}
+/* cards + quiz */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px; margin:18px 0}
+.flip{perspective:900px; height:210px; cursor:pointer}
+.flip .inner{position:relative; width:100%; height:100%; transition:transform .45s; transform-style:preserve-3d}
+.flip.on .inner{transform:rotateY(180deg)}
+.flip .face{position:absolute; inset:0; backface-visibility:hidden; border:1.5px solid var(--ink); border-radius:10px; padding:14px; background:var(--panel); overflow:auto; font-size:15.5px; line-height:1.5}
+.flip .face.front{font-family:var(--cond); font-size:18px; font-weight:600; display:flex; align-items:center}
+.flip .face.back{transform:rotateY(180deg); background:var(--keep-soft)}
+.q{background:var(--panel); border:1px solid var(--rule); border-radius:10px; padding:14px 16px; margin:12px 0}
+.q .qt{font-family:var(--cond); font-weight:600; font-size:18px; margin-bottom:8px}
+.q .opt{display:block; width:100%; text-align:left; font-family:var(--serif); font-weight:400; font-size:16px; margin:6px 0; border:1.5px solid var(--rule); background:var(--paper)}
+.q .opt.right{border-color:var(--keep); background:var(--keep-soft)}
+.q .opt.wrong{border-color:var(--err); background:var(--err-soft)}
+.q .why{display:none; font-size:15.5px; color:var(--ink2); margin-top:6px}
+.q.done .why{display:block}
+.pill{display:inline-block; font-family:var(--cond); font-size:13px; border:1px solid var(--rule); border-radius:999px; padding:1px 9px; margin-right:4px; background:var(--paper)}
+.stepper{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px}
+.stepper button{font-weight:500}
+.stepper button.on{background:var(--ink); color:var(--paper)}
+.steptext{min-height:150px}
+.twocol{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+.mtx{font-family:var(--mono); font-size:13px}
+.mtx td{padding:4px 6px; text-align:right}
+.mtx td.flip{background:var(--err-soft)}
+.grid24{display:grid; grid-template-columns:repeat(16,1fr); gap:3px; margin:6px 0}
+.cell{font-family:var(--mono); font-size:11px; aspect-ratio:1/1; display:grid; place-items:center; border-radius:3px; background:var(--grid-soft); color:var(--ink)}
+.cell.z{background:transparent; border:1px dashed var(--rule); color:var(--ink2)}
+.cell.g{box-shadow:inset 0 -3px 0 var(--grid)}
+.filter{margin-bottom:8px; width:280px}
+footer{margin-top:80px; font-family:var(--cond); color:var(--ink2); font-size:15px}
+@media (max-width: 900px){
+  .layout{grid-template-columns:1fr}
+  nav.toc{position:static; height:auto; border-right:none; border-bottom:1px solid var(--rule)}
+  nav.toc ol{display:grid; grid-template-columns:1fr 1fr}
+  main{padding:0 16px 80px}
+  .bitrow{grid-template-columns:1fr; gap:4px}
+  .bitrow .val{text-align:left}
+  .twocol{grid-template-columns:1fr}
+  body{font-size:17px}
+}
+</style>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=gambarino@400&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700,400i&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/notes.css">
+<link rel="stylesheet" href="../assets/theme-quant.css">
+
+</head>
+<body>
+<div class="pai-bar"><a class="pai-bar__name" href="../../">Adithya Balaji</a><nav><a href="../../blog/#physical-ai-notes">Physical-AI notes</a><a href="../../blog/">Blog</a></nav></div>
+
+<div id="progress"></div>
+<div class="layout">
+<nav class="toc" aria-label="Chapters">
+  <div class="brand">Fewer Bits, Same Robot</div>
+  <div class="sub">Quantization, model optimization and TensorRT</div>
+  <ol>
+    <li><a href="#formats">Number formats</a></li>
+    <li><a href="#qmath">The quantization equation</a></li>
+    <li><a href="#granularity">Granularity</a></li>
+    <li><a href="#calibration">Calibration</a></li>
+    <li><a href="#ptq">PTQ algorithms</a></li>
+    <li><a href="#qat">Quantization-aware training</a></li>
+    <li><a href="#recipe">Choosing a recipe</a></li>
+    <li><a href="#roofline">Where time goes</a></li>
+    <li><a href="#fusion">Kernel fusion</a></li>
+    <li><a href="#graphs">CUDA / HIP graphs</a></li>
+    <li><a href="#pruning">Pruning & sparsity</a></li>
+    <li><a href="#distill">Distillation</a></li>
+    <li><a href="#trt">TensorRT, end to end</a></li>
+    <li><a href="#amd">The AMD mirror</a></li>
+    <li><a href="#drill">Drill: cards & quiz</a></li>
+  </ol>
+  <div class="tools"><button id="themeBtn" type="button">Toggle theme</button></div>
+</nav>
+<main>
+<header class="hero col" style="max-width:none">
+  <h1>Every number in a model is a compromise.</h1>
+  <p class="lede">Type any value. Watch what each format keeps and what it throws away. Everything else in this guide — calibration, SmoothQuant, GPTQ, TensorRT's precision rules — is about managing exactly this loss.</p>
+  <div class="bench" id="bitExplorer">
+    <div class="bhead"><b>Bit explorer</b><span>sign · exponent · mantissa, rounded to nearest</span></div>
+    <div class="bbody">
+      <div class="controls">
+        <label>Value <input type="text" id="bxVal" value="0.1337" size="12" aria-label="Value to encode"></label>
+        <button type="button" data-bx="0.1337">0.1337</button>
+        <button type="button" data-bx="70000">70000</button>
+        <button type="button" data-bx="3.14159265">π</button>
+        <button type="button" data-bx="0.00001">1e-5</button>
+        <button type="button" data-bx="-500">−500</button>
+        <label>INT8 absmax <input type="number" id="bxAbs" value="1" step="0.5" min="0.01" style="width:90px"></label>
+      </div>
+      <div id="bxRows"></div>
+      <div class="legend"><span class="ls">sign</span><span class="le">exponent = range</span><span class="lm">mantissa = precision</span></div>
+    </div>
+  </div>
+  <p class="col">Try <b>70000</b>: FP16 overflows (its ceiling is 65,504) while BF16 shrugs — same exponent width as FP32. Try <b>1e-5</b>: FP8 E4M3 flushes it to zero. Try the INT8 row with absmax 1 and a value of 3: it clips. <em>Range, precision, clipping</em> — hold those three words, they come back in every chapter.</p>
+</header>
+<!-- ============ CH1 FORMATS ============ -->
+<section class="chapter col" id="formats">
+<div class="chnum">Chapter 1</div>
+<h2>Number formats: range versus precision</h2>
+<p>A checkpoint is a dictionary of named tensors — each one a dtype, a shape and a flat run of bytes (<code>.safetensors</code> is literally a JSON header of offsets plus one byte buffer; <code>.pt</code> is a zip of a pickle plus raw storages). Size on disk is <b>parameters × bytes per element</b>. Quantization changes the bytes-per-element term. Before changing it, you need to know what each format can and cannot hold.</p>
+
+<h3>Floating point in one sentence</h3>
+<p>A float is <i>(−1)<sup>sign</sup> × 1.mantissa × 2<sup>exponent − bias</sup></i>. Exponent bits buy <b>range</b> (how big and how small). Mantissa bits buy <b>precision</b> (how finely spaced the values are near any given magnitude). Spacing is <em>relative</em>: between 1 and 2, FP16 has steps of 2<sup>−10</sup>; between 1024 and 2048 its steps are 1. That relative spacing is why floats handle wide dynamic ranges gracefully and integers don't.</p>
+
+<div class="wrap"><table>
+<tr><th>Format</th><th>Sign·Exp·Man</th><th>Largest</th><th>Smallest normal</th><th>Where it lives</th></tr>
+<tr><td>FP32</td><td class="num">1·8·23</td><td class="num">3.4e38</td><td class="num">1.2e−38</td><td>Reference, optimizer master weights, accumulators</td></tr>
+<tr><td>TF32</td><td class="num">1·8·10</td><td class="num">3.4e38</td><td class="num">1.2e−38</td><td>NVIDIA tensor-core <em>math mode</em>; stored as FP32</td></tr>
+<tr><td>FP16</td><td class="num">1·5·10</td><td class="num">65,504</td><td class="num">6.1e−5</td><td>GPU inference default; overflow risk in LLM activations</td></tr>
+<tr><td>BF16</td><td class="num">1·8·7</td><td class="num">3.4e38</td><td class="num">1.2e−38</td><td>Training default — FP32 range, coarse precision, never overflows</td></tr>
+<tr><td>FP8 E4M3</td><td class="num">1·4·3</td><td class="num">448</td><td class="num">2<sup>−6</sup></td><td>Inference weights + activations (Hopper, Blackwell, MI300, Thor)</td></tr>
+<tr><td>FP8 E5M2</td><td class="num">1·5·2</td><td class="num">57,344</td><td class="num">2<sup>−14</sup></td><td>Gradients — range matters more than precision</td></tr>
+<tr><td>FP4 E2M1</td><td class="num">1·2·1</td><td class="num">6</td><td class="num">1</td><td>Only ±{0, 0.5, 1, 1.5, 2, 3, 4, 6}. Useless without block scales</td></tr>
+<tr><td>INT8</td><td class="num">two's complement</td><td class="num">127·s</td><td class="num">s (the scale)</td><td>Integer GEMMs; needs an external scale</td></tr>
+<tr><td>INT4</td><td class="num">two's complement</td><td class="num">7·s</td><td class="num">s</td><td>Weight-only LLM/VLA compression</td></tr>
+</table></div>
+
+<div class="aside"><b class="tag">FP16 vs BF16, the one-liner</b>FP16 has more precision and less range; BF16 has less precision and FP32's range. Training blows up on FP16 without loss scaling because small gradients underflow and large activations overflow. BF16 just rounds more coarsely — which SGD tolerates.</div>
+
+<h3>Subnormals, saturation and special values</h3>
+<p>When the exponent field is all zeros, IEEE formats switch to <b>subnormals</b>: the implicit leading 1 becomes 0, giving a gradual slide to zero instead of a cliff. FP16 subnormals reach down to about 6e−8. At the other end, IEEE formats overflow to <b>inf</b>. The OCP FP8 E4M3 variant deliberately has no infinity — it reclaims those bit patterns for extra finite values and <b>saturates</b> at ±448, keeping a single NaN encoding. Kernels typically clamp before casting so a large activation becomes 448, not garbage.</p>
+
+<h3>Microscaling: how 4-bit becomes usable</h3>
+<p>FP4 alone covers 0.5 to 6. Real tensors span orders of magnitude. The fix is <b>block scaling baked into the format</b>:</p>
+<div class="wrap"><table>
+<tr><th>Format</th><th>Element</th><th>Block</th><th>Shared scale</th><th>Hardware</th></tr>
+<tr><td>MXFP8 / MXFP6 / MXFP4</td><td class="num">FP8 / FP6 / FP4</td><td class="num">32</td><td>E8M0 — a pure power of two</td><td>OCP standard; AMD MI350 (CDNA4), Blackwell</td></tr>
+<tr><td>NVFP4</td><td class="num">FP4 E2M1</td><td class="num">16</td><td>FP8 E4M3 per block + FP32 per tensor</td><td>NVIDIA Blackwell</td></tr>
+<tr><td>GGUF K-quants</td><td class="num">2–6 bit ints</td><td class="num">sub-blocks in 256 super-blocks</td><td>quantized scales and mins</td><td>llama.cpp / ggml, CPU and GPU</td></tr>
+</table></div>
+<p>Smaller blocks and a finer-grained scale (NVFP4's FP8 scale vs MX's power-of-two) cost a little metadata and buy accuracy. This is per-group quantization, chapter 3, pushed into silicon.</p>
+</section>
+
+<!-- ============ CH2 QMATH ============ -->
+<section class="chapter col" id="qmath">
+<div class="chnum">Chapter 2</div>
+<h2>The quantization equation</h2>
+<p>Integers have no exponent. To store real numbers in INT8 you pick a <b>scale</b> <i>s</i> (the real-valued step between neighbouring integers) and optionally a <b>zero-point</b> <i>z</i> (the integer that represents real zero):</p>
+<div class="formula">
+q = clamp( round( x / s ) + z , q<sub>min</sub>, q<sub>max</sub> )<br>
+x̂ = s · ( q − z )
+<span class="note">quantize, then dequantize. x̂ is what the network "sees". The gap x − x̂ is quantization error.</span>
+</div>
+
+<h3>Symmetric vs asymmetric</h3>
+<div class="formula">
+Symmetric: &nbsp; s = max|x| / (2<sup>b−1</sup> − 1), &nbsp; z = 0 &nbsp;&nbsp; (INT8: s = absmax / 127)<br>
+Asymmetric: s = (max − min) / (2<sup>b</sup> − 1), &nbsp; z = q<sub>min</sub> − round(min / s)
+<span class="note">Symmetric wastes half the grid on a one-sided distribution (post-ReLU). Asymmetric uses every level but adds a zero-point term to every GEMM.</span>
+</div>
+<p>Weights are near-symmetric around zero → symmetric, per-channel. Activations after ReLU/GELU are skewed → asymmetric is tempting, but many accelerators prefer symmetric activations too because the zero-point cross-term costs an extra correction. Symmetric INT8 usually uses −127…127, not −128, so the grid stays symmetric.</p>
+
+<h3>The two kinds of error</h3>
+<p>Every range choice trades <b>rounding error</b> against <b>clipping error</b>:</p>
+<ul>
+<li><b>Rounding error</b> — inside the range, each value moves by at most <i>s</i>/2. Treating it as uniform noise, its variance is <b><i>s</i>²/12</b>. Bigger range → bigger <i>s</i> → more rounding noise everywhere.</li>
+<li><b>Clipping error</b> — values outside the range get slammed to the edge. Error grows with how far outside they were.</li>
+</ul>
+<p>Absmax never clips but lets one outlier inflate <i>s</i> for everybody. Tighter ranges clip a few values to keep the grid fine for the many. Rule of thumb: each extra bit halves <i>s</i> and buys about <b>6 dB</b> of signal-to-quantization-noise ratio (SQNR).</p>
+
+<div class="bench" id="playground">
+  <div class="bhead"><b>Quantization playground</b><span>4,000 samples · blue lines = representable levels · red = clipped</span></div>
+  <div class="bbody">
+    <div class="controls">
+      <label>Tensor <select id="pgDist">
+        <option value="w">Weights (Gaussian)</option>
+        <option value="gelu">Activations after GELU</option>
+        <option value="heavy">LLM-style heavy tail</option>
+      </select></label>
+      <label><input type="checkbox" id="pgOut"> Add 0.3% outliers</label>
+      <label>Bits <input type="range" id="pgBits" min="2" max="8" value="4"><b id="pgBitsV">4</b></label>
+      <label>Scheme <select id="pgSch"><option value="sym">Symmetric</option><option value="asym">Asymmetric</option></select></label>
+      <label>Range <select id="pgRange">
+        <option value="absmax">Absmax / min-max</option>
+        <option value="pct">Percentile 99.9</option>
+        <option value="mse">MSE-optimal search</option>
+      </select></label>
+      <button type="button" id="pgNew">New sample</button>
+    </div>
+    <canvas id="pgCanvas" width="940" height="300" aria-label="Histogram of values with quantization levels"></canvas>
+    <div class="stats" id="pgStats"></div>
+  </div>
+</div>
+<p><b>Things to try.</b> Weights at 8 bits: absmax is fine. Turn on outliers: SQNR collapses under absmax, and percentile/MSE rescue it by clipping. GELU activations: switch to asymmetric and watch SQNR jump — symmetric wastes the negative half. Drop to 2 bits: every choice is bad, which is why 2-bit needs the heavy machinery in chapter 5.</p>
+
+<h3>What the hardware actually computes</h3>
+<p>For a linear layer <i>y = W x</i> with symmetric per-channel weights (scale <i>s<sub>w</sub></i> per output row) and a per-tensor activation scale <i>s<sub>x</sub></i>, zero-point <i>z<sub>x</sub></i>:</p>
+<div class="formula">
+y<sub>i</sub> ≈ s<sub>w,i</sub> · s<sub>x</sub> · Σ<sub>k</sub> q<sub>w,ik</sub> · ( q<sub>x,k</sub> − z<sub>x</sub> ) &nbsp;+ b<sub>i</sub>
+<span class="note">The sum runs entirely in integers: INT8 × INT8 products accumulated in INT32. The float scales are applied once per output, after the sum.</span>
+</div>
+<p>Then the output is <b>requantized</b> for the next layer: <i>q<sub>y</sub> = round( y / s<sub>y</sub> ) + z<sub>y</sub></i>. In practice <i>s<sub>w</sub>s<sub>x</sub>/s<sub>y</sub></i> is folded into one fixed-point multiplier plus a bit shift, and the bias is pre-quantized to INT32 at scale <i>s<sub>w</sub>s<sub>x</sub></i>. That's why it matters that per-channel weight scales are "free": they factor out of the sum over <i>k</i>. A per-channel <em>activation</em> scale would sit inside the sum and break the integer GEMM — keep that in mind for SmoothQuant.</p>
+
+<h3>Two very different mechanisms behind the labels</h3>
+<div class="twocol">
+<div class="aside"><b class="tag">True low-precision compute (W8A8, FP8)</b>Both operands are low precision; the tensor/matrix cores do the math in INT8 or FP8. Gains <b>compute throughput</b> and memory. Needs activation scales → needs calibration.</div>
+<div class="aside"><b class="tag">Weight-only (W4A16, W8A16 on GPU)</b>Weights stored in 4/8 bits, <b>dequantized inside the kernel</b> to FP16, math in FP16. Gains <b>memory and bandwidth only</b>. No activation calibration. Wins big on memory-bound decode.</div>
+</div>
+<div class="aside you"><b class="tag">Field note: W8A16 on an integer NPU</b>On Hexagon, "W8A16" means <b>INT16 fixed-point activations</b>, not FP16. HTP is an integer machine; INT16 gives 65,536 levels, enough to survive transformer outliers. A ViT that falls apart at W8A8 usually comes back to near-reference quality at W8A16. That is the outlier problem, measured.</div>
+</section>
+
+<!-- ============ CH3 GRANULARITY ============ -->
+<section class="chapter col" id="granularity">
+<div class="chnum">Chapter 3</div>
+<h2>Granularity: how many scales</h2>
+<p>One scale for a whole tensor is cheap and fragile. More scales track local ranges better at the cost of metadata and kernel complexity.</p>
+<div class="wrap"><table>
+<tr><th>Granularity</th><th>One scale per…</th><th>Typical use</th><th>Cost</th></tr>
+<tr><td>Per-tensor</td><td>whole tensor</td><td>static INT8/FP8 activations</td><td>1 float</td></tr>
+<tr><td>Per-channel (per-axis)</td><td>output channel of a weight</td><td>INT8 weights — the standard</td><td>free in GEMM (factors out)</td></tr>
+<tr><td>Per-group / block</td><td>32–128 consecutive weights</td><td>INT4 weight-only (GPTQ, AWQ, GGUF), MX, NVFP4</td><td>~0.25–0.5 extra bits/weight</td></tr>
+<tr><td>Per-token</td><td>each row of an activation</td><td>dynamic activation quant for LLMs</td><td>computed at runtime</td></tr>
+</table></div>
+
+<div class="bench" id="granBench">
+  <div class="bhead"><b>Granularity lab</b><span>8 output channels × 64 inputs · INT4 symmetric</span></div>
+  <div class="bbody">
+    <div class="controls">
+      <label>Scheme <select id="grMode">
+        <option value="tensor">Per-tensor</option>
+        <option value="channel">Per-channel</option>
+        <option value="group">Per-group (16)</option>
+      </select></label>
+      <label><input type="checkbox" id="grSpread" checked> Channels with very different ranges</label>
+      <button type="button" id="grNew">New weights</button>
+    </div>
+    <canvas id="grCanvas" width="940" height="260" aria-label="Per-channel quantization error bars"></canvas>
+    <div class="stats" id="grStats"></div>
+  </div>
+</div>
+<p>Per-tensor lets the loudest channel set the step for all eight; quiet channels round to almost nothing. Per-channel fixes the across-channel problem. Per-group also fixes <em>within</em>-channel spikes, which is why 4-bit schemes all go per-group.</p>
+</section>
+
+<!-- ============ CH4 CALIBRATION ============ -->
+<section class="chapter col" id="calibration">
+<div class="chnum">Chapter 4</div>
+<h2>Calibration: choosing ranges for activations</h2>
+<p>Weights are known offline — you can inspect every value. Activations only exist when data flows. <b>Calibration</b> runs a few hundred representative inputs, records each activation tensor's statistics, and picks a range.</p>
+
+<h3>Range-selection methods</h3>
+<div class="wrap"><table>
+<tr><th>Method</th><th>Rule</th><th>Strength</th><th>Weakness</th></tr>
+<tr><td>Absmax / min-max</td><td>range = observed extremes (running max or EMA)</td><td>no clipping, trivial</td><td>one outlier ruins the grid</td></tr>
+<tr><td>Percentile</td><td>range = 99.9 / 99.99th percentile of |x|</td><td>robust, cheap</td><td>percentile is a hyperparameter; clips real signal if tails matter</td></tr>
+<tr><td>MSE-optimal</td><td>search clip value α minimizing ‖x − x̂(α)‖²</td><td>directly minimizes error</td><td>treats all errors equally — not task loss</td></tr>
+<tr><td>Entropy / KL</td><td>pick threshold minimizing KL(P ‖ Q) between original and quantized histograms</td><td>TensorRT's classic INT8 default; good for CNNs</td><td>slow; histogram resolution matters</td></tr>
+<tr><td>ACIQ-style analytic</td><td>fit Gaussian/Laplace, compute optimal clip in closed form</td><td>no search</td><td>wrong if the distribution isn't that shape</td></tr>
+</table></div>
+
+<h4>How the KL/entropy calibrator works</h4>
+<p>Build a histogram of |activation| (TensorRT uses 2048 bins). For each candidate threshold <i>i</i> (starting around bin 128): take bins 0…i as reference distribution P, fold the clipped tail mass into the last bin, re-bin P into 128 levels (the INT8 positive half) to get Q, expand Q back, and compute KL(P‖Q). Choose the threshold with minimum KL. Intuition: preserve the <em>shape</em> of the distribution the next layer sees, not every extreme value.</p>
+
+<h3>Static vs dynamic</h3>
+<p><b>Static</b>: activation scales frozen from calibration. Zero runtime cost; wrong if deployment data drifts. <b>Dynamic</b>: scale computed per tensor/token at runtime (e.g. per-token absmax). More accurate for LLM activations, costs a reduction pass per tensor.</p>
+
+<h3>What makes a good calibration set</h3>
+<ul>
+<li><b>Representative, not large.</b> 128–512 samples often suffice; covering the input modes matters more than count.</li>
+<li><b>Deduplicated.</b> Consecutive robot frames are near-identical; effective sample size is roughly N divided by the correlation length.</li>
+<li><b>Held-out.</b> Evaluate on data you didn't calibrate on.</li>
+<li><b>Seeded.</b> Unseeded shuffles near a threshold make exports flaky between runs.</li>
+<li><b>Covers every axis the model conditions on.</b> For diffusion that includes <em>timesteps</em>.</li>
+</ul>
+
+<div class="aside you"><b class="tag">Field note: calibrating diffusion and flow heads</b>A flow-matching or diffusion head runs the same network at different noise levels, and activation statistics shift strongly with the timestep. If you calibrate by running the policy's own sampling loop, you only ever see the handful of timesteps that loop visits (four, for a four-step sampler), however many trajectories you feed. More samples can't fix a coverage gap on a different axis. Sample timesteps across the whole schedule instead, as Q-Diffusion and PTQ4DM do for image diffusion.</div>
+</section>
+<!-- ============ CH5 PTQ ============ -->
+<section class="chapter col" id="ptq">
+<div class="chnum">Chapter 5</div>
+<h2>PTQ algorithms: from rounding to rotating</h2>
+<p>Post-training quantization (PTQ) quantizes a finished model with a little calibration data and no full retraining. Every algorithm below attacks one of three problems: <b>rounding is locally greedy</b>, <b>errors compound across weights</b>, or <b>activations have outliers</b>.</p>
+
+<h3>The baseline: round-to-nearest (RTN)</h3>
+<p>Quantize each weight independently to its nearest level. Works at 8 bits for almost everything. At 4 bits and below it degrades, because the best choice for each weight <em>alone</em> isn't the best choice for the layer's <em>output</em>.</p>
+
+<h3>AdaRound — learn which way to round</h3>
+<p>Nagel et al., 2020. Key observation: what matters is the layer output <i>Wx</i>, not each weight. Rounding some weights "the wrong way" can let errors cancel. AdaRound keeps the scale fixed and learns, for each weight, a binary choice: floor or ceil.</p>
+<div class="formula">
+W̃ = s · clamp( ⌊W/s⌋ + h(V), q<sub>min</sub>, q<sub>max</sub> ), &nbsp;&nbsp; h(V) = clip( σ(V)(ζ − γ) + γ, 0, 1 )<br>
+minimize &nbsp;‖ W x − W̃ x ‖²<sub>F</sub> &nbsp;+ &nbsp;λ Σ ( 1 − |2h(V) − 1|<sup>β</sup> )
+<span class="note">h(V) is a rectified sigmoid (ζ = 1.1, γ = −0.1). The regularizer pushes h to exactly 0 or 1; β is annealed high → low. Optimized layer by layer on calibration activations.</span>
+</div>
+<div class="bench" id="adaBench">
+  <div class="bhead"><b>AdaRound, brute-forced</b><span>1 neuron · 8 weights · 3-bit · all 256 floor/ceil choices tried</span></div>
+  <div class="bbody">
+    <div class="controls"><button type="button" id="adaNew" class="primary">New random layer</button><span id="adaMsg" style="font-family:var(--cond)"></span></div>
+    <div class="wrap" id="adaTable"></div>
+    <div class="stats" id="adaStats"></div>
+  </div>
+</div>
+<p>Rows shaded red are weights where the output-optimal choice rounds <em>away</em> from nearest. AdaRound approximates this search with gradient descent, because 2<sup>n</sup> is impossible for real layers.</p>
+<p><b>Descendants.</b> <b>BRECQ</b> (2021) reconstructs whole blocks (e.g. a residual block) instead of single layers, using second-order (Fisher) weighting — enables 2–4 bit. <b>QDrop</b> (2022) randomly drops activation quantization during reconstruction so weights become robust to activation noise.</p>
+
+<h3>GPTQ — compensate error as you go</h3>
+<p>Frantar et al., 2022, built on Optimal Brain Quantization (OBQ). Quantize one weight column at a time; after each, <b>update the not-yet-quantized weights</b> to absorb the error, using the inverse Hessian of the layer's reconstruction loss.</p>
+<div class="formula">
+H = 2 X Xᵀ &nbsp;(+ λI damping) &nbsp;&nbsp; — from calibration inputs X<br>
+for column i: &nbsp; q<sub>i</sub> = quant(w<sub>i</sub>), &nbsp; δ = (w<sub>i</sub> − q<sub>i</sub>) / [H<sup>−1</sup>]<sub>ii</sub><br>
+&nbsp;&nbsp;&nbsp;&nbsp;w<sub>j</sub> ← w<sub>j</sub> − δ · [H<sup>−1</sup>]<sub>ij</sub> &nbsp;for all j &gt; i
+<span class="note">Correlated inputs let later weights compensate for earlier rounding. Practical GPTQ: fixed column order shared across rows, lazy batch updates in blocks of 128, Cholesky of H⁻¹ for stability. Optional "act-order" quantizes high-Hessian columns first.</span>
+</div>
+<div class="bench" id="gptqBench">
+  <div class="bhead"><b>GPTQ, step by step</b><span>1 row · 6 weights · 3-bit · correlated inputs</span></div>
+  <div class="bbody">
+    <div class="controls"><button type="button" id="gpStep" class="primary">Quantize next column</button><button type="button" id="gpReset">New problem</button><span id="gpMsg" style="font-family:var(--cond)"></span></div>
+    <div class="wrap" id="gpTable"></div>
+    <div class="stats" id="gpStats"></div>
+  </div>
+</div>
+<p>Watch the unquantized weights drift after each step — that drift is error compensation. Compare the final output error against RTN. GPTQ is greedy, so on some layers it gains little; the demo picks layers where the effect is visible. GPTQ quantizes 175B-parameter models to 3–4 bits in a few GPU hours; it's the default weight-only method for LLMs alongside AWQ.</p>
+
+<h3>AWQ — protect the salient weights</h3>
+<p>Lin et al., 2023 (activation-aware weight quantization). Observation: about 1% of weight channels matter disproportionately, and you find them by looking at <b>activation</b> magnitude, not weight magnitude. Instead of keeping them in FP16 (mixed precision is hardware-unfriendly), scale them up before quantizing:</p>
+<div class="formula">
+Q(W · diag(s)) · ( diag(s)<sup>−1</sup> · X ), &nbsp;&nbsp; s = s<sub>X</sub><sup>α</sup>, &nbsp; α ∈ [0,1] grid-searched per layer
+<span class="note">Scaling a channel up gives it relatively more quantization levels; the inverse scale is folded into the previous op. Weight-only, no backprop, generalizes well because it doesn't overfit the calibration set.</span>
+</div>
+
+<h3>SmoothQuant — move the difficulty from activations to weights</h3>
+<p>Xiao et al., 2022. Enables true <b>W8A8</b> on LLMs. Activations have a few channels with huge magnitudes; weights are well-behaved. Since per-channel activation scales can't be used inside an integer GEMM (chapter 2), SmoothQuant applies a mathematically equivalent per-channel rescale:</p>
+<div class="formula">
+Y = X W = ( X diag(s)<sup>−1</sup> ) · ( diag(s) W )<br>
+s<sub>j</sub> = max|X<sub>j</sub>|<sup>α</sup> / max|W<sub>j</sub>|<sup>1−α</sup> &nbsp;&nbsp;&nbsp; (α ≈ 0.5, up to 0.75–0.85 for harder models)
+<span class="note">diag(s)⁻¹ is folded offline into the preceding LayerNorm/linear, so it costs nothing at runtime. α balances difficulty between the two operands.</span>
+</div>
+<div class="bench" id="sqBench">
+  <div class="bhead"><b>SmoothQuant migration</b><span>8 input channels · bars = per-channel max magnitude</span></div>
+  <div class="bbody">
+    <div class="controls"><label><input type="checkbox" id="sqOff" checked> No smoothing (original model)</label><label>Migration strength α <input type="range" id="sqA" min="0" max="1" step="0.05" value="0.5"><b id="sqAV">0.50</b></label></div>
+    <canvas id="sqCanvas" width="940" height="280" aria-label="Activation and weight channel magnitudes"></canvas>
+    <div class="stats" id="sqStats"></div>
+  </div>
+</div>
+<p>Start with smoothing off: two activation channels dominate, and per-tensor INT8 leaves the typical channel about ten levels. Turn it on and sweep α. At α = 0 the weights become perfectly flat and all the difficulty lands on activations; at α = 1 it all lands on the weights. Around α ≈ 0.5 both operands keep a healthy share of levels — that balance is the whole method.</p>
+
+<h3>LLM.int8() — just don't quantize the outliers</h3>
+<p>Dettmers et al., 2022. Vector-wise INT8, plus <b>mixed-precision decomposition</b>: feature dimensions whose activations exceed a threshold (magnitude 6) are pulled out and multiplied in FP16; the remaining ~99.9% run in INT8. Accurate, but the split GEMM is slower than pure INT8 — it's a memory-saving method more than a speed method.</p>
+
+<h3>Rotations — QuaRot and SpinQuant</h3>
+<p>If outliers live in a few channels, rotate the space so every channel gets a bit of every outlier. For any orthogonal matrix Q:</p>
+<div class="formula">
+X W = ( X Q ) ( Qᵀ W ), &nbsp;&nbsp; Q Qᵀ = I
+<span class="note">A random Hadamard rotation spreads outlier energy evenly (incoherence processing), so both activations and weights become near-Gaussian and easy to quantize. Rotations fold into weights offline; some need a fast online Hadamard transform.</span>
+</div>
+<p><b>QuaRot</b> (2024) uses Hadamard rotations to reach end-to-end <b>W4A4</b> with 4-bit KV cache. <b>SpinQuant</b> (2024) <em>learns</em> the rotations (optimized on the Stiefel manifold) and beats random ones. Same idea underlies <b>QuIP / QuIP#</b> for 2-bit weights.</p>
+
+<h3>The rest of the zoo</h3>
+<div class="wrap"><table>
+<tr><th>Method</th><th>Quantizes</th><th>Key trick</th><th>When you'd reach for it</th></tr>
+<tr><td>ZeroQuant</td><td>W8A8</td><td>group-wise weights, token-wise activations, layer-wise distillation</td><td>early LLM W8A8</td></tr>
+<tr><td>OmniQuant</td><td>W4A16 → W4A4</td><td>learnable weight clipping + learnable equivalent (smoothing) transform</td><td>when SmoothQuant's closed-form α isn't enough</td></tr>
+<tr><td>SqueezeLLM</td><td>3–4 bit W</td><td>non-uniform (k-means) levels weighted by sensitivity + sparse outliers</td><td>memory-bound serving</td></tr>
+<tr><td>SpQR</td><td>3–4 bit W</td><td>small groups + outlier weights kept sparse in high precision</td><td>near-lossless small models</td></tr>
+<tr><td>AQLM / QuIP#</td><td>2 bit W</td><td>vector (codebook) quantization / lattice codebooks with rotations</td><td>extreme compression</td></tr>
+<tr><td>HQQ</td><td>2–8 bit W</td><td>calibration-free; half-quadratic solver for scale/zero</td><td>no calibration data available</td></tr>
+<tr><td>NF4 (QLoRA)</td><td>4 bit W</td><td>levels at quantiles of N(0,1); double-quantized scales</td><td>fine-tuning a frozen 4-bit base</td></tr>
+<tr><td>FP8 PTQ (ModelOpt, Quark)</td><td>W8A8 FP8</td><td>per-tensor scales usually enough thanks to exponent bits</td><td>first thing to try on FP8 hardware</td></tr>
+<tr><td>Q-Diffusion / PTQ4DM</td><td>diffusion models</td><td>timestep-aware calibration; split quantization of skip connections</td><td>diffusion and flow-matching heads</td></tr>
+<tr><td>KV-cache quantization</td><td>KV in FP8/INT8/INT4</td><td>per-head / per-token scales; KIVI quantizes keys per-channel, values per-token</td><td>long context, many concurrent sequences</td></tr>
+</table></div>
+</section>
+
+<!-- ============ CH6 QAT ============ -->
+<section class="chapter col" id="qat">
+<div class="chnum">Chapter 6</div>
+<h2>Quantization-aware training</h2>
+<p>When PTQ loses too much, let the model learn to live with rounding. QAT inserts <b>fake-quantization</b> nodes — quantize then immediately dequantize, all in floating point — so the forward pass sees exactly the error it will see at deployment.</p>
+<div class="formula">
+forward: &nbsp; x̂ = s · clamp( round(x/s), q<sub>min</sub>, q<sub>max</sub> )<br>
+backward (STE): &nbsp; ∂x̂/∂x ≈ 1 inside the range, 0 outside
+<span class="note">round() has zero gradient almost everywhere; the straight-through estimator pretends it's the identity so gradients flow.</span>
+</div>
+<ul>
+<li><b>LSQ</b> (learned step size, 2020): the scale <i>s</i> is a trainable parameter with a gradient derived through the rounding, scaled by 1/√(N·Q<sub>p</sub>) for stable training.</li>
+<li><b>PACT</b> (2018): learns the activation clipping value α — clipping becomes a trainable trade-off instead of a calibration heuristic.</li>
+<li><b>Recipe</b>: start from the trained FP model, PTQ-initialize scales, fine-tune a few percent of the original schedule with a lower learning rate, freeze BatchNorm statistics late.</li>
+</ul>
+<p><b>When to use it:</b> 4-bit activations, small models with little redundancy (mobile CNNs, compact ViTs), or when PTQ misses the accuracy gate. <b>Cost:</b> a training pipeline, training data, and GPU time. For LLM-scale models people prefer PTQ plus a light fine-tune (e.g. QLoRA-style) over full QAT.</p>
+<div class="aside"><b class="tag">QAT vs QLoRA, often confused</b>QAT trains a model to be robust to its <em>own</em> quantization. QLoRA freezes an NF4-quantized base and trains FP16 LoRA adapters on top — it's a memory-saving fine-tuning method, not a deployment quantization method.</div>
+</section>
+
+<!-- ============ CH7 RECIPE ============ -->
+<section class="chapter col" id="recipe">
+<div class="chnum">Chapter 7</div>
+<h2>Choosing a recipe</h2>
+<p>The profile follows from two questions: <b>what bounds this workload</b>, and <b>what the hardware executes natively</b>.</p>
+<div class="wrap"><table>
+<tr><th>Situation</th><th>Start with</th><th>Why</th></tr>
+<tr><td>Memory-bound: batch-1 LLM/VLA decode, big backbone</td><td>W4A16 / W8A16 weight-only (AWQ, GPTQ)</td><td>bytes moved is the cost; math stays FP16</td></tr>
+<tr><td>Compute-bound: ViT prefill, conv backbones, batched GEMMs</td><td>FP8 W8A8 if supported, else INT8 W8A8 (+SmoothQuant)</td><td>tensor-core throughput doubles</td></tr>
+<tr><td>Integer NPU (Hexagon, XDNA)</td><td>W8A8 for CNNs; W8A16 for transformers</td><td>INT16 activations survive outliers</td></tr>
+<tr><td>Diffusion / flow-matching head</td><td>FP8 or BF16; timestep-aware calibration; fewer steps first</td><td>step count dominates latency</td></tr>
+<tr><td>Extreme memory limit</td><td>4-bit groups + sensitive layers kept high</td><td>mixed precision per layer</td></tr>
+</table></div>
+<h3>The workflow that doesn't lie to you</h3>
+<ol>
+<li><b>Fix the reference first.</b> Compare exported graph vs framework at FP32/FP16 before quantizing anything. If export isn't faithful, quantization results are meaningless.</li>
+<li><b>Profile the bound.</b> Memory or compute, per component.</li>
+<li><b>Sensitivity analysis.</b> Quantize one layer (or block) at a time, measure the drop. Rank layers.</li>
+<li><b>Keep the usual suspects high:</b> first and last layers, LayerNorm/RMSNorm, softmax, attention score matmuls, anything feeding a residual stream with outliers.</li>
+<li><b>Calibrate on representative, held-out data</b> covering every conditioning axis.</li>
+<li><b>Gate on the task metric</b> — closed-loop success for a policy, not just cosine or MSE on actions.</li>
+</ol>
+<div class="aside trap"><b class="tag">Classic trap</b>Offline action MSE can look perfect while closed-loop success drops, because small errors compound over a rollout and push the robot into states the model never saw. Open-loop metrics are a filter, not a verdict.</div>
+</section>
+<!-- ============ CH8 ROOFLINE ============ -->
+<section class="chapter col" id="roofline">
+<div class="chnum">Chapter 8</div>
+<h2>Where time goes: the roofline</h2>
+<p>Every kernel is limited either by how fast the chip computes or by how fast it can be fed. The <b>roofline model</b> makes that a single plot.</p>
+<div class="formula">
+arithmetic intensity &nbsp; AI = FLOPs / bytes moved<br>
+attainable FLOP/s = min( peak compute, &nbsp; AI × memory bandwidth )
+<span class="note">The ridge point = peak / bandwidth. Below it you're memory-bound; above it, compute-bound.</span>
+</div>
+<p><b>Batch-1 decode is the canonical memory-bound case.</b> A matrix-vector product reads each FP16 weight (2 bytes) once and does 2 FLOPs with it (multiply + add): AI ≈ 1 FLOP/byte. Modern accelerators have ridge points in the hundreds. The chip idles more than 99% of its math. That's why weight-only INT4 speeds decode up almost 4×: same FLOPs, a quarter of the bytes, AI ≈ 4.</p>
+<div class="bench" id="rfBench">
+  <div class="bhead"><b>Roofline calculator</b><span>log–log · illustrative hardware presets</span></div>
+  <div class="bbody">
+    <div class="controls">
+      <label>Preset <select id="rfPreset">
+        <option value="dc">Datacenter GPU (≈1000 TFLOPS, 5 TB/s)</option>
+        <option value="edge" selected>Edge SoC (≈100 TFLOPS, 250 GB/s)</option>
+        <option value="npu">Small NPU (≈50 TOPS, 100 GB/s)</option>
+      </select></label>
+      <label>Peak TFLOPS <input type="number" id="rfPeak" value="100" min="1" style="width:90px"></label>
+      <label>Bandwidth GB/s <input type="number" id="rfBw" value="250" min="1" style="width:90px"></label>
+    </div>
+    <div class="controls">
+      <b>Custom GEMM</b>
+      <label>M <input type="number" id="rfM" value="1" min="1" style="width:80px"></label>
+      <label>N <input type="number" id="rfN" value="4096" min="1" style="width:80px"></label>
+      <label>K <input type="number" id="rfK" value="4096" min="1" style="width:80px"></label>
+      <label>Weight bytes/elem <select id="rfWb"><option value="2">2 (FP16)</option><option value="1">1 (INT8/FP8)</option><option value="0.5">0.5 (INT4)</option></select></label>
+    </div>
+    <canvas id="rfCanvas" width="940" height="360" aria-label="Roofline plot"></canvas>
+    <div class="stats" id="rfStats"></div>
+  </div>
+</div>
+<p>Set M = 1 (one token) then M = 512 (a prefill or a ViT with 512 patches) and watch the point cross the ridge. Same weights, same layer, different bound — which is why one model can need two quantization strategies.</p>
+<div class="aside you"><b class="tag">Field note: falling off a bandwidth tier</b>On NPUs with a small on-chip memory, a transformer can read several times its own weight size from DRAM per inference once activations spill. The tell is a latency cliff from batch 1 to batch 2: the kernel drops from the on-chip bandwidth tier to the DRAM tier. Same roofline, two ceilings.</div>
+</section>
+
+<!-- ============ CH9 FUSION ============ -->
+<section class="chapter col" id="fusion">
+<div class="chnum">Chapter 9</div>
+<h2>Kernel fusion: stop writing to memory</h2>
+<p>Unfused, every op reads its inputs from DRAM and writes its output back. For cheap elementwise ops that round-trip costs far more than the math. <b>Fusion</b> keeps intermediates in registers or shared memory (LDS on AMD) and writes once.</p>
+<div class="bench" id="fuBench">
+  <div class="bhead"><b>Fusion ledger</b><span>GEMM → +bias → GELU → +residual, FP16 activations</span></div>
+  <div class="bbody">
+    <div class="controls">
+      <label>Tokens <input type="range" id="fuT" min="64" max="8192" step="64" value="1024"><b id="fuTV">1024</b></label>
+      <label>Hidden <input type="range" id="fuD" min="256" max="8192" step="256" value="2048"><b id="fuDV">2048</b></label>
+      <label><input type="checkbox" id="fuOn"> Fuse into GEMM epilogue</label>
+    </div>
+    <canvas id="fuCanvas" width="940" height="220" aria-label="Memory traffic comparison"></canvas>
+    <div class="stats" id="fuStats"></div>
+  </div>
+</div>
+<h3>Kinds of fusion</h3>
+<ul>
+<li><b>Vertical (producer–consumer)</b>: conv/GEMM + bias + activation, LayerNorm + residual add. The epilogue of a GEMM kernel applies elementwise ops before the single write.</li>
+<li><b>Horizontal</b>: independent ops with shared input launched as one kernel — Q, K, V projections become one larger GEMM.</li>
+<li><b>Reduction fusion</b>: softmax, LayerNorm, RMSNorm as one pass with warp/wavefront shuffles instead of several kernels.</li>
+<li><b>Quantization fusion</b>: dequantize inside the GEMM (weight-only kernels), requantize in the epilogue, fold Q/DQ into neighbours.</li>
+</ul>
+<h3>FlashAttention — fusion that changed the field</h3>
+<p>Naive attention materializes the N×N score matrix in DRAM: write S = QKᵀ, read it for softmax, write P, read it for PV. FlashAttention tiles Q, K and V into on-chip blocks and never materializes S. The trick that makes tiling legal is the <b>online softmax</b>:</p>
+<div class="formula">
+for each K/V tile: &nbsp; m<sub>new</sub> = max(m, rowmax(S<sub>tile</sub>)) <br>
+&nbsp;&nbsp; ℓ ← e<sup>m − m<sub>new</sub></sup> ℓ + rowsum( e<sup>S<sub>tile</sub> − m<sub>new</sub></sup> ) <br>
+&nbsp;&nbsp; O ← e<sup>m − m<sub>new</sub></sup> O + e<sup>S<sub>tile</sub> − m<sub>new</sub></sup> V<sub>tile</sub> &nbsp;&nbsp;&nbsp; finally O ← O / ℓ
+<span class="note">Keep a running max m and running denominator ℓ; rescale earlier partial results when the max grows. Exact softmax, no N×N buffer, memory O(N) instead of O(N²).</span>
+</div>
+<p>It's IO-aware: same FLOPs (slightly more, due to recomputation in the backward pass), far fewer bytes. On AMD this lives in Composable Kernel and AITER.</p>
+</section>
+
+<!-- ============ CH10 GRAPHS ============ -->
+<section class="chapter col" id="graphs">
+<div class="chnum">Chapter 10</div>
+<h2>CUDA and HIP graphs: kill the launch tax</h2>
+<p>Every kernel launch costs CPU time in the driver — a few microseconds — and the CPU has to stay ahead of the GPU. A batch-1 VLA step is hundreds of small kernels; a four-step flow-matching head multiplies that. When kernels are shorter than launch overhead, the GPU starves. On an embedded CPU also running ROS, launch timing jitters.</p>
+<p>A <b>graph</b> records the sequence once (stream capture), instantiates it, and replays it with a single launch.</p>
+<div class="bench" id="cgBench">
+  <div class="bhead"><b>Launch timeline</b><span>top: eager · bottom: graph replay · 20 simulated runs</span></div>
+  <div class="bbody">
+    <div class="controls">
+      <label>Kernels <input type="range" id="cgN" min="10" max="400" step="10" value="120"><b id="cgNV">120</b></label>
+      <label>Avg kernel µs <input type="range" id="cgK" min="1" max="60" value="6"><b id="cgKV">6</b></label>
+      <label>Launch overhead µs <input type="range" id="cgL" min="2" max="20" value="6"><b id="cgLV">6</b></label>
+      <label><input type="checkbox" id="cgJ" checked> CPU contention (jitter)</label>
+    </div>
+    <canvas id="cgCanvas" width="940" height="200" aria-label="Eager vs graph timeline"></canvas>
+    <div class="stats" id="cgStats"></div>
+  </div>
+</div>
+<h3>The rules that bite</h3>
+<ul>
+<li><b>Static shapes.</b> A captured graph bakes in sizes; new shapes need re-capture (or one graph per shape bucket).</li>
+<li><b>Static addresses.</b> Copy new inputs into pre-allocated buffers; never allocate inside capture.</li>
+<li><b>No host synchronization or host-side work inside capture.</b> In TensorRT terms: set tensor addresses and input shapes <em>before</em> capture, capture only <code>enqueueV3</code>.</li>
+<li><b>Warm up first.</b> Run once eagerly so lazy initialization happens outside capture.</li>
+<li><b>It only removes launch cost.</b> A compute- or bandwidth-bound kernel isn't faster in a graph.</li>
+</ul>
+<div class="aside you"><b class="tag">Field note: graphs around a denoising loop</b>A multi-step denoising loop (action encoder → DiT → decoder → Euler step, repeated) captures cleanly with the rules above: bind addresses outside capture, enqueue inside, re-capture when the sequence length changes, keep an eager fallback. Expect a modest gain when the DiT engines themselves dominate, which is exactly what the widget shows when kernels are long.</div>
+</section>
+
+<!-- ============ CH11 PRUNING ============ -->
+<section class="chapter col" id="pruning">
+<div class="chnum">Chapter 11</div>
+<h2>Pruning and sparsity</h2>
+<p>Remove weights (or whole structures) that contribute little. The catch: <b>zeros only save time if hardware can skip them</b>.</p>
+<div class="wrap"><table>
+<tr><th>Type</th><th>What's removed</th><th>Speedup on real hardware</th></tr>
+<tr><td>Unstructured</td><td>individual weights anywhere</td><td>little on GPUs below ~90% sparsity; saves storage with sparse formats</td></tr>
+<tr><td>Semi-structured 2:4</td><td>2 of every 4 contiguous weights</td><td>sparse tensor cores: up to 2× math throughput, less end to end</td></tr>
+<tr><td>Structured</td><td>channels, heads, layers, blocks</td><td>always — the model simply gets smaller and dense</td></tr>
+<tr><td>Token pruning / merging</td><td>activations (sequence length)</td><td>attention cost falls quadratically</td></tr>
+</table></div>
+<div class="bench" id="spBench">
+  <div class="bhead"><b>2:4 versus unstructured</b><span>4 × 16 weights · underline marks each group of 4</span></div>
+  <div class="bbody">
+    <div class="controls">
+      <button type="button" id="spU">Unstructured 50%</button>
+      <button type="button" id="sp24" class="primary">Prune 2:4</button>
+      <button type="button" id="spR">Reset</button>
+    </div>
+    <div id="spGrid" class="grid24"></div>
+    <div class="stats" id="spStats"></div>
+  </div>
+</div>
+<h3>Scoring what to cut</h3>
+<ul>
+<li><b>Magnitude</b>: drop smallest |w|. Simple, surprisingly strong with fine-tuning.</li>
+<li><b>Movement pruning</b>: drop weights moving toward zero during fine-tuning — better for transfer learning.</li>
+<li><b>SparseGPT</b> (2023): one-shot, GPTQ-style — prune with the inverse Hessian and update remaining weights to compensate. 50–60% unstructured on large LLMs with small loss, no retraining.</li>
+<li><b>Wanda</b> (2023): score = |W<sub>ij</sub>| · ‖X<sub>j</sub>‖<sub>2</sub>, prune per output row, no weight update. Activation-aware, like AWQ is for quantization.</li>
+<li><b>Structured</b>: head importance, channel L1 norms, layer dropping (LLM-Pruner, depth pruning) — then fine-tune or distill to recover.</li>
+</ul>
+<h3>The 2:4 workflow</h3>
+<p>Train dense → prune each group of 4 to its 2 largest magnitudes → fine-tune to recover → export. Storage: half the values plus 2-bit indices per kept value. In TensorRT, build with <code>--sparsity=enable</code> and it uses sparse tactics only where they are actually faster.</p>
+<h3>Token merging</h3>
+<p><b>ToMe</b> (2022) merges similar tokens in a ViT via bipartite soft matching — r tokens per layer, training-free, often ~2× throughput with a small accuracy drop. For a VLA with multiple cameras the vision tokens dominate the LLM's sequence, so token reduction is often a bigger win than any kernel.</p>
+<div class="aside you"><b class="tag">Reporting a pruning result</b>Lead with what was pruned (heads, channels, tokens), how it was scored, and what it bought on the target device. The method name comes last.</div>
+</section>
+
+<!-- ============ CH12 DISTILLATION ============ -->
+<section class="chapter col" id="distill">
+<div class="chnum">Chapter 12</div>
+<h2>Distillation: a small model that thinks like a big one</h2>
+<p>Train a student to match a teacher's outputs, not just hard labels. The teacher's full distribution carries "dark knowledge" — which wrong answers are nearly right.</p>
+<div class="formula">
+L = α · T² · KL( softmax(z<sub>t</sub>/T) ‖ softmax(z<sub>s</sub>/T) ) &nbsp;+ &nbsp;(1 − α) · CE( y, softmax(z<sub>s</sub>) )
+<span class="note">Temperature T &gt; 1 softens both distributions to expose secondary probabilities. T² keeps gradient magnitudes comparable as T changes (Hinton et al., 2015).</span>
+</div>
+<div class="bench" id="kdBench">
+  <div class="bhead"><b>Temperature</b><span>teacher logits for 6 candidate grasps</span></div>
+  <div class="bbody">
+    <div class="controls"><label>T <input type="range" id="kdT" min="0.3" max="10" step="0.1" value="1"><b id="kdTV">1.0</b></label></div>
+    <canvas id="kdCanvas" width="940" height="220" aria-label="Softmax probabilities at temperature T"></canvas>
+  </div>
+</div>
+<h3>Variants worth knowing</h3>
+<ul>
+<li><b>Feature / hint distillation</b>: match intermediate representations (FitNets), attention maps, or hidden states through a small projection. Useful when student and teacher widths differ.</li>
+<li><b>Sequence-level / on-policy distillation</b>: student generates, teacher scores or corrects — avoids exposure bias.</li>
+<li><b>Regression outputs</b> (actions): no logits, so match actions directly (MSE/L1) or match the teacher's predicted velocity field.</li>
+<li><b>Step distillation for diffusion</b>: <em>progressive distillation</em> trains a student to do two teacher steps in one, halving repeatedly (Salimans & Ho, 2022). <em>Consistency models</em> learn to map any point on the ODE trajectory straight to its endpoint — one or two steps. <em>Rectified flow / reflow</em> straightens trajectories so few Euler steps suffice. For robot policies, <em>Consistency Policy</em> applies this to diffusion policies.</li>
+</ul>
+<div class="aside you"><b class="tag">Field note: latency of generative action heads</b>When the action head is the bottleneck (N denoising steps × a deep DiT), no kernel beats cutting steps. Step distillation or consistency training on the head is the upstream fix; quantization and graphs are downstream. A shallower, distilled head is a cheap second lever.</div>
+</section>
+<!-- ============ CH13 TENSORRT ============ -->
+<section class="chapter col" id="trt">
+<div class="chnum">Chapter 13</div>
+<h2>TensorRT, end to end</h2>
+<p>TensorRT is an <b>ahead-of-time compiler plus a runtime</b>. You hand it a graph (almost always ONNX); it spends minutes searching for the fastest implementation of that graph on <em>this exact GPU</em>, and serializes the result as an <b>engine</b> (plan file). At runtime you deserialize and execute. Build is slow and hardware-specific; run is fast.</p>
+
+<h3>The objects</h3>
+<div class="wrap"><table>
+<tr><th>Object</th><th>Role</th></tr>
+<tr><td><code>IBuilder</code></td><td>factory for networks, configs, engines</td></tr>
+<tr><td><code>INetworkDefinition</code></td><td>the graph; filled by the ONNX parser. Created <em>strongly typed</em> or <em>weakly typed</em></td></tr>
+<tr><td><code>IParser</code> (ONNX)</td><td>ONNX → network; reports unsupported ops</td></tr>
+<tr><td><code>IBuilderConfig</code></td><td>precision flags, memory pool limits (workspace), optimization profiles, timing cache, builder optimization level, DLA, sparsity</td></tr>
+<tr><td><code>IOptimizationProfile</code></td><td>min / opt / max shape for each dynamic input</td></tr>
+<tr><td><code>buildSerializedNetwork()</code></td><td>runs the optimizer, returns the plan bytes</td></tr>
+<tr><td><code>IRuntime</code> → <code>ICudaEngine</code></td><td>deserialize the plan into an engine (weights + chosen kernels)</td></tr>
+<tr><td><code>IExecutionContext</code></td><td>per-inference state: <code>setInputShape</code>, <code>setTensorAddress</code>, <code>enqueueV3(stream)</code></td></tr>
+</table></div>
+
+<h3>What happens during the build</h3>
+<div class="bench" id="trtBench">
+  <div class="bhead"><b>Build pipeline</b><span>click a stage</span></div>
+  <div class="bbody">
+    <div class="stepper" id="trtSteps"></div>
+    <div class="steptext" id="trtText"></div>
+  </div>
+</div>
+
+<h3>Precision: weakly typed vs strongly typed</h3>
+<p><b>Weakly typed</b> (the classic mode): you set flags like <code>FP16</code>, <code>INT8</code>, <code>FP8</code>; TensorRT treats them as <em>permissions</em> and may pick any allowed precision per layer if it's faster. Great for speed, hard to reason about accuracy, and you may need layer precision constraints to pin sensitive layers.</p>
+<p><b>Strongly typed</b> (<code>NetworkDefinitionCreationFlag::kSTRONGLY_TYPED</code>, <code>trtexec --stronglyTyped</code>): tensor types come from the graph — ONNX dtypes and explicit Q/DQ nodes are authoritative. No precision autotuning. This is the modern path for FP8/NVFP4 graphs produced by ModelOpt: what you exported is what runs.</p>
+
+<h3>Implicit vs explicit quantization</h3>
+<div class="twocol">
+<div class="aside"><b class="tag">Implicit (legacy INT8)</b>FP graph + <code>INT8</code> flag + a calibrator (<code>IInt8EntropyCalibrator2</code>, MinMax, …) that produces a calibration cache of per-tensor ranges. TensorRT decides where INT8 is used. Deprecated in TensorRT 10 in favour of explicit Q/DQ.</div>
+<div class="aside"><b class="tag">Explicit (Q/DQ)</b>The ONNX graph contains <code>QuantizeLinear</code>/<code>DequantizeLinear</code> pairs with scales, produced by PTQ or QAT tooling (ModelOpt, pytorch-quantization). TensorRT fuses Q/DQ into neighbouring ops: it moves DQ nodes forward and Q nodes backward to maximize the low-precision region, then fuses them into the compute kernels.</div>
+</div>
+<p>Rule of thumb for Q/DQ placement: quantize the <em>inputs</em> of GEMM/conv (weights and activations), don't sprinkle Q/DQ on elementwise ops, and keep residual adds in higher precision unless the fusion pattern supports it.</p>
+
+<h3>Dynamic shapes</h3>
+<p>Mark dynamic dims as −1 in ONNX, give every dynamic input a <b>min / opt / max</b> in an optimization profile. TensorRT tunes kernels for <em>opt</em> but guarantees correctness across the range. At runtime call <code>setInputShape</code> before enqueue. Wide ranges cost performance; several profiles (e.g. short and long sequences) can help. Data-dependent sequence lengths — padded VLM tokens — are the usual reason a transformer engine needs a dynamic profile, or a fixed padded budget.</p>
+
+<h3>Plugins</h3>
+<p>For ops TensorRT can't express or fuses badly: implement <code>IPluginV3</code> (TensorRT 10; older code uses <code>IPluginV2DynamicExt</code>) with shape inference, supported formats/types, <code>enqueue</code> with your CUDA kernel, and serialization; register a creator; load the <code>.so</code> at build and run time. The ONNX node's op type must match the plugin name. Plugins are opaque to the optimizer — fusion stops at their boundary, so they're a last resort.</p>
+
+<h3>Build knobs that matter</h3>
+<ul>
+<li><b>Workspace / memory pool</b> — scratch memory tactics may use. Too small silently excludes fast tactics.</li>
+<li><b>Builder optimization level</b> (0–5, default 3) — higher searches more tactics, builds slower.</li>
+<li><b>Timing cache</b> — persist tactic timings so rebuilds are fast and more reproducible.</li>
+<li><b>Tactic sources</b> — cuBLAS, cuBLASLt, cuDNN, internal kernels; can be restricted.</li>
+<li><b>Sparsity</b> — allow 2:4 sparse tactics.</li>
+<li><b>DLA</b> (Jetson Orin has two DLA cores) — offload supported layers with GPU fallback; each GPU↔DLA transition costs a reformat and sync.</li>
+<li><b>Hardware / version compatibility</b> — engines are tied to GPU architecture and TensorRT version by default; compatibility modes relax this at some performance cost.</li>
+</ul>
+
+<h3>trtexec cheat sheet</h3>
+<input type="text" class="filter" id="flagFilter" placeholder="Filter flags, e.g. shape, fp8, profile" aria-label="Filter trtexec flags">
+<div class="wrap"><table id="flagTable"></table></div>
+
+<h3>Debugging accuracy: Polygraphy</h3>
+<pre>
+# Compare TensorRT against ONNX Runtime on the same inputs
+polygraphy run model.onnx --trt --onnxrt --atol 1e-3 --rtol 1e-3
+
+# Mark every intermediate as an output to find the first diverging layer
+polygraphy run model.onnx --trt --onnxrt \
+    --trt-outputs mark all --onnx-outputs mark all
+
+# Search for which layers must stay in higher precision
+polygraphy debug precision model.onnx --fp16 --check ...
+
+# Clean the graph before building
+polygraphy surgeon sanitize model.onnx --fold-constants -o clean.onnx
+</pre>
+<div class="aside you"><b class="tag">Field note: a TensorRT-only accuracy regression</b>Symptom: action error many times PyTorch's at <em>every</em> precision, so not quantization. Ablate by component (swap one engine at a time into the pipeline) to find the one carrying the error. Then ablate by runtime: if ONNX Runtime matches PyTorch on that graph and TensorRT does not, the export is faithful and the compiler isn't. Reproduce on the vendor's unmodified reference, then fix the most upstream cause, which can be as boring as pinning a different TensorRT release. Method: <b>isolate by component, isolate by runtime, reproduce on a reference, then fix upstream.</b> Polygraphy's layer-wise compare shortens the second step.</div>
+
+<h3>Runtime patterns</h3>
+<pre>
+engine  = runtime.deserialize_cuda_engine(plan_bytes)
+ctx     = engine.create_execution_context()
+for name in input_names:
+    ctx.set_input_shape(name, shape)          # dynamic dims, before enqueue
+for name, ptr in buffers.items():
+    ctx.set_tensor_address(name, ptr)         # pre-allocated, persistent
+ctx.execute_async_v3(stream)                  # enqueueV3; capture this in a CUDA graph
+</pre>
+<ul>
+<li>Allocate once, reuse forever; pinned host memory for H2D copies (or none at all on unified-memory Jetsons).</li>
+<li>One execution context per concurrent stream.</li>
+<li>Don't <code>synchronize</code> after every engine in a multi-engine pipeline — chain them on one stream.</li>
+<li>Pin the whole stack (JetPack, CUDA, TensorRT, ModelOpt, opset) and record versions next to every benchmark.</li>
+</ul>
+
+<h3>Pitfalls that show up in practice</h3>
+<div class="wrap"><table>
+<tr><th>Symptom</th><th>Likely cause</th></tr>
+<tr><td>Engine slower than expected</td><td>workspace too small, opt shape far from real shape, reformat layers between precisions, DLA fallback ping-pong</td></tr>
+<tr><td>FP16 output NaN/inf</td><td>activation overflow above 65,504 — keep that layer FP32 or use BF16</td></tr>
+<tr><td>Accuracy fine in ONNX Runtime, wrong in TensorRT</td><td>fusion/tactic bug, version regression, precision chosen by weak typing — bisect with Polygraphy</td></tr>
+<tr><td>Accuracy wrong in both</td><td>export problem: wrong output layer, dropped op, constant folding, opset semantics</td></tr>
+<tr><td>Engine fails to load on another device</td><td>engines are GPU-architecture and TensorRT-version specific</td></tr>
+<tr><td>Benchmarks don't reproduce</td><td>stale engines reused, unpinned versions, clocks/power mode not fixed, no warmup</td></tr>
+</table></div>
+<div class="aside"><b class="tag">ModelOpt in one line</b>NVIDIA TensorRT Model Optimizer: PyTorch-side PTQ/QAT (<code>mtq.quantize(model, cfg, forward_loop)</code>) that inserts quantizers, calibrates them on your data, and exports ONNX with Q/DQ (FP8, INT8, INT4-AWQ, NVFP4) for a strongly typed TensorRT build. Also does sparsity and distillation.</div>
+</section>
+
+<!-- ============ CH14 AMD ============ -->
+<section class="chapter col" id="amd">
+<div class="chnum">Chapter 14</div>
+<h2>The AMD mirror</h2>
+<p>Every concept above has an AMD counterpart. Know the mapping and most NVIDIA experience transfers.</p>
+<div class="wrap"><table>
+<tr><th>NVIDIA</th><th>AMD</th><th>What changes</th></tr>
+<tr><td>CUDA</td><td>HIP (HIPify converts source)</td><td>near source-compatible</td></tr>
+<tr><td>SM, warp (32)</td><td>CU, <b>wavefront 64</b> on CDNA/Instinct; RDNA runs wave32</td><td>divergence cost and occupancy maths change; audit lane-count literals and shuffle masks</td></tr>
+<tr><td>Shared memory</td><td>LDS (Local Data Share)</td><td>same role</td></tr>
+<tr><td>Tensor cores</td><td>Matrix cores (MFMA instructions)</td><td>same role</td></tr>
+<tr><td>TensorRT</td><td>MIGraphX; ONNX Runtime with MIGraphX EP</td><td>ONNX in, compiled program out; tune static shapes</td></tr>
+<tr><td>cuBLAS(Lt) / cuDNN / CUTLASS</td><td>rocBLAS, hipBLASLt / MIOpen / Composable Kernel</td><td>library swap</td></tr>
+<tr><td>FlashAttention, fused kernels</td><td>CK FlashAttention, AITER</td><td>used by vLLM/SGLang on ROCm</td></tr>
+<tr><td>ModelOpt PTQ</td><td>AMD Quark (FP8, INT8, MXFP4, AWQ/GPTQ)</td><td>re-express per-layer overrides as Quark configs</td></tr>
+<tr><td>CUDA Graphs</td><td>HIP Graphs</td><td>same capture rules</td></tr>
+<tr><td>Nsight Systems / Compute</td><td>rocprofv3, ROCm Systems Profiler, ROCm Compute Profiler</td><td>timeline and kernel-level counters</td></tr>
+<tr><td>NCCL</td><td>RCCL</td><td>collectives</td></tr>
+<tr><td>DLA (Jetson)</td><td>XDNA NPU via Ryzen AI software / Vitis AI</td><td>fixed-function offload, static shapes, INT8/BF16 friendly</td></tr>
+</table></div>
+<div class="say">The concepts carry over directly — HIP is close to CUDA at the source level, HIP Graphs follow the same capture rules, Quark covers the same PTQ recipes as ModelOpt. The thing to relearn carefully is wavefront 64 on Instinct: it changes divergence cost and occupancy, so kernels tuned for warp 32 don't port optimally as-is.</div>
+</section>
+
+<!-- ============ CH15 DRILL ============ -->
+<section class="chapter col" id="drill">
+<div class="chnum">Chapter 15</div>
+<h2>Drill: cards and quiz</h2>
+<p>Click a card to flip it. Answer out loud <em>before</em> flipping — the point is fluency, not recognition.</p>
+<div class="cards" id="cards"></div>
+<h3>Quiz</h3>
+<p id="quizScore" style="font-family:var(--cond);font-weight:600"></p>
+<div id="quiz"></div>
+<button type="button" id="quizReset">Reset quiz</button>
+</section>
+
+<footer class="col">Personal study notes. Amber field notes are lessons from practice, written generally; everything else is background. Verify library defaults against current docs before relying on them.</footer>
+</main>
+</div>
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function store(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function rng(seed){let a=seed>>>0;return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let R=rng(7);
+function randn(r){r=r||R;let u=0,v=0;while(u===0)u=r();while(v===0)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+const fmt=(x,d)=>{if(!isFinite(x))return String(x);const a=Math.abs(x);if(a!==0&&(a<1e-3||a>=1e5))return x.toExponential(d===undefined?3:d);return x.toFixed(d===undefined?4:d)};
+const redraws=[];
+
+/* ---------- theme ---------- */
+const saved=load('qg-theme',null); if(saved) document.documentElement.setAttribute('data-theme',saved);
+$('themeBtn').addEventListener('click',()=>{
+  const cur=document.documentElement.getAttribute('data-theme');
+  const sysDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const isDark=cur?cur==='dark':sysDark; const next=isDark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next); store('qg-theme',next); redraws.forEach(f=>f());
+});
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>redraws.forEach(f=>f()));
+
+/* ---------- progress + toc ---------- */
+const links=[...document.querySelectorAll('nav.toc a')];
+function onScroll(){const h=document.documentElement;const p=h.scrollTop/(h.scrollHeight-h.clientHeight);$('progress').style.width=(p*100)+'%'}
+window.addEventListener('scroll',onScroll,{passive:true});
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-30% 0px -60% 0px'});
+document.querySelectorAll('section.chapter').forEach(s=>obs.observe(s));
+
+/* ---------- canvas helper ---------- */
+function ctxOf(c){const x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.font='13px "IBM Plex Sans Condensed", Arial, sans-serif';return x}
+
+/* ---------- 0 bit explorer ---------- */
+function encFloat(x,E,M,fn){
+  const bias=(1<<(E-1))-1, emin=1-bias, top=(1<<E)-1;
+  const s=(x<0||Object.is(x,-0))?1:0, a=Math.abs(x);
+  const maxVal=fn?Math.pow(2,top-bias)*(1+((1<<M)-2)/(1<<M)):Math.pow(2,top-1-bias)*(2-Math.pow(2,-M));
+  if(a===0) return {s,e:0,m:0,val:0,status:''};
+  let e=Math.floor(Math.log2(a)); if(a/Math.pow(2,e)>=2)e++; if(a/Math.pow(2,e)<1)e--;
+  let ef,m;
+  if(e<emin){ m=Math.round(a/Math.pow(2,emin)*(1<<M)); if(m>=(1<<M)){ef=1;m=0}else ef=0; }
+  else { m=Math.round((a/Math.pow(2,e)-1)*(1<<M)); if(m>=(1<<M)){m=0;e++} ef=e+bias; }
+  let val=ef===0?m/(1<<M)*Math.pow(2,emin):(1+m/(1<<M))*Math.pow(2,ef-bias);
+  let status='';
+  const over=fn?(ef>top||(ef===top&&m>(1<<M)-2)||val>maxVal):(ef>=top||val>maxVal);
+  if(over){ if(fn){status='saturated at ±'+maxVal;ef=top;m=(1<<M)-2;val=maxVal}else{status='overflow → inf';ef=top;m=0;val=Infinity} }
+  if(val===0) status='underflow → 0';
+  return {s,e:ef,m,val:s?-val:val,status};
+}
+function bitsHTML(s,e,E,m,M){
+  let h='<span class="bit s">'+s+'</span>';
+  for(let i=E-1;i>=0;i--)h+='<span class="bit e">'+((e>>i)&1)+'</span>';
+  for(let i=M-1;i>=0;i--)h+='<span class="bit mm">'+(Math.floor(m/Math.pow(2,i))%2)+'</span>';
+  return h;
+}
+function renderBX(){
+  const raw=$('bxVal').value.replace(/[−–]/g,'-'); const x=parseFloat(raw); const out=$('bxRows');
+  if(!isFinite(x)){out.innerHTML='<p>Enter a finite number, for example 0.25 or -3e4.</p>';return}
+  const rows=[];
+  const errTxt=(v)=>{if(!isFinite(v))return '';if(x===0)return 'exact';const r=Math.abs(v-x)/Math.abs(x);return r===0?'exact':'rel. err '+(r*100).toPrecision(3)+'%'};
+  // fp32
+  const dv=new DataView(new ArrayBuffer(4)); dv.setFloat32(0,x); const u=dv.getUint32(0);
+  const f32=Math.fround(x);
+  rows.push({name:'FP32',sub:'1·8·23',bits:bitsHTML(u>>>31,(u>>>23)&255,8,u&0x7FFFFF,23),val:f32,st:isFinite(f32)?errTxt(f32):'overflow → inf'});
+  const fl=[['FP16','1·5·10',5,10,false],['BF16','1·8·7',8,7,false],['FP8 E4M3','1·4·3, no inf',4,3,true],['FP8 E5M2','1·5·2',5,2,false]];
+  fl.forEach(([n,sub,E,M,fn])=>{const r=encFloat(x,E,M,fn);rows.push({name:n,sub,bits:bitsHTML(r.s,r.e,E,r.m,M),val:r.val,st:r.status||errTxt(r.val)})});
+  // int8
+  const A=Math.max(parseFloat($('bxAbs').value)||1,1e-9); const sc=A/127; let q=Math.round(x/sc); let st='';
+  if(q>127){q=127;st='clipped at +absmax'} if(q<-127){q=-127;st='clipped at −absmax'}
+  const qv=q*sc; const tc=(q+256)%256; let ib='';for(let i=7;i>=0;i--)ib+='<span class="bit i">'+((tc>>i)&1)+'</span>';
+  rows.push({name:'INT8',sub:'q = '+q+', s = '+fmt(sc,5),bits:ib,val:qv,st:st||errTxt(qv)});
+  out.innerHTML=rows.map(r=>'<div class="bitrow"><div class="fmt">'+r.name+'<small>'+r.sub+'</small></div><div class="bits">'+r.bits+'</div><div class="val">'+(isFinite(r.val)?Number(r.val).toPrecision(7):'∞')+'<small>'+r.st+'</small></div></div>').join('');
+}
+$('bxVal').addEventListener('input',renderBX); $('bxAbs').addEventListener('input',renderBX);
+document.querySelectorAll('[data-bx]').forEach(b=>b.addEventListener('click',()=>{$('bxVal').value=b.dataset.bx;renderBX()}));
+renderBX();
+
+/* ---------- quantizer core ---------- */
+function quantize(xs,lo,hi,bits,sym){
+  const out=new Float64Array(xs.length); let clipped=0; const used=new Set(); let s,z=0,levels=[];
+  if(sym){const A=Math.max(Math.abs(lo),Math.abs(hi))||1e-12;const qm=Math.pow(2,bits-1)-1;s=A/qm;
+    for(let i=0;i<xs.length;i++){let q=Math.round(xs[i]/s);if(q>qm){q=qm;clipped++}else if(q<-qm){q=-qm;clipped++}out[i]=q*s;used.add(q)}
+    for(let k=-qm;k<=qm;k++)levels.push(k*s); lo=-A;hi=A;}
+  else{const n=Math.pow(2,bits)-1;s=(hi-lo)/n||1e-12;z=Math.round(-lo/s);
+    for(let i=0;i<xs.length;i++){let q=Math.round(xs[i]/s)+z;if(q>n){q=n;clipped++}else if(q<0){q=0;clipped++}out[i]=(q-z)*s;used.add(q)}
+    for(let k=0;k<=n;k++)levels.push((k-z)*s); lo=(0-z)*s;hi=(n-z)*s;}
+  return {out,s,z,clipped,used:used.size,levels,lo,hi};
+}
+function mse(a,b){let m=0;for(let i=0;i<a.length;i++){const d=a[i]-b[i];m+=d*d}return m/a.length}
+function power(a){let m=0;for(let i=0;i<a.length;i++)m+=a[i]*a[i];return m/a.length}
+
+/* ---------- 2 playground ---------- */
+let pgSeed=11, pgData=null;
+function genPG(){
+  const r=rng(pgSeed), d=$('pgDist').value, N=4000, xs=[];
+  for(let i=0;i<N;i++){let v;
+    if(d==='w')v=randn(r);
+    else if(d==='gelu'){const z=randn(r)*1.5;v=0.5*z*(1+Math.tanh(Math.sqrt(2/Math.PI)*(z+0.044715*z*z*z)))}
+    else {const z=randn(r);let c=0;for(let k=0;k<3;k++){const t=randn(r);c+=t*t}v=z/Math.sqrt(c/3)*0.7}
+    xs.push(v)}
+  if($('pgOut').checked){for(let i=0;i<12;i++){const mag=8+4*r();const sg=d==='gelu'?1:(r()<.5?-1:1);xs[Math.floor(r()*N)]=sg*mag}}
+  pgData=Float64Array.from(xs);
+}
+function pctile(sorted,p){const i=Math.min(sorted.length-1,Math.max(0,Math.round(p*(sorted.length-1))));return sorted[i]}
+function renderPG(){
+  if(!pgData)genPG();
+  const xs=pgData, bits=+$('pgBits').value, sym=$('pgSch').value==='sym', rm=$('pgRange').value;
+  $('pgBitsV').textContent=bits;
+  let mn=Infinity,mx=-Infinity;for(const v of xs){if(v<mn)mn=v;if(v>mx)mx=v}
+  let lo=mn,hi=mx;
+  if(rm==='pct'){ if(sym){const ab=Array.from(xs,Math.abs).sort((a,b)=>a-b);const A=pctile(ab,.999);lo=-A;hi=A}else{const so=Array.from(xs).sort((a,b)=>a-b);lo=pctile(so,.0005);hi=pctile(so,.9995)} }
+  let res;
+  if(rm==='mse'){let best=null;for(let c=0.05;c<=1.0001;c+=0.01){const r=quantize(xs,lo*c,hi*c,bits,sym);const e=mse(xs,r.out);if(!best||e<best.e)best={e,r,c}}res=best.r;res.c=best.c}
+  else res=quantize(xs,lo,hi,bits,sym);
+  const e=mse(xs,res.out), sq=10*Math.log10(power(xs)/Math.max(e,1e-30));
+  // draw
+  const c=$('pgCanvas'),x=ctxOf(c),W=c.width,H=c.height,pad=30; const bins=160;
+  const L=Math.min(mn,res.lo),Rr=Math.max(mx,res.hi); const span=(Rr-L)||1; const X=v=>pad+(v-L)/span*(W-2*pad);
+  const cnt=new Array(bins).fill(0);for(const v of xs){cnt[Math.min(bins-1,Math.floor((v-L)/span*bins))]++}
+  const cm=Math.max(...cnt);
+  x.fillStyle=css('--err-soft');x.fillRect(pad,10,X(res.lo)-pad,H-40);x.fillRect(X(res.hi),10,W-pad-X(res.hi),H-40);
+  x.strokeStyle=css('--grid');x.globalAlpha=res.levels.length>70?0.25:0.7;x.lineWidth=1;
+  res.levels.forEach(l=>{if(l>=L&&l<=Rr){x.beginPath();x.moveTo(X(l),10);x.lineTo(X(l),H-30);x.stroke()}});x.globalAlpha=1;
+  x.fillStyle=css('--ink2');
+  for(let i=0;i<bins;i++){if(!cnt[i])continue;const h=Math.max(2,cnt[i]/cm*(H-60));const x0=pad+i/bins*(W-2*pad);x.fillRect(x0,H-30-h,(W-2*pad)/bins-1,h)}
+  x.fillStyle=css('--err');for(const v of xs){if(v<res.lo||v>res.hi){x.fillRect(X(v)-1,H-28,3,8)}}
+  x.fillStyle=css('--ink');x.fillText(fmt(L,2),pad,H-8);x.textAlign='right';x.fillText(fmt(Rr,2),W-pad,H-8);x.textAlign='center';x.fillText('0',X(0),H-8);x.textAlign='left';
+  const st=[['scale s',fmt(res.s,5)],['zero-point',res.z],['levels used',res.used+' / '+res.levels.length],['clipped',(res.clipped/xs.length*100).toFixed(2)+'%'],['MSE',fmt(e,5)],['SQNR',sq.toFixed(1)+' dB']];
+  if(res.c)st.push(['best clip','×'+res.c.toFixed(2)+' of range']);
+  $('pgStats').innerHTML=st.map(([a,b])=>'<span class="stat">'+a+' <b>'+b+'</b></span>').join('');
+}
+['pgDist','pgOut'].forEach(id=>$(id).addEventListener('change',()=>{genPG();renderPG()}));
+['pgBits','pgSch','pgRange'].forEach(id=>$(id).addEventListener('input',renderPG));
+$('pgNew').addEventListener('click',()=>{pgSeed++;genPG();renderPG()});
+renderPG(); redraws.push(renderPG);
+
+/* ---------- 3 granularity ---------- */
+let grSeed=3,grW=null;
+function genGR(){const r=rng(grSeed);const spread=$('grSpread').checked;const f=spread?[0.05,0.3,1,0.5,4,0.8,0.15,2]:[1,1,1,1,1,1,1,1];
+  grW=[];for(let i=0;i<8;i++){const row=[];for(let j=0;j<64;j++)row.push(randn(r)*f[i]);if(spread&&(i===2||i===6)){row[Math.floor(r()*64)]*=7}grW.push(row)}}
+function renderGR(){
+  if(!grW)genGR();const mode=$('grMode').value,qm=7;const errs=[];let scales=0,tot=0,totP=0;
+  const q=(v,s)=>Math.max(-qm,Math.min(qm,Math.round(v/s)))*s;
+  const gA=Math.max(...grW.flat().map(Math.abs));
+  for(let i=0;i<8;i++){const row=grW[i];let e=0,p=0;
+    if(mode==='tensor'){const s=gA/qm;row.forEach(v=>{const d=v-q(v,s);e+=d*d;p+=v*v})}
+    else if(mode==='channel'){const s=Math.max(...row.map(Math.abs))/qm;scales++;row.forEach(v=>{const d=v-q(v,s);e+=d*d;p+=v*v})}
+    else{for(let g=0;g<64;g+=16){const seg=row.slice(g,g+16);const s=Math.max(...seg.map(Math.abs))/qm;scales++;seg.forEach(v=>{const d=v-q(v,s);e+=d*d;p+=v*v})}}
+    errs.push(Math.sqrt(e/p)*100);tot+=e;totP+=p}
+  if(mode==='tensor')scales=1;
+  const c=$('grCanvas'),x=ctxOf(c),W=c.width,H=c.height,pad=40;const bw=(W-2*pad)/8;const top=100;
+  x.strokeStyle=css('--rule');x.beginPath();x.moveTo(pad,H-30);x.lineTo(W-pad,H-30);x.stroke();
+  errs.forEach((v,i)=>{const h=Math.min(v,top)/top*(H-60);x.fillStyle=v>30?css('--err'):css('--grid');x.fillRect(pad+i*bw+10,H-30-h,bw-20,h);
+    x.fillStyle=css('--ink');x.textAlign='center';x.fillText(v.toFixed(1)+'%',pad+i*bw+bw/2,H-36-h);x.fillText('ch '+i,pad+i*bw+bw/2,H-12)});
+  x.textAlign='left';x.fillStyle=css('--ink2');x.fillText('relative RMS error per output channel',pad,16);
+  $('grStats').innerHTML=['overall rel. error <b>'+(Math.sqrt(tot/totP)*100).toFixed(1)+'%</b>','scales stored <b>'+scales+'</b>','extra bits/weight <b>'+(scales*16/512).toFixed(3)+'</b> (FP16 scales)'].map(s=>'<span class="stat">'+s+'</span>').join('');
+}
+$('grMode').addEventListener('input',renderGR);$('grSpread').addEventListener('change',()=>{genGR();renderGR()});$('grNew').addEventListener('click',()=>{grSeed++;genGR();renderGR()});
+renderGR();redraws.push(renderGR);
+
+/* ---------- 5a AdaRound ---------- */
+let adaSeed=5;
+function corrX(r,m,n){const X=[];for(let i=0;i<m;i++){const b=randn(r);const row=[];for(let j=0;j<n;j++)row.push(0.75*b+0.66*randn(r));X.push(row)}return X}
+function outErr(X,w0,w){let e=0;for(const row of X){let d=0;for(let j=0;j<w.length;j++)d+=row[j]*(w0[j]-w[j]);e+=d*d}return e/X.length}
+function renderAda(tries){
+  tries=tries||0;const r=rng(adaSeed),n=8,qm=3;const w=[];for(let i=0;i<n;i++)w.push(randn(r)*0.6);
+  const s=Math.max(...w.map(Math.abs))/qm;const X=corrX(r,64,n);
+  const rtn=w.map(v=>Math.max(-qm,Math.min(qm,Math.round(v/s))));
+  let best=null;for(let mask=0;mask<(1<<n);mask++){const q=w.map((v,i)=>{const b=((mask>>i)&1)?Math.ceil(v/s):Math.floor(v/s);return Math.max(-qm,Math.min(qm,b))});const e=outErr(X,w,q.map(k=>k*s));if(!best||e<best.e)best={e,q}}
+  const eR=outErr(X,w,rtn.map(k=>k*s));
+  if(best.e>eR*0.95&&tries<80){adaSeed++;return renderAda(tries+1)}
+  let h='<table class="mtx"><tr><th>i</th><th>w</th><th>w / s</th><th>RTN q</th><th>best q</th></tr>';
+  w.forEach((v,i)=>{const fl=best.q[i]!==rtn[i];h+='<tr><td>'+i+'</td><td>'+v.toFixed(3)+'</td><td>'+(v/s).toFixed(2)+'</td><td>'+rtn[i]+'</td><td class="'+(fl?'flip':'')+'">'+best.q[i]+'</td></tr>'});
+  $('adaTable').innerHTML=h+'</table>';
+  const flips=best.q.filter((v,i)=>v!==rtn[i]).length;
+  $('adaMsg').textContent=flips+' weight'+(flips>1?'s':'')+' round the "wrong" way';
+  $('adaStats').innerHTML=['RTN output MSE <b>'+fmt(eR,5)+'</b>','best rounding MSE <b>'+fmt(best.e,5)+'</b>','reduction <b>'+((1-best.e/eR)*100).toFixed(1)+'%</b>'].map(s=>'<span class="stat">'+s+'</span>').join('');
+}
+$('adaNew').addEventListener('click',()=>{adaSeed++;renderAda()});renderAda();
+
+/* ---------- 5b GPTQ ---------- */
+let gp={};
+function inv(A){const n=A.length;const M=A.map((r,i)=>[...r,...Array.from({length:n},(_,j)=>i===j?1:0)]);
+  for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;[M[c],M[p]]=[M[p],M[c]];const d=M[c][c];for(let j=0;j<2*n;j++)M[c][j]/=d;for(let r=0;r<n;r++){if(r===c)continue;const f=M[r][c];for(let j=0;j<2*n;j++)M[r][j]-=f*M[c][j]}}
+  return M.map(r=>r.slice(n))}
+function gpGain(seed){resetGP(seed,true);while(gp.i<gp.n)stepGP(true);const s=gp.s,qm=gp.qm;const rtn=gp.w0.map(v=>Math.max(-qm,Math.min(qm,Math.round(v/s)))*s);return 1-outErr(gp.X,gp.w0,gp.q)/outErr(gp.X,gp.w0,rtn)}
+function pickGP(seed){let t=0;while(gpGain(seed)<0.1&&t<80){seed++;t++}resetGP(seed)}
+function resetGP(seed,quiet){const r=rng(seed),n=6,qm=3;const w0=[];for(let i=0;i<n;i++)w0.push(randn(r)*0.6);const X=corrX(r,64,n);
+  const H=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>{let s=0;for(const row of X)s+=row[i]*row[j];return 2*s/X.length}));
+  const md=H.reduce((a,row,i)=>a+row[i],0)/n;for(let i=0;i<n;i++)H[i][i]+=0.01*md;
+  const s=Math.max(...w0.map(Math.abs))/qm;gp={seed,n,qm,w0,w:[...w0],X,Hi:inv(H),s,i:0,q:Array(n).fill(null)};if(!quiet)renderGP()}
+function stepGP(quiet){if(gp.i>=gp.n)return;const {i,s,qm,Hi,w}=gp;const q=Math.max(-qm,Math.min(qm,Math.round(w[i]/s)))*s;const E=(w[i]-q)/Hi[i][i];
+  for(let j=i+1;j<gp.n;j++)w[j]-=E*Hi[i][j];
+  const col=Hi.map(r=>r[i]),rowi=[...Hi[i]],d=Hi[i][i];for(let a=0;a<gp.n;a++)for(let b=0;b<gp.n;b++)Hi[a][b]-=col[a]*rowi[b]/d;
+  w[i]=q;gp.q[i]=q;gp.i++;if(!quiet)renderGP()}
+function renderGP(){const {n,w0,w,q,i,s,qm,X}=gp;let h='<table class="mtx"><tr><th>col</th><th>original w</th><th>current w</th><th>quantized</th><th>RTN of original</th></tr>';
+  for(let k=0;k<n;k++){const rt=Math.max(-qm,Math.min(qm,Math.round(w0[k]/s)))*s;const moved=q[k]===null&&Math.abs(w[k]-w0[k])>1e-9;
+    h+='<tr><td>'+k+(k===i?' ◀':'')+'</td><td>'+w0[k].toFixed(3)+'</td><td class="'+(moved?'flip':'')+'">'+w[k].toFixed(3)+'</td><td>'+(q[k]===null?'—':q[k].toFixed(3))+'</td><td>'+rt.toFixed(3)+'</td></tr>'}
+  $('gpTable').innerHTML=h+'</table>';
+  const rtn=w0.map(v=>Math.max(-qm,Math.min(qm,Math.round(v/s)))*s);const eR=outErr(X,w0,rtn);
+  if(i>=n){const eG=outErr(X,w0,q);$('gpMsg').textContent='Done.';$('gpStats').innerHTML=['RTN output MSE <b>'+fmt(eR,5)+'</b>','GPTQ output MSE <b>'+fmt(eG,5)+'</b>','reduction <b>'+((1-eG/eR)*100).toFixed(1)+'%</b>'].map(s=>'<span class="stat">'+s+'</span>').join('')}
+  else{$('gpMsg').textContent='Next: column '+i+'. Red = weights already shifted to compensate.';$('gpStats').innerHTML='<span class="stat">RTN output MSE <b>'+fmt(eR,5)+'</b></span>'}}
+$('gpStep').addEventListener('click',()=>stepGP());$('gpReset').addEventListener('click',()=>pickGP(gp.seed+1));pickGP(31);
+
+/* ---------- 5c SmoothQuant ---------- */
+const sqX=[1.2,0.8,24,1.0,0.6,17,1.1,0.9], sqW=[0.5,0.7,0.3,0.6,0.8,0.25,0.5,0.6];
+function renderSQ(){const a=+$('sqA').value,off=$('sqOff').checked;$('sqAV').textContent=a.toFixed(2);$('sqA').disabled=off;
+  const s=sqX.map((v,j)=>off?1:Math.pow(v,a)/Math.pow(sqW[j],1-a));const X=sqX.map((v,j)=>v/s[j]),W=sqW.map((v,j)=>v*s[j]);
+  const c=$('sqCanvas'),x=ctxOf(c),Wd=c.width,H=c.height,half=(Wd-60)/2;
+  function panel(vals,x0,label,col){const m=Math.max(...vals);const bw=half/vals.length;x.fillStyle=css('--ink');x.fillText(label+'  (max '+m.toFixed(2)+')',x0,16);
+    vals.forEach((v,j)=>{const h=v/m*(H-60);x.fillStyle=col;x.fillRect(x0+j*bw+4,H-28-h,bw-8,h);x.fillStyle=css('--ink2');x.textAlign='center';x.fillText(j,x0+j*bw+bw/2,H-10);x.textAlign='left'})}
+  panel(X,20,'Activation channel max |X|',css('--err'));panel(W,40+half,'Weight channel max |W|',css('--grid'));
+  const med=v=>{const s=[...v].sort((a,b)=>a-b);return (s[3]+s[4])/2};
+  const lx=med(X)/(Math.max(...X)/127),lw=med(W)/(Math.max(...W)/127);
+  $('sqStats').innerHTML=['typical activation channel gets <b>'+lx.toFixed(1)+'</b> of 127 INT8 levels','typical weight channel gets <b>'+lw.toFixed(1)+'</b> of 127','worst of the two <b>'+Math.min(lx,lw).toFixed(1)+'</b>'].map(s=>'<span class="stat">'+s+'</span>').join('')}
+$('sqA').addEventListener('input',renderSQ);$('sqOff').addEventListener('change',renderSQ);renderSQ();redraws.push(renderSQ);
+
+/* ---------- 8 roofline ---------- */
+const presets={dc:[1000,5000],edge:[100,250],npu:[50,100]};
+$('rfPreset').addEventListener('change',()=>{const p=presets[$('rfPreset').value];$('rfPeak').value=p[0];$('rfBw').value=p[1];renderRF()});
+function gemmAI(M,N,K,wb){const f=2*M*N*K,b=M*K*2+K*N*wb+M*N*2;return{f,b,ai:f/b}}
+function renderRF(){const P=Math.max(+$('rfPeak').value,1e-3),B=Math.max(+$('rfBw').value,1e-3)/1000;const ridge=P/B;
+  const c=$('rfCanvas'),x=ctxOf(c),W=c.width,H=c.height,pl=60,pr=20,pt=20,pb=40;
+  const ax0=Math.log10(0.05),ax1=Math.log10(5000),ay1=Math.log10(P*2),ay0=ay1-5;
+  const X=a=>pl+(Math.log10(a)-ax0)/(ax1-ax0)*(W-pl-pr),Y=t=>H-pb-(Math.log10(Math.max(t,1e-12))-ay0)/(ay1-ay0)*(H-pt-pb);
+  x.strokeStyle=css('--rule');x.fillStyle=css('--ink2');
+  for(let e=-1;e<=3;e++){const v=Math.pow(10,e);x.beginPath();x.moveTo(X(v),pt);x.lineTo(X(v),H-pb);x.stroke();x.fillText(v>=1?v:v,X(v)-6,H-pb+16)}
+  for(let e=Math.ceil(ay0);e<=Math.floor(ay1);e++){const v=Math.pow(10,e);x.beginPath();x.moveTo(pl,Y(v));x.lineTo(W-pr,Y(v));x.stroke();x.fillText(v>=1?v:v.toExponential(0),6,Y(v)+4)}
+  x.fillText('FLOP / byte',W/2,H-6);x.save();x.translate(14,H/2+40);x.rotate(-Math.PI/2);x.fillText('attainable TFLOP/s',0,0);x.restore();
+  x.strokeStyle=css('--ink');x.lineWidth=2.5;x.beginPath();x.moveTo(X(0.05),Y(0.05*B));x.lineTo(X(ridge),Y(P));x.lineTo(X(5000),Y(P));x.stroke();x.lineWidth=1;
+  x.setLineDash([4,4]);x.beginPath();x.moveTo(X(ridge),Y(P));x.lineTo(X(ridge),H-pb);x.stroke();x.setLineDash([]);x.fillStyle=css('--ink');x.fillText('ridge '+ridge.toFixed(0),X(ridge)+4,H-pb-6);
+  const pts=[['elementwise add',1/6],['decode FP16 (M=1)',gemmAI(1,4096,4096,2).ai],['decode INT4 W (M=1)',gemmAI(1,4096,4096,0.5).ai],['batch-32 decode',gemmAI(32,4096,4096,2).ai],['ViT prefill (256 tok)',gemmAI(256,1024,1024,2).ai]];
+  const cu=gemmAI(+$('rfM').value||1,+$('rfN').value||1,+$('rfK').value||1,+$('rfWb').value);pts.push(['your GEMM',cu.ai]);
+  pts.forEach(([n,ai],k)=>{const t=Math.min(P,ai*B);const mine=k===pts.length-1;x.fillStyle=ai<ridge?css('--err'):css('--keep');x.beginPath();x.arc(X(ai),Y(t),mine?7:5,0,7);x.fill();if(mine){x.strokeStyle=css('--ink');x.lineWidth=2;x.stroke();x.lineWidth=1}
+    x.fillStyle=css('--ink');x.fillText(n,X(ai)+8,Y(t)+(k%2?14:-8))});
+  const t=Math.min(P,cu.ai*B);
+  $('rfStats').innerHTML=['your GEMM AI <b>'+cu.ai.toFixed(2)+'</b> FLOP/B','bound <b>'+(cu.ai<ridge?'memory':'compute')+'</b>','attainable <b>'+t.toFixed(2)+'</b> TFLOP/s','est. time <b>'+(cu.f/(t*1e12)*1e6).toFixed(1)+' µs</b>','bytes moved <b>'+(cu.b/1e6).toFixed(2)+' MB</b>'].map(s=>'<span class="stat">'+s+'</span>').join('')}
+['rfPeak','rfBw','rfM','rfN','rfK','rfWb'].forEach(id=>$(id).addEventListener('input',renderRF));renderRF();redraws.push(renderRF);
+
+/* ---------- 9 fusion ---------- */
+function renderFU(){const T=+$('fuT').value,D=+$('fuD').value,on=$('fuOn').checked;$('fuTV').textContent=T;$('fuDV').textContent=D;
+  const t=T*D*2/1e6,w=D*D*2/1e6;const unf=[['read input',t],['read weights',w],['GEMM write',t],['bias r/w',2*t],['GELU r/w',2*t],['residual r+r/w',3*t]];const fus=[['read input',t],['read weights',w],['read residual',t],['single write',t]];
+  const tot=a=>a.reduce((s,v)=>s+v[1],0);const U=tot(unf),F=tot(fus);
+  const c=$('fuCanvas'),x=ctxOf(c),W=c.width,H=c.height,pl=120,pr=20;const sc=(W-pl-pr)/U;
+  const cols=[css('--ink2'),css('--grid'),css('--err'),css('--amber'),css('--keep'),css('--err')];
+  function bar(y,segs,label,dim){x.globalAlpha=dim?0.35:1;let xx=pl;segs.forEach((s,i)=>{x.fillStyle=cols[i%cols.length];x.fillRect(xx,y,s[1]*sc,46);xx+=s[1]*sc});x.fillStyle=css('--ink');x.fillText(label,6,y+28);x.fillText(tot(segs).toFixed(1)+' MB',xx+6>W-80?W-80:xx+6,y+28);x.globalAlpha=1}
+  bar(30,unf,'Unfused · 4 kernels',on);bar(120,fus,'Fused · 1 kernel',!on);
+  $('fuStats').innerHTML=['traffic saved <b>'+((1-F/U)*100).toFixed(0)+'%</b>','unfused @250 GB/s <b>'+(U/250*1000).toFixed(0)+' µs</b>','fused @250 GB/s <b>'+(F/250*1000).toFixed(0)+' µs</b>','launches <b>'+(on?'1':'4')+'</b>'].map(s=>'<span class="stat">'+s+'</span>').join('')}
+['fuT','fuD','fuOn'].forEach(id=>$(id).addEventListener('input',renderFU));renderFU();redraws.push(renderFU);
+
+/* ---------- 10 cuda graph ---------- */
+function simEager(N,k,L,jit,r){let cpu=0,gpu=0;const ks=[];for(let i=0;i<N;i++){let l=L;if(jit&&r()<0.04)l+=15+60*r();cpu+=l;const kt=k*(0.7+0.6*r());const st=Math.max(cpu,gpu);ks.push([st,kt]);gpu=st+kt}return{t:gpu,ks}}
+function simGraph(N,k,L,r){let gpu=2*L;const ks=[];for(let i=0;i<N;i++){const kt=k*(0.7+0.6*r());ks.push([gpu,kt]);gpu+=kt+0.3}return{t:gpu,ks}}
+function renderCG(){const N=+$('cgN').value,k=+$('cgK').value,L=+$('cgL').value,j=$('cgJ').checked;$('cgNV').textContent=N;$('cgKV').textContent=k;$('cgLV').textContent=L;
+  const r=rng(99);const e=[],g=[];let e0,g0;for(let i=0;i<20;i++){const a=simEager(N,k,L,j,r),b=simGraph(N,k,L,r);e.push(a.t);g.push(b.t);if(!i){e0=a;g0=b}}
+  const pc=(a,p)=>{const s=[...a].sort((x,y)=>x-y);return s[Math.min(s.length-1,Math.floor(p*s.length))]};
+  const c=$('cgCanvas'),x=ctxOf(c),W=c.width,H=c.height,pl=70;const T=Math.max(e0.t,g0.t);const sc=(W-pl-20)/T;
+  function row(y,ks,label,col){x.fillStyle=css('--rule');x.fillRect(pl,y,W-pl-20,40);x.fillStyle=col;ks.forEach(([s,d])=>x.fillRect(pl+s*sc,y+4,Math.max(1,d*sc-0.5),32));x.fillStyle=css('--ink');x.fillText(label,6,y+25)}
+  row(30,e0.ks,'Eager',css('--err'));row(110,g0.ks,'Graph',css('--keep'));x.fillStyle=css('--ink2');x.fillText('grey = GPU idle · '+T.toFixed(0)+' µs full scale',pl,H-10);
+  $('cgStats').innerHTML=['eager p50 <b>'+pc(e,.5).toFixed(0)+' µs</b>','eager p99 <b>'+pc(e,.99).toFixed(0)+' µs</b>','graph p50 <b>'+pc(g,.5).toFixed(0)+' µs</b>','graph p99 <b>'+pc(g,.99).toFixed(0)+' µs</b>','GPU busy (eager) <b>'+(N*k/pc(e,.5)*100).toFixed(0)+'%</b>'].map(s=>'<span class="stat">'+s+'</span>').join('')}
+['cgN','cgK','cgL','cgJ'].forEach(id=>$(id).addEventListener('input',renderCG));renderCG();redraws.push(renderCG);
+
+/* ---------- 11 sparsity ---------- */
+let spW=[],spMode='dense';
+function resetSP(){const r=rng(Date.now()%100000);spW=Array.from({length:64},()=>Math.round((r()*2-1)*90)/10);spMode='dense';renderSP()}
+function renderSP(){$('spGrid').innerHTML=spW.map((v,i)=>'<div class="cell'+(v===0?' z':'')+(Math.floor(i/4)%2===0?' g':'')+'">'+(v===0?'0':v.toFixed(1))+'</div>').join('');
+  const nz=spW.filter(v=>v!==0).length;let valid=true;for(let g=0;g<64;g+=4){if(spW.slice(g,g+4).filter(v=>v!==0).length>2)valid=false}
+  const st=[['non-zeros',nz+' / 64'],['valid 2:4',valid?'yes':'no'],['dense FP16','128 B']];
+  if(spMode==='24')st.push(['2:4 compressed','64 B values + 8 B indices'],['tensor-core speedup','yes (sparse tactics)']);
+  if(spMode==='u')st.push(['sparse format','~64 B values + ~32 B indices'],['tensor-core speedup','no — irregular']);
+  $('spStats').innerHTML=st.map(([a,b])=>'<span class="stat">'+a+' <b>'+b+'</b></span>').join('')}
+$('spR').addEventListener('click',resetSP);
+$('sp24').addEventListener('click',()=>{for(let g=0;g<64;g+=4){const idx=[0,1,2,3].map(k=>g+k).sort((a,b)=>Math.abs(spW[a])-Math.abs(spW[b]));spW[idx[0]]=0;spW[idx[1]]=0}spMode='24';renderSP()});
+$('spU').addEventListener('click',()=>{const idx=spW.map((v,i)=>i).sort((a,b)=>Math.abs(spW[a])-Math.abs(spW[b]));idx.slice(0,32).forEach(i=>spW[i]=0);spMode='u';renderSP()});
+resetSP();
+
+/* ---------- 12 KD ---------- */
+const kdZ=[4.0,3.2,1.0,0.5,-1.0,-2.0],kdL=['grasp A','grasp B','push','regrasp','retreat','idle'];
+function renderKD(){const T=+$('kdT').value;$('kdTV').textContent=T.toFixed(1);const ex=kdZ.map(z=>Math.exp(z/T)),S=ex.reduce((a,b)=>a+b);const p=ex.map(v=>v/S);
+  const c=$('kdCanvas'),x=ctxOf(c),W=c.width,H=c.height,bw=(W-40)/6;p.forEach((v,i)=>{const h=v*(H-60);x.fillStyle=i===0?css('--grid'):css('--keep');x.fillRect(20+i*bw+10,H-30-h,bw-20,h);x.fillStyle=css('--ink');x.textAlign='center';x.fillText((v*100).toFixed(1)+'%',20+i*bw+bw/2,H-36-h);x.fillText(kdL[i],20+i*bw+bw/2,H-10)});x.textAlign='left';
+  x.fillStyle=css('--ink2');x.fillText(T<1?'Sharper than the hard label — almost nothing to learn beyond the argmax':T<3?'Secondary options start to show':'Soft targets: the student learns grasp B is nearly as good, retreat is not',20,18)}
+$('kdT').addEventListener('input',renderKD);renderKD();redraws.push(renderKD);
+
+/* ---------- 13 TRT stepper ---------- */
+const stages=[
+['Parse','The ONNX parser turns nodes into TensorRT layers and initializers into weights. Unsupported ops fail here — that is the moment to decide: rewrite the graph, fold it away, or write a plugin. Check the parser errors, not just the final build status.'],
+['Graph optimization','Constant folding, dead-layer elimination, shape propagation, removal of no-op reshapes/transposes/casts. In explicit quantization, Q/DQ propagation happens here: DQ nodes move forward and Q nodes backward to widen the low-precision region.'],
+['Layer fusion','Vertical fusions (GEMM/conv + bias + activation, pointwise chains into one kernel), horizontal fusions (shared-input GEMMs), attention and transformer subgraphs compiled by an internal graph compiler (they appear as large fused regions in verbose logs), Q/DQ folded into the compute kernels. Fusion stops at plugin boundaries.'],
+['Precision & formats','Weakly typed: pick a precision per layer among the ones your flags allow, whichever is faster. Strongly typed: honour the graph dtypes. Then choose tensor memory formats (layouts, vectorization); where neighbours disagree, TensorRT inserts reformat layers — each one is a copy you pay for.'],
+['Tactic selection','For every layer, time the candidate implementations (different kernels, tile sizes, libraries) on the actual GPU with the opt shapes, keep the fastest. This is why builds take minutes, why workspace size matters, and why two builds can differ slightly. A timing cache stores results for faster, more repeatable rebuilds.'],
+['Memory planning','Compute tensor lifetimes and alias activation buffers that are never live at the same time; size the scratch workspace. This is why an engine’s activation memory is far below the sum of all tensors.'],
+['Serialize','Weights, chosen kernels and metadata go into the plan file. It is bound to the GPU architecture and TensorRT version it was built with unless you opted into hardware or version compatibility. Rebuild per device class — which is why engines are built on the target (or an identical device), not shipped from a workstation.']];
+function renderTRT(k){$('trtSteps').innerHTML=stages.map((s,i)=>'<button type="button" class="'+(i===k?'on':'')+'" data-k="'+i+'">'+(i+1)+'. '+s[0]+'</button>').join('');$('trtText').innerHTML='<p>'+stages[k][1]+'</p>';
+  document.querySelectorAll('#trtSteps button').forEach(b=>b.addEventListener('click',()=>renderTRT(+b.dataset.k)))}
+renderTRT(0);
+
+/* ---------- flags ---------- */
+const flags=[
+['--onnx=model.onnx','Input graph','always'],
+['--saveEngine / --loadEngine','Write or reuse a plan file','cache builds; beware stale engines'],
+['--fp16 --bf16 --int8 --fp8','Precision permissions (weakly typed)','classic mixed-precision builds'],
+['--stronglyTyped','Graph dtypes and Q/DQ are authoritative','ModelOpt FP8/NVFP4/INT4 graphs'],
+['--minShapes/--optShapes/--maxShapes=in:1x3x224x224','Optimization profile for dynamic inputs','dynamic batch or sequence'],
+['--memPoolSize=workspace:4096M','Scratch memory for tactics','fast tactics missing? raise it'],
+['--builderOptimizationLevel=0..5','Search effort (default 3)','squeeze the last few %'],
+['--timingCacheFile=cache.bin','Persist tactic timings','fast, repeatable rebuilds'],
+['--sparsity=enable','Allow 2:4 sparse tactics','pruned 2:4 weights'],
+['--useDLACore=0 --allowGPUFallback','Offload to DLA (Jetson Orin)','power-limited perception'],
+['--precisionConstraints=obey --layerPrecisions=name:fp32','Pin sensitive layers','weak typing accuracy fixes'],
+['--calib=cache','Implicit INT8 calibration cache (legacy)','old INT8 flows'],
+['--useCudaGraph','Replay inference via CUDA graph in trtexec timing','measure launch-free latency'],
+['--noDataTransfers','Exclude H2D/D2H from timing','pure compute latency'],
+['--separateProfileRun','Profile per-layer in a separate run','clean latency + profile'],
+['--dumpProfile --profilingVerbosity=detailed','Per-layer timing table','find the slow layer'],
+['--dumpLayerInfo --exportLayerInfo=layers.json','Fused layers, precisions, tactics','verify what actually got fused'],
+['--warmUp / --iterations / --duration','Benchmark control','stable numbers'],
+['--staticPlugins / --dynamicPlugins (older: --plugins)','Load plugin libraries','custom ops'],
+['--hardwareCompatibilityLevel=ampere+','Engine runs across GPU architectures','fleet with mixed GPUs'],
+['--versionCompatible','Engine survives TensorRT upgrades','long-lived deployments'],
+['--verbose','Full build log','debug fusions and parser issues']];
+function renderFlags(){const f=$('flagFilter').value.toLowerCase();$('flagTable').innerHTML='<tr><th>Flag</th><th>What it does</th><th>Use when</th></tr>'+flags.filter(r=>r.join(' ').toLowerCase().includes(f)).map(r=>'<tr><td class="num">'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>').join('')}
+$('flagFilter').addEventListener('input',renderFlags);renderFlags();
+
+/* ---------- cards ---------- */
+const cards=[
+['Why is W4A16 fast for decode if the math is still FP16?','Batch-1 decode is memory-bound: AI ≈ 1 FLOP/byte. The GPU waits on weight reads. Four times fewer weight bytes ≈ up to four times faster, even though every multiply is FP16.'],
+['Why can’t an INT8 GEMM use per-channel activation scales?','Per-output-channel weight scales factor out of the sum over k. A per-input-channel activation scale sits inside the sum, so the integer accumulation no longer works. Hence per-tensor/per-token activations — and SmoothQuant.'],
+['SmoothQuant in one sentence','Divide activation channels by s and multiply the matching weight rows by s — mathematically identical output — so activation outliers shrink and weights absorb the difficulty; s_j = max|X_j|^α / max|W_j|^(1−α).'],
+['AWQ vs GPTQ','Both weight-only. GPTQ quantizes column by column and updates the remaining weights using the inverse Hessian. AWQ finds salient channels via activation magnitude and scales them up before plain rounding — no weight updates, less overfitting to calibration data.'],
+['What does AdaRound optimize?','The floor/ceil decision per weight, to minimize the layer’s output reconstruction error rather than each weight’s rounding error. A rectified-sigmoid relaxation plus a regularizer forces binary choices.'],
+['What is the straight-through estimator?','In QAT, round() has zero gradient. STE treats the quantizer as identity in the backward pass (inside the clip range), so gradients reach the weights.'],
+['Absmax vs percentile calibration','Absmax never clips but one outlier inflates the scale for everyone — rounding noise everywhere. Percentile clips the extreme tail to keep a fine grid for the bulk. MSE or KL search picks the clip value explicitly.'],
+['FP16 vs BF16','FP16: 5 exponent bits, 10 mantissa — precise, max 65,504, overflows. BF16: 8 exponent bits like FP32, 7 mantissa — coarse, never overflows. Training prefers BF16.'],
+['E4M3 vs E5M2','E4M3 has more precision (max 448) → weights and activations in inference. E5M2 has more range (max 57,344) → gradients.'],
+['What is tactic selection in TensorRT?','For each layer, TensorRT times candidate kernels on the target GPU at the opt shapes and keeps the fastest. Source of long builds and slight build-to-build differences; cached by the timing cache.'],
+['Strongly vs weakly typed networks','Weakly typed: precision flags are permissions, TensorRT picks per layer. Strongly typed: graph dtypes and Q/DQ nodes decide precision exactly — the modern path for FP8/NVFP4 graphs.'],
+['Why aren’t engines portable?','Kernels are chosen and compiled for a specific GPU architecture and TensorRT version. Build on the target class, or opt into hardware/version compatibility at some cost.'],
+['CUDA graph constraints','Static shapes, static addresses, no allocation or host sync inside capture, warm up first, re-capture on shape change. Only removes launch overhead.'],
+['Why 2:4 and not just 50% unstructured?','Hardware can only skip zeros in a regular pattern. 2:4 lets sparse tensor cores fetch half the values with 2-bit indices; random zeros don’t map to any faster kernel.'],
+['How does FlashAttention avoid the N×N matrix?','Tiles Q/K/V into on-chip memory and uses online softmax — a running max and running sum, rescaling partial outputs — so the exact softmax is computed without ever writing the score matrix to DRAM.'],
+['Fastest win for a diffusion/flow policy head?','Reduce the step count: step distillation, consistency training, or straighter flows. Latency scales with steps × network depth; kernels and quantization only shave the per-step cost.'],
+['W8A16 on Hexagon','INT8 weights, INT16 fixed-point activations. HTP is integer hardware; INT16 has enough levels to survive transformer activation outliers where INT8 collapses.'],
+['Ridge point of a roofline','Peak FLOP/s ÷ memory bandwidth. Kernels with arithmetic intensity below it are memory-bound; above it, compute-bound.']];
+$('cards').innerHTML=cards.map(c=>'<div class="flip" tabindex="0" role="button" aria-label="Flip card"><div class="inner"><div class="face front">'+c[0]+'</div><div class="face back">'+c[1]+'</div></div></div>').join('');
+document.querySelectorAll('.flip').forEach(f=>{const t=()=>f.classList.toggle('on');f.addEventListener('click',t);f.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();t()}})});
+
+/* ---------- quiz ---------- */
+const quiz=[
+['A batch-1 LLM decode step on an edge GPU is limited by…',['Tensor-core throughput','Memory bandwidth','Kernel launch overhead only','PCIe transfers'],1,'Arithmetic intensity ≈ 1 FLOP/byte, far below any ridge point.'],
+['Which calibration method does the classic TensorRT INT8 entropy calibrator use?',['Min-max','99.99th percentile','Minimize KL divergence between original and quantized histograms','Random search'],2,'Histogram of |x| with 2048 bins; choose the threshold minimizing KL(P‖Q).'],
+['SmoothQuant’s rescaling is folded into…',['The next layer’s bias','The preceding LayerNorm/linear weights','A runtime kernel','The KV cache'],1,'diag(s)⁻¹ merges into the previous op offline, so there’s no runtime cost.'],
+['GPTQ uses which matrix to redistribute rounding error?',['The weight covariance','The inverse Hessian H⁻¹ = (2XXᵀ)⁻¹','The attention matrix','The gradient'],1,'Optimal Brain Quantization: error on column i is compensated along row i of H⁻¹.'],
+['You enable --fp16 on a weakly typed build. What does TensorRT do?',['Forces every layer to FP16','Allows FP16 where it is faster; may keep some layers FP32','Converts the ONNX file','Nothing unless Q/DQ exist'],1,'Precision flags are permissions in weak typing.'],
+['A captured CUDA graph must be re-captured when…',['The input values change','The input shapes change','The stream changes priority','Always, every call'],1,'Shapes and addresses are baked into the graph; values in the same buffers are fine.'],
+['Which format has the largest range?',['FP16','FP8 E4M3','BF16','INT8'],2,'BF16 shares FP32’s 8 exponent bits.'],
+['Accuracy matches in ONNX Runtime but not in TensorRT. Most likely problem area?',['Export','Calibration data','The TensorRT build (fusion, tactic or version)','Tokenizer'],2,'The export is faithful if ORT matches the framework; the compiler step differs. Bisect with Polygraphy.'],
+['Why does W8A8 collapse transformer ViTs more often than CNNs?',['Transformers have no weights','Activation outlier channels inflate per-tensor scales','INT8 can’t represent zero','LayerNorm removes outliers'],1,'A few huge activation channels dominate the range; quiet channels get almost no levels.'],
+['What does AWQ change before quantization?',['Rotates weights with Hadamard','Scales salient input channels up (and activations down)','Prunes 50% of weights','Trains with STE'],1,'Salient channels identified by activation magnitude get more effective resolution.'],
+['2:4 sparsity requires…',['Any 50% of weights zero','Exactly 2 zeros in every 4 contiguous weights','Pruning whole heads','Unstructured 90% sparsity'],1,'The regular pattern is what sparse tensor cores can exploit.'],
+['The most upstream latency fix for a 4-step flow-matching action head is…',['FP8 on the DiT','A CUDA graph','Fewer steps via distillation or consistency training','A larger workspace'],2,'Latency ∝ steps × depth; the others reduce per-step cost only.']];
+let qs=load('qg-quiz',{});
+function renderQuiz(){let right=0,done=0;$('quiz').innerHTML=quiz.map((q,i)=>{const a=qs[i];if(a!==undefined){done++;if(a===q[2])right++}
+  return '<div class="q'+(a!==undefined?' done':'')+'"><div class="qt">'+(i+1)+'. '+q[0]+'</div>'+q[1].map((o,j)=>'<button type="button" class="opt'+(a!==undefined&&j===q[2]?' right':'')+(a===j&&j!==q[2]?' wrong':'')+'" data-q="'+i+'" data-o="'+j+'"'+(a!==undefined?' disabled':'')+'>'+o+'</button>').join('')+'<div class="why">'+q[3]+'</div></div>'}).join('');
+  $('quizScore').textContent=done?('Score: '+right+' / '+done+' answered, '+quiz.length+' total'):'Answer each question; your progress is saved in this browser.';
+  document.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>{qs[+b.dataset.q]=+b.dataset.o;store('qg-quiz',qs);renderQuiz()}))}
+$('quizReset').addEventListener('click',()=>{qs={};store('qg-quiz',qs);renderQuiz()});renderQuiz();
+})();
+</script>
+</body>
+</html>

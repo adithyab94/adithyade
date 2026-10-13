@@ -1,0 +1,9 @@
+/* Site bar shared by every Physical-AI note */
+.pai-bar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 24px;
+  background:#f2f6ea;border-bottom:1px solid rgba(35,34,32,.14);position:relative;z-index:200;
+  font:13px/1.4 "Fragment Mono",ui-monospace,monospace}
+.pai-bar a{color:#85847c;text-decoration:none}
+.pai-bar a:hover{color:#232220}
+.pai-bar nav{display:flex;gap:22px}
+.pai-bar .pai-bar__name{font:21px/1 "Gambarino",Georgia,serif;letter-spacing:-.01em;color:#232220}
+@media (max-width:600px){.pai-bar{padding:12px 16px}.pai-bar nav a:last-child{display:none}}

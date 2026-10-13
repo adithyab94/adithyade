@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){var ok=false;try{ok=localStorage.getItem("pai-notes")==="unlocked"}catch(e){ok=true}if(!ok)location.replace("../../../blog/#physical-ai-notes")})();</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paradigm comparison · Physical AI Systems Map</title>
+<meta name="description" content="VLA vs WAM vs diffusion policy vs RL policy vs classical pipeline.">
+<script>try{var t=localStorage.getItem("pai.theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=gambarino@400&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700,400i&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/notes.css">
+<link rel="stylesheet" href="../../assets/theme-map.css">
+</head>
+<body data-page="view" data-id="view-paradigms" data-root="../">
+<div class="pai-bar"><a class="pai-bar__name" href="../../../">Adithya Balaji</a><nav><a href="../../../blog/#physical-ai-notes">Physical-AI notes</a><a href="../../../blog/">Blog</a></nav></div>
+
+<a class="skip" href="#content">Skip to content</a>
+<div class="app">
+<aside class="rail" id="rail" aria-label="Site navigation"></aside>
+<div class="maincol">
+<header class="topbar" id="topbar"></header>
+<main class="page" id="content">
+<div data-crumbs></div>
+<header class="phead"><div class="eyebrow">Integration view</div><h1>Paradigm comparison</h1><p class="lede">VLA vs world action model vs task-specific diffusion policy vs RL policy vs classical pipeline. In real systems these are layers of one stack, not rivals: a classical safety and control layer at the bottom, RL-trained controllers for physics-dominated skills, a VLA or WAM for visuomotor behaviour, and a reasoner on top.</p></header>
+<div data-render="paradigms"><noscript><p>This view renders from the files in <code>data/</code> with JavaScript.</p></noscript></div>
+<section class="sec" id="wam-map"><header><span class="num">··</span><h2>Where world action models sit</h2></header>
+<p class="prose" style="margin-bottom:.8rem">Taxonomy after the 2026 WAM surveys: cascaded models predict a future and then extract actions; joint models predict both together. Futures can be pixels (video) or latents (features). Inference cost falls from top-left to bottom-right.</p>
+<div class="diagram"><svg viewBox="0 0 1000 380" role="img" aria-labelledby="wamT wamD"><title id="wamT">World action model taxonomy</title><desc id="wamD">Two-by-two map: cascaded versus joint architectures, pixel versus latent future representations, with example models in each cell.</desc><text x="250" y="24" style="fill:var(--muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.06em">FUTURE REPRESENTED AS PIXELS / VIDEO</text><text x="630" y="24" style="fill:var(--muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.06em">FUTURE AS LATENTS / FEATURES</text><text x="12" y="100" style="fill:var(--fg);font-family:var(--font-display);font-weight:700;font-size:15px">CASCADED</text><text x="12" y="120" style="fill:var(--muted);font-size:11.5px">predict the future,</text><text x="12" y="135" style="fill:var(--muted);font-size:11.5px">then extract actions</text><rect x="180" y="40" width="385" height="150" rx="6" style="fill:var(--t-wam-bg);stroke:var(--t-wam);stroke-width:1.2"/><text x="196" y="74" style="fill:var(--fg);font-size:12.5px">· UniPi, Gen2Act</text><text x="196" y="98" style="fill:var(--fg);font-size:12.5px">· π0.7 generated subgoal images</text><text x="196" y="122" style="fill:var(--fg);font-size:12.5px">· NovaFlow, Dream2Flow (flow → action)</text><text x="196" y="176" style="fill:var(--muted);font-family:var(--font-mono);font-size:10.5px">highest fidelity, highest latency</text><rect x="580" y="40" width="385" height="150" rx="6" style="fill:var(--t-wam-bg);stroke:var(--t-wam);stroke-width:1.2"/><text x="596" y="74" style="fill:var(--fg);font-size:12.5px">· VPP (video-model features → policy)</text><text x="596" y="98" style="fill:var(--fg);font-size:12.5px">· Latent action planners (GO-1)</text><text x="596" y="122" style="fill:var(--fg);font-size:12.5px">· Latent plans for VLA heads</text><text x="596" y="176" style="fill:var(--muted);font-family:var(--font-mono);font-size:10.5px">cheaper inference, less visual foresight</text><text x="12" y="265" style="fill:var(--fg);font-family:var(--font-display);font-weight:700;font-size:15px">JOINT</text><text x="12" y="285" style="fill:var(--muted);font-size:11.5px">predict futures and</text><text x="12" y="300" style="fill:var(--muted);font-size:11.5px">actions in one model</text><rect x="180" y="205" width="385" height="150" rx="6" style="fill:var(--t-wam-bg);stroke:var(--t-wam);stroke-width:1.2"/><text x="196" y="239" style="fill:var(--fg);font-size:12.5px">· DreamZero (14B video diffusion)</text><text x="196" y="263" style="fill:var(--fg);font-size:12.5px">· Cosmos Policy (actions as latent frames)</text><text x="196" y="287" style="fill:var(--fg);font-size:12.5px">· X-WAM, Fast-WAM, LingBot-VA</text><text x="196" y="341" style="fill:var(--muted);font-family:var(--font-mono);font-size:10.5px">highest fidelity, highest latency</text><rect x="580" y="205" width="385" height="150" rx="6" style="fill:var(--t-wam-bg);stroke:var(--t-wam);stroke-width:1.2"/><text x="596" y="239" style="fill:var(--fg);font-size:12.5px">· LaWAM (foundation-feature futures)</text><text x="596" y="263" style="fill:var(--fg);font-size:12.5px">· V-JEPA 2-AC, VLA-JEPA</text><text x="596" y="287" style="fill:var(--fg);font-size:12.5px">· GigaWorld-Policy (video only in training)</text><text x="596" y="341" style="fill:var(--muted);font-family:var(--font-mono);font-size:10.5px">cheaper inference, less visual foresight</text><text x="12" y="372" style="fill:var(--muted);font-size:11px">Reference point: a VLA has no explicit future prediction; it maps observations straight to actions through a VLM backbone.</text></svg>
+</div>
+<p class="small muted" style="margin-top:.5rem">Sources: <a href="https://arxiv.org/abs/2609.16074v1" target="_blank" rel="noopener">WAM survey (Sep 2026)</a>, <a href="https://github.com/XuejiFang/awesome-wam-2026" target="_blank" rel="noopener">awesome-wam-2026 taxonomy</a>. Detail in the <a href="frontier.html#f-wam">frontier entry</a>.</p></section>
+<section class="sec" id="layers"><header><span class="num">··</span><h2>How the paradigms stack in one robot</h2></header>
+<div class="tablewrap"><table><thead><tr><th>Layer</th><th>Typical paradigm (2026)</th><th>Rate</th><th>Why this paradigm</th></tr></thead><tbody>
+<tr><td class="name"><b>Reasoning / planning</b></td><td>VLM / embodied-reasoning model (ER 2, Cosmos Reason 2), sometimes cloud</td><td>0.1–2 Hz</td><td class="wide">Semantics, long horizon, language; latency tolerant</td></tr>
+<tr><td class="name"><b>Visuomotor policy</b></td><td>VLA today; WAM or WAM-distilled policy emerging</td><td>5–15 Hz chunks</td><td class="wide">Generalist manipulation from pixels and language</td></tr>
+<tr><td class="name"><b>Skill residuals</b></td><td>RL residual or small diffusion policy</td><td>20–50 Hz</td><td class="wide">Precision and speed on contact phases</td></tr>
+<tr><td class="name"><b>Whole-body / balance (humanoids)</b></td><td>RL motion-tracking controller</td><td>50 Hz (→1 kHz PD)</td><td class="wide">Physics-dominated; trained in sim</td></tr>
+<tr><td class="name"><b>Control & limits</b></td><td>Classical impedance, IK, safety filters</td><td>0.5–1 kHz</td><td class="wide">Guarantees and certification</td></tr>
+<tr><td class="name"><b>Safety functions</b></td><td>Classical, safety-rated hardware</td><td>ms cycle</td><td class="wide">Required by standards; independent of learning</td></tr>
+</tbody></table></div></section>
+<div data-pager></div>
+</main>
+<footer class="foot" id="pagefoot"></footer>
+</div>
+</div>
+<script src="../data/meta.js"></script>
+<script src="../data/views.js"></script>
+<script src="../assets/app.js"></script>
+</body>
+</html>

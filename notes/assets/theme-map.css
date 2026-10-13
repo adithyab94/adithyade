@@ -1,0 +1,56 @@
+/* Physical AI Systems Map -> site theme (technique hues kept) */
+:root:root:root{
+  /* palette — light */
+  --bg: #f3f5f8;
+  --surface: #ffffff;
+  --surface-2: #e9edf3;
+  --fg: #141820;
+  --muted: #566074;
+  --line: #d4dae3;
+  --line-strong: #aab3c2;
+  --accent: #2346c4;
+  --accent-ink: #1a3594;
+  --accent-soft: #e3e9fb;
+  --frontier: #a8226a;
+  --frontier-soft: #f8e4ef;
+  --ok: #1d7347;
+  --warn: #9a5a00;
+  --bad: #b3261e;
+  --shadow: 0 1px 2px rgba(20, 24, 32, .06), 0 4px 16px rgba(20, 24, 32, .05);
+
+  /* technique / location tag hues (text on soft tint) */
+  --t-cloud: #1c6db5;   --t-cloud-bg: #e2eef9;
+  --t-onprem: #3b5b8c;  --t-onprem-bg: #e5ebf4;
+  --t-sim: #6a43be;     --t-sim-bg: #eee8fa;
+  --t-edge: #a35100;    --t-edge-bg: #fbeedd;
+  --t-robot: #8a3a12;   --t-robot-bg: #f8e9e1;
+  --t-rl: #b8233f;      --t-rl-bg: #fae4e8;
+  --t-il: #157240;      --t-il-bg: #e0f3e8;
+  --t-classical: #46536a; --t-classical-bg: #e7eaf0;
+  --t-s2r: #0f6e66;     --t-s2r-bg: #ddf2ef;
+  --t-r2s: #0c6a86;     --t-r2s-bg: #dcf0f6;
+  --t-r2s2r: #155f9c;   --t-r2s2r-bg: #e0ecf7;
+  --t-fm: #3a33a3;      --t-fm-bg: #e7e6f8;
+  --t-wam: #7a1fb8;     --t-wam-bg: #f2e5fa;
+  --t-icl: #557015;     --t-icl-bg: #eef3dc;
+
+  /* type */
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --fs-xs: .75rem;
+  --fs-sm: .8125rem;
+  --fs-base: .9375rem;
+  --fs-md: 1.0625rem;
+  --fs-lg: 1.375rem;
+  --fs-xl: 1.875rem;
+  --fs-xxl: 2.5rem;
+
+  --rail-w: 17.5rem;
+  --radius: 6px;
+  --measure: 72ch;
+  color-scheme: light;}
+:root:root:root{--bg:#f2f6ea;--surface:#fbfcf8;--surface-2:#e8ede0;--fg:#232220;--muted:#6f6e66;--line:#d5d9cb;--line-strong:#b4b8a8;--accent:#232220;--accent-ink:#232220;--accent-soft:#e6ecd8;--shadow:none;--font-display:"Gambarino",Georgia,serif;--font-body:"Switzer",system-ui,sans-serif;--font-mono:"Fragment Mono",ui-monospace,monospace;color-scheme:light}
+h1,h2{font-weight:400!important;letter-spacing:-.02em}
+h3{font-family:"Switzer",system-ui,sans-serif;font-weight:500}
+#themeBtn,[data-theme-toggle],#themeToggle,.theme-toggle{display:none!important}

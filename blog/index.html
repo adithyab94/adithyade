@@ -1,0 +1,90 @@
+---
+layout: default
+nav: Blog
+title: Blog
+description: "Longer write-ups of things Adithya Balaji has built and measured: robot policies, hand tracking, and the plumbing around them."
+---
+    <section class="page-head wrap">
+      <p class="eyebrow reveal">Blog</p>
+      <h1 class="page-head__title reveal">Notes from the lab.</h1>
+      <p class="lede reveal">
+        Longer write-ups of things I've built and measured. Mostly robots that learn,
+        and what happens when they don't.
+      </p>
+    </section>
+
+    <section class="posts wrap">
+      <ol class="post-list">
+        {%- for post in site.posts %}
+        {%- assign words = post.content | strip_html | number_of_words %}
+        <li class="post-list__item reveal">
+          <a class="post-list__link" href="{{ post.url | relative_url }}">
+            <span class="post-list__date"><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %-d, %Y" }}</time></span>
+            <span class="post-list__main">
+              <span class="post-list__title">{{ post.title }}</span>
+              {%- if post.subtitle %}
+              <span class="post-list__sub">{{ post.subtitle }}</span>
+              {%- endif %}
+              <span class="post-list__meta">{{ words | divided_by: 230 | plus: 1 }} min read{% if post.tags.size > 0 %} · {{ post.tags | join: " · " }}{% endif %}</span>
+            </span>
+          </a>
+        </li>
+        {%- endfor %}
+      </ol>
+    </section>
+
+    <section class="pai wrap" id="physical-ai-notes">
+      <p class="section-label reveal">Physical-AI notes</p>
+      <h2 class="pai__title reveal">Study notes, behind a very small door.</h2>
+      <p class="lede reveal">
+        Interactive notes I keep while learning the robot-learning stack: quantization, NPUs, foundation models,
+        deployment, reconstruction and touch. Rough around the edges, and full of widgets.
+      </p>
+
+      <form class="pai__lock reveal" id="paiLock" autocomplete="off">
+        <label class="pai__hint" for="paiPassword">
+          Hint: who gave robots three laws, then spent decades writing stories about them finding loopholes?
+        </label>
+        <div class="pai__row">
+          <input id="paiPassword" name="password" type="password" placeholder="Surname is enough" aria-describedby="paiMsg">
+          <button class="button" type="submit">Unlock <span class="arrow">→</span></button>
+        </div>
+        <p class="pai__msg" id="paiMsg" role="status" aria-live="polite"></p>
+      </form>
+
+      <ol class="post-list pai__list" id="paiList" hidden>
+        {%- for note in site.data.notes %}
+        <li class="post-list__item">
+          <a class="post-list__link" href="{{ note.url | relative_url }}">
+            <span class="post-list__date">{{ note.kind }}</span>
+            <span class="post-list__main">
+              <span class="post-list__title">{{ note.title }}</span>
+              <span class="post-list__sub">{{ note.summary }}</span>
+              <span class="post-list__meta">{{ note.tags }}</span>
+            </span>
+          </a>
+        </li>
+        {%- endfor %}
+      </ol>
+    </section>
+
+    <script>
+      (function () {
+        var form = document.getElementById("paiLock"), list = document.getElementById("paiList"),
+            input = document.getElementById("paiPassword"), msg = document.getElementById("paiMsg");
+        function unlocked() { try { return localStorage.getItem("pai-notes") === "unlocked"; } catch (e) { return false; } }
+        function open() { form.hidden = true; list.hidden = false; }
+        if (unlocked()) open();
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var guess = input.value.toLowerCase().replace(/[^a-z]/g, "");
+          if (guess === "asimov" || guess === "isaacasimov") {
+            try { localStorage.setItem("pai-notes", "unlocked"); } catch (err) {}
+            open();
+          } else {
+            msg.textContent = guess ? "Not quite. Think Foundation, and I, Robot." : "Type an answer first.";
+            input.select();
+          }
+        });
+      })();
+    </script>

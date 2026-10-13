@@ -1,0 +1,798 @@
+<!doctype html><html><head>
+<script>(function(){var ok=false;try{ok=localStorage.getItem("pai-notes")==="unlocked"}catch(e){ok=true}if(!ok)location.replace("../../blog/#physical-ai-notes")})();</script>
+<meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<div class="pai-bar"><a class="pai-bar__name" href="../../">Adithya Balaji</a><nav><a href="../../blog/#physical-ai-notes">Physical-AI notes</a><a href="../../blog/">Blog</a></nav></div>
+
+<title>Qualcomm AI Stack · Physical-AI notes</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: datasheet. Sticky module rail on the left, one reading column, interactive "instruments" break out wider. */
+:root{
+  --bg:#f2f4f7; --surface:#ffffff; --sunk:#e8ecf1; --ink:#15202b; --muted:#566575; --line:#d3dae2;
+  --accent:#b9501a; --accent-soft:#fbe9dd; --ok:#1f7a4a; --warn:#9a6a00; --bad:#b3362f;
+  --cpu:#2f66b3; --gpu:#2e8548; --htp:#a8366f; --dsp:#a86a08; --lpai:#0d7f86; --hta:#6b7480;
+  --code-bg:#17212c; --code-fg:#dbe5ef; --code-dim:#8fa3b6;
+  --f-display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f151c; --surface:#172029; --sunk:#111922; --ink:#e5ebf1; --muted:#93a2b2; --line:#293543;
+  --accent:#f0884a; --accent-soft:#3a2416; --ok:#5fc48d; --warn:#e0b04a; --bad:#f0807a;
+  --cpu:#6fa3ea; --gpu:#63c27f; --htp:#e77fb3; --dsp:#e3a742; --lpai:#4cc4cb; --hta:#a3adb9;
+  --code-bg:#0a0f14; --code-fg:#dbe5ef; --code-dim:#7f93a6; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f151c; --surface:#172029; --sunk:#111922; --ink:#e5ebf1; --muted:#93a2b2; --line:#293543;
+  --accent:#f0884a; --accent-soft:#3a2416; --ok:#5fc48d; --warn:#e0b04a; --bad:#f0807a;
+  --cpu:#6fa3ea; --gpu:#63c27f; --htp:#e77fb3; --dsp:#e3a742; --lpai:#4cc4cb; --hta:#a3adb9;
+  --code-bg:#0a0f14; --code-fg:#dbe5ef; --code-dim:#7f93a6; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;margin:0}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:40px;max-width:1180px;margin:0 auto;padding-inline:24px;padding-block:28px 80px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.08;margin:0;letter-spacing:.005em}
+h1{font-size:clamp(2.6rem,6.2vw,4.4rem);font-weight:700;text-transform:uppercase}
+h2{font-size:clamp(1.9rem,3.6vw,2.5rem);font-weight:700;text-transform:uppercase}
+h3{font-size:1.35rem;font-weight:600;margin-top:8px}
+p{margin:0;max-width:66ch}
+a{color:var(--accent)}
+code,.mono{font-family:var(--f-mono);font-size:.86em}
+:not(pre)>code{background:var(--sunk);padding:.08em .35em;border-radius:3px;overflow-wrap:anywhere}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+
+/* rail */
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 40px);overflow:auto}
+.rail .brand{font-family:var(--f-display);font-weight:700;font-size:1.25rem;text-transform:uppercase;line-height:1.05}
+.rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;counter-reset:m}
+.rail li a{display:grid;grid-template-columns:26px 1fr 14px;gap:6px;align-items:baseline;padding:6px 8px;text-decoration:none;color:var(--muted);font-size:.9rem;border-left:2px solid var(--line)}
+.rail li a::before{counter-increment:m;content:counter(m,decimal-leading-zero);font-family:var(--f-mono);font-size:.72rem}
+.rail li a.on{color:var(--ink);border-left-color:var(--accent);background:var(--surface)}
+.rail li a .tick{color:var(--ok);font-size:.8rem;visibility:hidden} .rail li a.done .tick{visibility:visible}
+.meter{height:6px;background:var(--line);border-radius:3px;overflow:hidden} .meter i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+main{display:flex;flex-direction:column;gap:72px;min-width:0}
+section{display:flex;flex-direction:column;gap:18px;scroll-margin-top:20px;min-width:0}
+.sec-head{display:flex;flex-direction:column;gap:6px;border-top:3px solid var(--ink);padding-top:14px}
+.lede{font-size:1.1rem}
+.done-row{display:flex;align-items:center;gap:10px;font-size:.9rem;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px}
+.done-row input{width:18px;height:18px;accent-color:var(--accent)}
+
+/* hero */
+.hero{display:flex;flex-direction:column;gap:18px}
+.hero h1 span{color:var(--accent)}
+.oneliner{font-family:var(--f-mono);font-size:.9rem;background:var(--surface);border:1px solid var(--line);padding:12px 14px;overflow-x:auto;white-space:nowrap}
+.oneliner b{color:var(--accent);font-weight:500}
+
+/* generic pieces */
+.panel{background:var(--surface);border:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);padding:5px 11px;border-radius:999px;font-size:.88rem}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tag{font-family:var(--f-mono);font-size:.72rem;padding:2px 7px;border-radius:3px;border:1px solid currentColor;white-space:nowrap}
+.note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:10px 14px}
+.note p{max-width:none}
+ul.tight{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:6px} ul.tight li{max-width:70ch}
+.kv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:6px 14px;font-size:.93rem}
+.kv dt{font-family:var(--f-mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-top:3px} .kv dd{margin:0}
+.scroll{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--sunk);position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+td.c,th.c{text-align:center}
+pre{margin:0;background:var(--code-bg);color:var(--code-fg);padding:14px 16px;overflow-x:auto;font-family:var(--f-mono);font-size:.82rem;line-height:1.55}
+.codebox{position:relative;min-width:0} .codebox .copy{position:absolute;top:6px;right:6px;background:transparent;border:1px solid var(--code-dim);color:var(--code-dim);font-family:var(--f-mono);font-size:.7rem;padding:2px 8px;border-radius:3px}
+.codebox .copy:hover{color:var(--code-fg);border-color:var(--code-fg)}
+
+/* SoC floorplan */
+.soc{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:64px;gap:6px;background:var(--sunk);border:1px solid var(--line);padding:10px;position:relative}
+.soc button{border:1.5px solid var(--c);background:color-mix(in srgb,var(--c) 12%,var(--surface));display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:6px 10px;text-align:left;line-height:1.15;min-width:0}
+.soc button b{font-family:var(--f-display);font-size:1.15rem;text-transform:uppercase;color:var(--c)}
+.soc button span{font-size:.72rem;color:var(--muted);font-family:var(--f-mono)}
+.soc button[aria-pressed="true"]{background:var(--c)} .soc button[aria-pressed="true"] b,.soc button[aria-pressed="true"] span{color:var(--surface)}
+.soc .inert{border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:.7rem;color:var(--muted);text-align:center;padding:4px}
+.b-cpu{--c:var(--cpu);grid-column:span 2;grid-row:span 2}.b-gpu{--c:var(--gpu);grid-column:span 2;grid-row:span 2}.b-htp{--c:var(--htp);grid-column:span 2;grid-row:span 4}
+.b-dsp{--c:var(--dsp);grid-column:span 2}.b-lpai{--c:var(--lpai);grid-column:span 2}.b-hta{--c:var(--hta);grid-column:span 2}
+.i-a{grid-column:span 2}.i-b{grid-column:span 6}
+.bk-title{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap} .bk-title h3{margin:0;color:var(--c)}
+
+/* stack layers */
+.layers{display:flex;flex-direction:column;gap:6px}
+.layer{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);padding:8px 10px}
+.layer>span{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.gl{border:1px solid var(--line);background:var(--bg);padding:4px 10px;font-size:.88rem;border-radius:3px}
+.gl[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+
+/* ops */
+.ops-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.ops-tools input[type=search]{flex:1 1 200px;min-width:0;padding:8px 10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+.ops-wrap{max-height:460px;overflow:auto;border:1px solid var(--line);background:var(--surface)}
+.ops-wrap td:first-child{font-family:var(--f-mono);font-size:.82rem;white-space:nowrap}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle}
+.dot.y{background:var(--ok)} .dot.e{border:2px solid var(--ok)} .dot.n{width:8px;height:2px;border-radius:0;background:var(--line)} .q{color:var(--muted);font-family:var(--f-mono);font-size:.8rem}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.82rem;color:var(--muted)} .legend span{display:inline-flex;gap:6px;align-items:center}
+
+/* wizard */
+.wiz{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.q-block{display:flex;flex-direction:column;gap:8px} .q-block>b{font-size:.92rem}
+.verdict{border:2px solid var(--c,var(--ink));padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.verdict h3{color:var(--c,var(--ink));margin:0;font-size:1.7rem;text-transform:uppercase}
+
+/* stepper */
+.steps{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px}
+.steps button{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);padding:8px 12px;font-size:.86rem;display:flex;gap:8px;align-items:baseline}
+.steps button i{font-family:var(--f-mono);font-style:normal;font-size:.7rem;color:var(--muted)}
+.steps button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)} .steps button[aria-pressed="true"] i{color:var(--bg)}
+
+/* call flow */
+.flow{display:grid;grid-template-columns:minmax(0,1fr) 70px minmax(0,1fr);gap:0;font-size:.86rem}
+.flow .hd{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:6px 10px;border-bottom:2px solid var(--ink)}
+.flow .cell{padding:8px 10px;border-bottom:1px solid var(--line);min-width:0}
+.flow .cell code{background:none;padding:0}
+.flow .mid{text-align:center;color:var(--htp);font-family:var(--f-mono);font-size:.72rem;display:flex;align-items:center;justify-content:center}
+.flow .r{color:var(--muted)}
+
+/* builder */
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:.84rem;color:var(--muted)}
+.form select,.form input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);padding:7px 8px;min-width:0;width:100%}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+
+/* quiz */
+.quiz{display:flex;flex-direction:column;gap:14px}
+.qcard{background:var(--surface);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:10px}
+.qcard .opts{display:flex;flex-direction:column;gap:6px}
+.qcard .opts button{text-align:left;border:1px solid var(--line);background:var(--bg);padding:8px 12px}
+.qcard .opts button.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--surface))}
+.qcard .opts button.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface))}
+.qcard .why{font-size:.9rem;color:var(--muted)}
+.score{font-family:var(--f-display);font-size:2rem;font-weight:700}
+
+@media (max-width:860px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:20px;padding-inline:16px}
+  .rail{position:static;max-height:none}
+  .rail ol{flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:4px}
+  .rail li a{grid-template-columns:auto;border-left:0;border-bottom:2px solid var(--line);white-space:nowrap}
+  .rail li a::before{display:none} .rail li a .tick{display:none}
+  .rail li a.on{border-bottom-color:var(--accent)}
+  .grid2,.grid3,.wiz,.form{grid-template-columns:minmax(0,1fr)}
+  .soc{grid-template-columns:repeat(2,1fr)} .b-cpu,.b-gpu,.b-htp,.b-dsp,.b-lpai,.b-hta{grid-column:span 1;grid-row:span 1} .i-a,.i-b{grid-column:span 2}
+  .layer{grid-template-columns:minmax(0,1fr)}
+  .flow{grid-template-columns:minmax(0,1fr) 44px minmax(0,1fr);font-size:.78rem}
+  .kv{grid-template-columns:minmax(0,1fr)} .kv dt{padding-top:8px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=gambarino@400&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700,400i&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/notes.css">
+<link rel="stylesheet" href="../assets/theme-qualcomm.css">
+
+
+<div class="shell">
+<nav class="rail" aria-label="Modules">
+  <div class="brand">Qualcomm AI Stack<br><span class="muted">Field Guide</span></div>
+  <div><div class="meter" aria-hidden="true"><i id="meter"></i></div><div class="small muted" id="meterTxt">0 of 9 modules done</div></div>
+  <ol id="navList"></ol>
+</nav>
+
+<main>
+<header class="hero" id="top">
+  <div class="eyebrow">For edge AI engineers coming from TensorRT · checked against Qualcomm docs, Oct 2026</div>
+  <h1>One SoC,<br>six places <span>to run a tensor</span></h1>
+  <p class="lede">A Snapdragon or Dragonwing chip gives you a CPU, a GPU, an NPU, a DSP and a micro-power NPU. Qualcomm's software stack is the set of tools that decides which one runs your model and how well. This guide walks the whole path, from a PyTorch checkpoint to a tuned inference loop on the NPU.</p>
+  <div class="oneliner" aria-label="The whole stack in one line"><b>train</b> → ONNX → <b>AIMET</b> (quantize) → <b>qairt-converter</b> (DLC) → <b>context binary</b> (per SoC) → <b>QNN runtime</b> → HTP / GPU / CPU / LPAI</div>
+</header>
+
+<!-- 1 -->
+<section id="map" data-title="The map">
+  <div class="sec-head"><div class="eyebrow">Module 01</div><h2>The map: every name, decoded</h2></div>
+  <p class="lede">Half the difficulty is naming. Qualcomm renamed most products at least once, and docs use old and new names side by side. Click any block.</p>
+  <div class="layers" id="layers"></div>
+  <div class="panel" id="glPanel" aria-live="polite"></div>
+
+  <h3>Rosetta stone: TensorRT → Qualcomm</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>You know (Jetson)</th><th>Qualcomm equivalent</th><th>What differs</th></tr></thead>
+    <tbody>
+    <tr><td>ONNX parser</td><td><code>qairt-converter</code></td><td>Output is a DLC file, not an engine. Layout is converted to NHWC.</td></tr>
+    <tr><td>Engine / <code>.plan</code></td><td>Context binary (<code>.bin</code>)</td><td>Tied to QAIRT version and SoC / HTP arch. Same pinning discipline as JetPack + TensorRT.</td></tr>
+    <tr><td>Builder optimisation</td><td>Graph finalize / offline prepare</td><td>Run on x86 host for HTP. On-device prepare exists but is slow.</td></tr>
+    <tr><td>INT8 calibrator, Q/DQ</td><td><code>qairt-quantizer</code>, AIMET encodings, QDQ ONNX</td><td>On the NPU quantization is the default path, not an optimisation.</td></tr>
+    <tr><td><code>trtexec</code></td><td><code>qnn-net-run</code>, <code>qnn-throughput-net-run</code></td><td>Reads raw tensor files from an input list.</td></tr>
+    <tr><td>Plugins</td><td>Op packages (QNN), UDO (SNPE)</td><td>One implementation per backend. HTP ones need the Hexagon SDK.</td></tr>
+    <tr><td>DLA</td><td>HTP (the NPU)</td><td>Same mental model: fast, fixed-point first, fallbacks are expensive.</td></tr>
+    <tr><td>CUDA zero-copy</td><td>rpcmem / DMA-BUF shared buffers</td><td>Registered with <code>QnnMem_register</code>.</td></tr>
+    <tr><td>Polygraphy</td><td><code>qnn-accuracy-debugger</code></td><td>Layer-wise compare against the framework reference.</td></tr>
+    <tr><td><code>tegrastats</code></td><td><code>sysMonApp</code>, Snapdragon Profiler</td><td>DSP load is reported separately from CPU load.</td></tr>
+    </tbody></table></div>
+  <label class="done-row"><input type="checkbox" id="d-map" data-done="map"> I can explain QAIRT vs QNN vs SNPE vs AI Hub</label>
+</section>
+
+<!-- 2 -->
+<section id="silicon" data-title="Backends">
+  <div class="sec-head"><div class="eyebrow">Module 02</div><h2>The silicon: six backends</h2></div>
+  <p class="lede">A QNN backend is one shared library that drives one piece of hardware. Click a block on the floorplan.</p>
+  <div class="soc" id="soc" role="group" aria-label="SoC floorplan">
+    <button class="b-cpu" data-bk="cpu"><b>CPU</b><span>Kryo / Oryon</span></button>
+    <button class="b-gpu" data-bk="gpu"><b>GPU</b><span>Adreno · OpenCL</span></button>
+    <button class="b-htp" data-bk="htp"><b>HTP = the NPU</b><span>Hexagon: scalar + HVX + HMX</span></button>
+    <button class="b-dsp" data-bk="dsp"><b>DSP</b><span>legacy cDSP v65/v66</span></button>
+    <button class="b-lpai" data-bk="lpai"><b>LPAI</b><span>eNPU on audio DSP</span></button>
+    <div class="inert i-a">ISP · modem · memory</div>
+    <button class="b-hta" data-bk="hta"><b>HTA</b><span>2019–20 accelerator</span></button>
+    <div class="inert i-b">FastRPC: the CPU ↔ DSP call bridge every NPU job crosses</div>
+  </div>
+  <div class="panel" id="bkPanel" aria-live="polite"></div>
+
+  <div class="note"><p><b>NPU, HTP and DSP are not three chips.</b> "NPU" is the marketing name. "HTP" (Hexagon Tensor Processor) is the QNN backend name for it. Physically it lives in the compute DSP subsystem (cDSP / NSP). In SNPE you still select it with the runtime named <code>DSP</code>. The QNN <code>DSP</code> backend is a different thing: older Hexagon cores without the tensor accelerator.</p></div>
+
+  <h3>Inside the Hexagon NPU</h3>
+  <div class="grid3">
+    <div class="panel"><b>Scalar cores</b><p class="small">Control flow, glue, ops with no vector kernel. Slow path.</p></div>
+    <div class="panel"><b>HVX (vector)</b><p class="small">1024-bit SIMD. Runs many element-wise and non-conv ops. You reserve HVX threads per graph (default 4).</p></div>
+    <div class="panel"><b>HMX (tensor)</b><p class="small">Matrix engine for conv and matmul. This is where the TOPS come from. Works on fixed-point and, on newer chips, FP16.</p></div>
+  </div>
+  <p><b>VTCM</b> is a small, fast on-chip memory the tensor engine works from. Bigger VTCM per graph means fewer tile shuffles, but it is shared between all graphs on that core. Default is 4 MB.</p>
+
+  <h3>HTP generations</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Arch</th><th>Typical chips</th><th>What changed</th></tr></thead>
+    <tbody>
+    <tr><td><code>v68</code></td><td>Snapdragon 888, QCS6490 (RB3 Gen 2)</td><td>First HTP. Quantized only.</td></tr>
+    <tr><td><code>v69</code></td><td>8 Gen 1</td><td>FP16 arrives on select SoCs.</td></tr>
+    <tr><td><code>v73</code></td><td>8 Gen 2, QCS8550, X Elite, QCS9100 / SA8775P</td><td>Weight sharing across graphs. Workhorse for LLMs.</td></tr>
+    <tr><td><code>v75</code></td><td>8 Gen 3</td><td>Generational speed-up.</td></tr>
+    <tr><td><code>v79</code></td><td>8 Elite</td><td>Generational speed-up.</td></tr>
+    <tr><td><code>v81</code></td><td>8 Elite Gen 5, X2 Elite</td><td>BF16 on Windows, concurrent resource sharing.</td></tr>
+    </tbody></table></div>
+  <p class="small muted">Chip-to-arch mapping is from memory of public material. Confirm yours in the SDK's supported-devices page before you set <code>dsp_arch</code>.</p>
+  <label class="done-row"><input type="checkbox" id="d-silicon" data-done="silicon"> I know which library drives which block</label>
+</section>
+
+<!-- 3 -->
+<section id="precision" data-title="Precision">
+  <div class="sec-head"><div class="eyebrow">Module 03</div><h2>Precision &amp; quantization</h2></div>
+  <p class="lede">Precision decides the backend more than anything else. A float model cannot use most of the NPU. A badly quantized model uses it and gives wrong answers.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Backend</th><th class="c">FP32</th><th class="c">FP16</th><th class="c">INT8</th><th class="c">INT16 act.</th><th class="c">4-bit weights</th><th>Notes</th></tr></thead>
+    <tbody>
+    <tr><td><b style="color:var(--cpu)">CPU</b></td><td class="c"><span class="dot y"></span></td><td class="c"><span class="dot n"></span></td><td class="c"><span class="dot y"></span></td><td class="c"><span class="dot n"></span></td><td class="c"><span class="dot n"></span></td><td>FP32 and quantized 8-bit from the same library.</td></tr>
+    <tr><td><b style="color:var(--gpu)">GPU</b></td><td class="c"><span class="dot y"></span></td><td class="c"><span class="dot y"></span></td><td class="c"><span class="dot n"></span></td><td class="c"><span class="dot n"></span></td><td class="c"><span class="dot n"></span></td><td>Modes: FP32, FP16, hybrid (FP16 tensors, FP32 accumulators).</td></tr>
+    <tr><td><b style="color:var(--htp)">HTP</b></td><td class="c"><span class="dot n"></span></td><td class="c"><span class="dot e"></span></td><td class="c"><span class="dot y"></span></td><td class="c"><span class="dot y"></span></td><td class="c"><span class="dot y"></span></td><td>INT8/INT16 on every SoC. FP16 on select SoCs. BF16 on Windows v81+. FP32 graphs run as FP16 when relaxed precision is on.</td></tr>
+    <tr><td><b style="color:var(--dsp)">DSP</b></td><td class="c"><span class="dot n"></span></td><td class="c"><span class="dot n"></span></td><td class="c"><span class="dot y"></span></td><td class="c"><span class="dot n"></span></td><td class="c"><span class="dot n"></span></td><td>8-bit fixed point.</td></tr>
+    <tr><td><b style="color:var(--lpai)">LPAI</b></td><td class="c"><span class="dot n"></span></td><td class="c"><span class="dot n"></span></td><td class="c"><span class="dot y"></span></td><td class="c"><span class="dot y"></span></td><td class="c"><span class="dot n"></span></td><td>Quantized only. Float models are rejected.</td></tr>
+    <tr><td><b style="color:var(--hta)">HTA</b></td><td class="c"><span class="dot n"></span></td><td class="c"><span class="dot n"></span></td><td class="c"><span class="dot y"></span></td><td class="c"><span class="dot e"></span></td><td class="c"><span class="dot n"></span></td><td>16-bit activations only with 8-bit weights.</td></tr>
+    </tbody></table></div>
+  <div class="legend"><span><i class="dot y"></i> supported</span><span><i class="dot e"></i> conditional</span><span><i class="dot n"></i> not supported</span></div>
+
+  <div class="grid2">
+    <div class="panel"><h3>Reading the notation</h3>
+      <ul class="tight">
+        <li><code>w8a8</code>: 8-bit weights, 8-bit activations. Fastest, least robust.</li>
+        <li><code>w8a16</code>: the default for transformers and anything with wide activation ranges.</li>
+        <li><code>w4a16</code>: LLM weights. Needs block-wise tricks (LPBQ) to hold accuracy.</li>
+        <li>ExecuTorch writes it the other way round: <code>16a8w</code>.</li>
+        <li>Weights are usually symmetric and per-channel. Activations are asymmetric and per-tensor.</li>
+      </ul></div>
+    <div class="panel"><h3>AIMET, in order of effort</h3>
+      <ul class="tight">
+        <li><b>Calibrate</b>: <code>QuantizationSimModel</code> + <code>compute_encodings</code> on a few hundred samples.</li>
+        <li><b>Free fixes</b>: batch-norm folding, cross-layer equalization.</li>
+        <li><b>Better rounding</b>: AdaRound, Sequential MSE, BN re-estimation.</li>
+        <li><b>Find the bad layer</b>: QuantAnalyzer, then mixed precision (manual or automatic) to lift only those layers to 16-bit.</li>
+        <li><b>Last resort</b>: QAT. For LLMs: LPBQ, OmniQuant, SpinQuant.</li>
+        <li>Export gives ONNX + an <code>.encodings</code> JSON. Feed that to the converter with <code>--quantization_overrides</code>.</li>
+      </ul></div>
+  </div>
+  <div class="note"><p><b>Three ways to quantize, pick one.</b> AIMET (most control), <code>qairt-quantizer</code> on a DLC (quickest, fewer algorithms), or an AI Hub quantize job (AIMET-ONNX run for you in the cloud). Do not stack them.</p></div>
+  <label class="done-row"><input type="checkbox" id="d-precision" data-done="precision"> I can pick a bit-width scheme for a model</label>
+</section>
+
+<!-- 4 -->
+<section id="ops" data-title="Op support">
+  <div class="sec-head"><div class="eyebrow">Module 04</div><h2>Op support explorer</h2></div>
+  <p class="lede">QNN defines well over a hundred ops. Each backend implements a subset, and each op has its own rank, datatype and parameter limits. Search an op, or filter to see what a backend lacks.</p>
+  <div class="ops-tools">
+    <input type="search" id="opQ" placeholder="Search ops, e.g. LayerNorm, Gather, Resize" aria-label="Search ops">
+    <div class="chips" id="opMiss" role="group" aria-label="Show ops missing on a backend"></div>
+  </div>
+  <div class="ops-wrap"><table id="opTable"><thead></thead><tbody></tbody></table></div>
+  <div class="legend">
+    <span><i class="dot y"></i> listed in Qualcomm's table or backend supplement</span>
+    <span><i class="dot e"></i> expected in current SDKs, not checked here</span>
+    <span><i class="dot n"></i> not supported</span><span><span class="q">?</span> not checked</span>
+    <span id="opCount"></span>
+  </div>
+  <div class="note"><p><b>How far to trust this table.</b> Rows up to <code>ElementWiseNeg</code> come from Qualcomm's supported-operations table, and the whole GPU and DSP columns come from their op supplements (docs published Aug 2026). I could not load the rest of the HTP, LPAI and HTA columns, so those show hollow dots or "?". Before you design around an op, open <a href="https://docs.qualcomm.com/doc/80-63442-10/topic/SupportedOps.html">SupportedOps</a> and the <a href="https://docs.qualcomm.com/doc/80-63442-10/topic/HtpOpDefSupplement.html">HTP supplement</a> for your SDK version.</p></div>
+
+  <h3>Why a "supported" op still falls back</h3>
+  <ul class="tight">
+    <li><b>Rank.</b> Most HTP ops stop at 4D or 5D. A 6D reshape in a window-attention block breaks the partition.</li>
+    <li><b>Datatype.</b> int64 indices, bool masks and float64 are common ONNX leftovers. Truncate or cast them before conversion.</li>
+    <li><b>Dynamic shapes.</b> Backends want static dims. The GPU backend states it plainly: variable input and output dimensions are not supported.</li>
+    <li><b>Parameter limits.</b> Example from the ORT QNN EP: Gather needs positive indices, LpNormalization only p = 2, MatMul on HTP only for specific uint8/uint16 input pairs.</li>
+    <li><b>Precision column.</b> An op can exist for INT8 and not for FP16, or the other way round.</li>
+  </ul>
+  <p>One fallback op in the middle of a graph costs two FastRPC crossings plus a dequantize and a quantize. Three small NPU islands are usually slower than running the whole thing on the GPU.</p>
+  <label class="done-row"><input type="checkbox" id="d-ops" data-done="ops"> I know how to check an op before committing to a backend</label>
+</section>
+
+<!-- 5 -->
+<section id="choose" data-title="Which backend">
+  <div class="sec-head"><div class="eyebrow">Module 05</div><h2>Which backend, and why</h2></div>
+  <p class="lede">Answer four questions. The recommendation updates as you click.</p>
+  <div class="wiz">
+    <div class="panel" id="wizQ"></div>
+    <div class="verdict" id="wizA" aria-live="polite"></div>
+  </div>
+
+  <h3>Why some models go to the NPU and others to the GPU</h3>
+  <div class="grid2">
+    <div class="panel"><b style="color:var(--htp)">NPU wins when</b>
+      <ul class="tight"><li>The model is quantized and the graph is static.</li><li>Conv and matmul dominate, so HMX does the work.</li><li>You care about energy per inference or sustained thermals.</li><li>You can build the context binary offline.</li></ul></div>
+    <div class="panel"><b style="color:var(--gpu)">GPU wins when</b>
+      <ul class="tight"><li>The model is float and quantization hurts accuracy (depth, flow, some diffusion parts, regression heads).</li><li>The op set is exotic or shapes change.</li><li>The data is already on the GPU (camera, render, OpenCL pipeline).</li><li>The NPU is busy with a higher-priority model.</li></ul></div>
+  </div>
+  <div class="scroll"><table>
+    <thead><tr><th>Workload</th><th>Usual home</th><th>Reason</th></tr></thead>
+    <tbody>
+    <tr><td>Detector / segmenter (YOLO, DeepLab)</td><td><span class="tag" style="color:var(--htp)">HTP w8a8 / w8a16</span></td><td>Conv-heavy, quantizes well.</td></tr>
+    <tr><td>ViT, DETR, VLA vision tower</td><td><span class="tag" style="color:var(--htp)">HTP w8a16</span></td><td>LayerNorm and softmax need 16-bit activations.</td></tr>
+    <tr><td>LLM / VLM decoder</td><td><span class="tag" style="color:var(--htp)">HTP w4a16 via Genie</span></td><td>Split into several context binaries, KV cache handled by Genie.</td></tr>
+    <tr><td>Monocular depth, super-resolution in float</td><td><span class="tag" style="color:var(--gpu)">GPU FP16</span></td><td>Accuracy-sensitive, no calibration needed.</td></tr>
+    <tr><td>NMS, tracker, pre/post-processing</td><td><span class="tag" style="color:var(--cpu)">CPU</span></td><td>Branchy, dynamic sizes, tiny compute.</td></tr>
+    <tr><td>Keyword spotting, tactile or IMU classifier</td><td><span class="tag" style="color:var(--lpai)">LPAI</span></td><td>Runs while the application processor sleeps.</td></tr>
+    <tr><td>Small MLP distilled from a random forest</td><td><span class="tag" style="color:var(--cpu)">CPU</span> or <span class="tag" style="color:var(--lpai)">LPAI</span></td><td>RPC overhead exceeds the compute on HTP. LPAI if it must be always-on.</td></tr>
+    </tbody></table></div>
+  <label class="done-row"><input type="checkbox" id="d-choose" data-done="choose"> I can defend a backend choice in a design review</label>
+</section>
+
+<!-- 6 -->
+<section id="pipeline" data-title="End to end">
+  <div class="sec-head"><div class="eyebrow">Module 06</div><h2>End to end: checkpoint to device</h2></div>
+  <p class="lede">Two lanes reach the same artifacts. The SDK lane runs on your x86 Linux box and in CI. The AI Hub lane runs in Qualcomm's cloud on real phones and boards.</p>
+  <div class="tabs" id="laneTabs" role="group" aria-label="Lane">
+    <button class="chip" data-lane="sdk" aria-pressed="true">QAIRT SDK (CLI)</button>
+    <button class="chip" data-lane="hub" aria-pressed="false">AI Hub Workbench (Python)</button>
+  </div>
+  <div class="steps" id="steps" role="group" aria-label="Pipeline step"></div>
+  <div class="panel" id="stepPanel" aria-live="polite"></div>
+  <div class="note"><p><b>Changed in Sept 2026:</b> AI Hub Workbench no longer compiles straight to a QNN context binary. Compile to <code>qnn_dlc</code>, then run a link job to get the binary.</p></div>
+
+  <h3>The three files you will ship</h3>
+  <div class="grid3">
+    <div class="panel"><b>DLC</b><p class="small">Graph + weights + encodings. Portable across SoCs and backends. Prepared on device at load, which is slow on HTP.</p></div>
+    <div class="panel"><b>Context binary</b><p class="small">Already compiled for one HTP arch and one QAIRT version. Loads fast. Rebuild it when either changes.</p></div>
+    <div class="panel"><b>Wrapper model</b><p class="small"><code>*_ctx.onnx</code> for ONNX Runtime or <code>.pte</code> for ExecuTorch. A thin shell that points at, or embeds, the context binary.</p></div>
+  </div>
+  <label class="done-row"><input type="checkbox" id="d-pipeline" data-done="pipeline"> I have run every step once</label>
+</section>
+
+<!-- 7 -->
+<section id="runtime" data-title="Runtime control">
+  <div class="sec-head"><div class="eyebrow">Module 07</div><h2>Runtime: load, run, tune</h2></div>
+  <p class="lede">Your process never touches the NPU directly. It talks to a stub library on the CPU, which sends FastRPC calls to a skeleton library inside the DSP. Everything below follows from that.</p>
+
+  <h3>The QNN C API call flow</h3>
+  <div class="scroll" style="border:0;background:transparent"><div class="flow" id="flow"></div></div>
+
+  <h3>What you can and cannot control</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Backend</th><th>Knob</th><th>Where</th><th>Effect</th></tr></thead>
+    <tbody>
+    <tr><td rowspan="9"><b style="color:var(--htp)">HTP</b></td><td>Performance profile</td><td><code>perf_profile</code>; power config via <code>QnnDevice_getInfrastructure</code></td><td>Sets DCVS, voltage corners and sleep latency. <code>burst</code> is fastest, <code>power_saver</code> family trades latency for energy.</td></tr>
+    <tr><td>RPC control latency, polling time</td><td><code>rpc_control_latency</code>, <code>rpc_polling_time</code> (µs)</td><td>Keeps the CPU side awake and polling. Cuts wake-up jitter on sporadic inference.</td></tr>
+    <tr><td>HVX threads</td><td><code>hvx_threads</code> per graph</td><td>How many vector threads the graph reserves. Default 4. Lower it to leave room for a second model.</td></tr>
+    <tr><td>VTCM size</td><td><code>vtcm_mb</code> per graph</td><td>Fast-memory budget. Default 4 MB.</td></tr>
+    <tr><td>Finalize optimisation</td><td><code>O</code> = 1, 2, 3</td><td>3 gives the fastest graph and the longest prepare. Use it for offline builds.</td></tr>
+    <tr><td>Context priority</td><td>low / normal / normal_high / high</td><td>Which graph wins when several share the NPU.</td></tr>
+    <tr><td>Device and core</td><td><code>device_id</code>, <code>core_id</code>, <code>core_type</code> (NSP or HPASS)</td><td>Picks the NPU on chips with several (automotive SA-series, HTP MCP).</td></tr>
+    <tr><td>Process domain</td><td><code>pd_session</code> signed / unsigned</td><td>Unsigned works for any app. Signed needs a signed DSP image from the OEM and unlocks more resources.</td></tr>
+    <tr><td>Async execution</td><td><code>QnnGraph_executeAsync</code>, queue depth</td><td>Pipeline several frames without blocking the caller.</td></tr>
+    <tr><td rowspan="3"><b style="color:var(--gpu)">GPU</b></td><td>Precision mode</td><td>graph custom config</td><td>FP32, FP16 or hybrid.</td></tr>
+    <tr><td>Performance hint</td><td>context custom config</td><td>HIGH (default) pushes clocks up, LOW saves power.</td></tr>
+    <tr><td>Kernel cache</td><td><code>QNN_GPU_KERNEL_REPO</code> on disk</td><td>Skips OpenCL kernel compilation on the next start.</td></tr>
+    <tr><td rowspan="2"><b style="color:var(--cpu)">CPU</b></td><td>Cores and threads</td><td>OS affinity on the calling thread (<code>sched_setaffinity</code>, <code>taskset</code>)</td><td>The QNN CPU backend documents no thread-count option. Higher layers do: ORT intra-op threads, LiteRT <code>number_of_threads</code>, Genie <code>n-threads</code> and <code>cpu-mask</code>.</td></tr>
+    <tr><td>Op debug callback</td><td>graph custom config</td><td>Returns intermediate outputs as the CPU backend executes.</td></tr>
+    <tr><td rowspan="2"><b style="color:var(--lpai)">LPAI</b></td><td>Clock and bandwidth</td><td><code>fps</code>, <code>ftrt_ratio</code>, <code>enpu_clock_scale</code></td><td>Sizes eNPU clocks to your frame rate.</td></tr>
+    <tr><td>Core, affinity, memory</td><td><code>core_selection</code> bitmask, <code>affinity</code> soft/hard, <code>mem_type</code> ddr/tcm</td><td>Real core pinning. TCM only in aDSP direct mode.</td></tr>
+    </tbody></table></div>
+  <div class="note"><p><b>About "assigning cores" on the NPU.</b> You do not pin NPU work to cores the way you pin CPU threads. You choose a device and core on multi-NPU chips, reserve HVX threads and VTCM per graph, and set priority. The Hexagon RTOS schedules the rest.</p></div>
+
+  <h3>Config builder</h3>
+  <p>Set the knobs, copy the files. The same settings are shown for <code>qnn-net-run</code> and for the ONNX Runtime QNN execution provider.</p>
+  <div class="grid2">
+    <div class="panel"><div class="form" id="cfgForm"></div></div>
+    <div class="panel"><div class="tabs" id="cfgTabs" role="group" aria-label="Output format"></div><div class="codebox"><button class="copy" data-copy="cfgOut">copy</button><pre id="cfgOut"></pre></div>
+      <p class="small muted">Key names follow the HTP backend-extension schema as I know it. Validate against the example JSON in your SDK's <code>docs/QNN/general/htp</code> folder.</p></div>
+  </div>
+
+  <h3>Talking to a model that is already loaded</h3>
+  <ul class="tight">
+    <li><b>Read its I/O.</b> <code>QnnSystemContext_getBinaryInfo</code> on the binary gives graph names, tensor names, shapes, datatypes and quantization scale/offset. On the CLI: <code>qnn-context-binary-utility</code> dumps the same as JSON.</li>
+    <li><b>Feed it without copies.</b> Allocate with <code>rpcmem_alloc</code> (DMA-BUF), register with <code>QnnMem_register</code>, set the tensor <code>memType</code> to memhandle. The NPU reads the camera buffer in place.</li>
+    <li><b>Skip CPU quantization.</b> Keep I/O tensors in their native uint8/uint16 type and fill them yourself with <code>q = round(x / scale) - offset</code>.</li>
+    <li><b>Switch behaviour live.</b> Several graphs can sit in one context and share weights (up to 64 per context, v73+). Pick one per call. LoRA adapters can be applied to a loaded context. ORT exposes <code>ep.dynamic.workload_type</code> to drop priority at runtime.</li>
+    <li><b>See inside.</b> No mid-graph tensor access on HTP at runtime. Use <code>--profiling_level detailed</code> for per-op time, <code>optrace</code> for a timeline, and debug builds that mark every layer as an output for value dumps.</li>
+    <li><b>Watch the DSP.</b> <code>adb shell sysMonApp getLoad</code>-style queries and Snapdragon Profiler show cDSP utilisation and clocks. CPU tools will not show NPU load.</li>
+  </ul>
+  <label class="done-row"><input type="checkbox" id="d-runtime" data-done="runtime"> I can write a load-and-execute loop and tune it</label>
+</section>
+
+<!-- 8 -->
+<section id="traps" data-title="Debug & traps">
+  <div class="sec-head"><div class="eyebrow">Module 08</div><h2>Debugging &amp; the traps everyone hits</h2></div>
+  <div class="grid2">
+    <div class="panel"><h3>When it will not load</h3><ul class="tight">
+      <li><b>Version skew.</b> Context binary, <code>libQnnHtp.so</code>, the stub and the <code>libQnnHtpV73Skel.so</code> on the DSP must come from the same QAIRT release.</li>
+      <li><b>Skel not found.</b> Set <code>ADSP_LIBRARY_PATH</code> to the folder holding the skel. On Android declare <code>libcdsprpc.so</code> with <code>uses-native-library</code>.</li>
+      <li><b>Wrong arch.</b> A v75 binary will not run on a v73 chip.</li>
+      <li><b>Too big.</b> One HTP session has a limited address space. LLMs are split into several binaries for this reason.</li>
+    </ul></div>
+    <div class="panel"><h3>When it is slow</h3><ul class="tight">
+      <li><b>Fallback islands.</b> Check which compute unit each layer landed on before reading any latency number.</li>
+      <li><b>On-device prepare.</b> Loading a DLC on HTP compiles it on the phone. Ship a context binary.</li>
+      <li><b>Cold NPU.</b> First inference after idle pays wake-up. Use <code>burst</code> plus RPC polling, or accept it.</li>
+      <li><b>Layout transposes.</b> NCHW models gain transposes at I/O. Feed NHWC.</li>
+      <li><b>CPU quant/dequant.</b> Float I/O on a quantized graph converts every frame on the CPU.</li>
+    </ul></div>
+    <div class="panel"><h3>When it is wrong</h3><ul class="tight">
+      <li>Run the quantized DLC on the CPU backend first. If it is already wrong, it is quantization, not the NPU.</li>
+      <li>Compare layer by layer with <code>qnn-accuracy-debugger</code>.</li>
+      <li>Usual suspects: softmax, LayerNorm, sigmoid tails, add of two very different ranges. Lift them to 16-bit.</li>
+      <li>FP16 on HTP overflows above ~65k. Watch un-normalised activations.</li>
+    </ul></div>
+    <div class="panel"><h3>Reproducibility checklist</h3><ul class="tight">
+      <li>Pin QAIRT version, HTP arch and <code>soc_model</code> in artifact metadata.</li>
+      <li>Store DLC and encodings next to the binary so you can rebuild.</li>
+      <li>Build binaries in Docker on x86 Linux, never on a dev laptop.</li>
+      <li>Record device firmware: the DSP image changes behaviour too.</li>
+      <li>Use the QNN Saver backend to capture a failing API sequence and replay it.</li>
+    </ul></div>
+  </div>
+  <label class="done-row"><input type="checkbox" id="d-traps" data-done="traps"> I have a debug order I follow</label>
+</section>
+
+<!-- 9 -->
+<section id="quiz" data-title="Check yourself">
+  <div class="sec-head"><div class="eyebrow">Module 09</div><h2>Check yourself</h2></div>
+  <p class="lede">Eight questions. Each one is a mistake people make in their first month on the stack.</p>
+  <div class="quiz" id="quizBox"></div>
+  <div class="panel"><div class="score" id="score">0 / 8</div><p id="scoreTxt" class="muted">Answer to score.</p></div>
+
+  <h3>A four-week path</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Week</th><th>Do</th><th>You are done when</th></tr></thead>
+    <tbody>
+    <tr><td>1</td><td>AI Hub Workbench: compile, profile and run inference on a MobileNet and a YOLO for your target chip.</td><td>You can read a per-layer profile and say which layers left the NPU.</td></tr>
+    <tr><td>2</td><td>Same model through the QAIRT CLI on your own machine. Quantize with AIMET, w8a8 then w8a16.</td><td>Your local context binary matches AI Hub latency within a few percent.</td></tr>
+    <tr><td>3</td><td>Write a C++ loader with the QNN API: context from binary, shared buffers, perf config.</td><td>Zero-copy camera frames in, p99 latency stable.</td></tr>
+    <tr><td>4</td><td>A hard model: a ViT or a small VLA block. Fix fallbacks, add mixed precision, wire it into CI.</td><td>Rebuild from checkpoint to binary is one pipeline run with pinned versions.</td></tr>
+    </tbody></table></div>
+  <label class="done-row"><input type="checkbox" id="d-quiz" data-done="quiz"> Quiz done</label>
+</section>
+
+<footer class="small muted" style="border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:6px">
+  <p style="max-width:none">Sources: Qualcomm QAIRT SDK docs (HTP, GPU, CPU, LPAI, HTA, DSP backends, supported ops, Genie), AI Hub Workbench docs and release notes, ONNX Runtime QNN EP docs, ExecuTorch Qualcomm backend docs, AIMET docs. Items marked as unverified come from general knowledge of the SDK and should be checked against your version.</p>
+  <p style="max-width:none">Not affiliated with Qualcomm. Product names belong to their owners.</p>
+</footer>
+</main>
+</div>
+
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const el=(t,a={},...kids)=>{const e=document.createElement(t);for(const k in a){if(k==='text')e.textContent=a[k];else if(k==='html')e.innerHTML=a[k];else e.setAttribute(k,a[k]);}kids.forEach(k=>e.append(k));return e;};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- nav + progress ---------- */
+const secs=$$('main section');
+const nav=$('#navList');
+secs.forEach(s=>{const a=el('a',{href:'#'+s.id});a.append(el('span',{text:s.dataset.title}),el('span',{class:'tick',text:'✓'}));nav.append(el('li',{},a));});
+const links=$$('a',nav);
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+e.target.id));}})},{rootMargin:'-20% 0px -70% 0px'});
+secs.forEach(s=>io.observe(s));
+let done=store.get('qc.done',{});
+function paintDone(){let n=0;secs.forEach((s,i)=>{const d=!!done[s.id];if(d)n++;links[i].classList.toggle('done',d);const cb=$('[data-done="'+s.id+'"]');if(cb)cb.checked=d;});
+  $('#meter').style.width=(100*n/secs.length)+'%';$('#meterTxt').textContent=n+' of '+secs.length+' modules done';}
+$$('[data-done]').forEach(cb=>cb.addEventListener('change',()=>{done[cb.dataset.done]=cb.checked;store.set('qc.done',done);paintDone();}));
+paintDone();
+
+/* ---------- glossary / stack layers ---------- */
+const GL={
+ aistack:['Qualcomm AI Stack','Umbrella name','Marketing name for everything on this page. Not a download.','You will see it on slides. Ignore it when searching docs.'],
+ hubmodels:['AI Hub Models','Model zoo','150+ models already exported, quantized and benchmarked per chip, with the Python recipes on GitHub (<code>qai_hub_models</code>).','Start here. Copy a recipe for a model close to yours.'],
+ workbench:['AI Hub Workbench','Cloud build + device farm (was "AI Hub")','Submit a model, get compile, quantize, profile, inference and link jobs run on real hosted devices. Python client <code>qai_hub</code>. Free to use.','Use it to learn what is achievable on a chip you do not own, and as a reference for your local build.'],
+ hubapps:['AI Hub Apps','Sample apps','Reference Android, Windows and Linux apps plus tutorials such as LLM on Genie.','Read before writing your own loader.'],
+ aimet:['AIMET','AI Model Efficiency Toolkit','Open-source quantization and compression library. Packages <code>aimet-torch</code> and <code>aimet-onnx</code>. Simulates fixed-point inference, improves it, exports encodings.','Use when plain calibration loses accuracy.'],
+ edge:['Edge Impulse','MCU-class tooling','Qualcomm-owned platform for tiny models and sensor data pipelines.','Relevant for microcontroller and sensor-hub class targets.'],
+ conv:['qairt-converter','Model → DLC','Reads ONNX, TensorFlow, TFLite or PyTorch and writes a DLC. Replaces the older per-framework <code>qnn-onnx-converter</code> / <code>snpe-onnx-to-dlc</code> tools, which produced <code>.cpp</code> + <code>.bin</code> or DLC separately.','Every local build starts here.'],
+ quant:['qairt-quantizer','DLC → quantized DLC','Calibrates a float DLC from an input list. Sets activation and weight bit-widths, per-channel, CLE.','Quick path when you do not need AIMET.'],
+ ctxgen:['qnn-context-binary-generator','DLC → context binary','Runs the backend\'s graph preparation on the x86 host and serialises the result for one target.','Required for HTP in production and for LPAI always.'],
+ netrun:['qnn-net-run','Reference runner','Loads a model or binary on any backend, runs an input list, writes outputs and profiles. <code>qnn-throughput-net-run</code> stresses several graphs and backends at once.','Your <code>trtexec</code>.'],
+ dbg:['Debug tools','Profile and compare','<code>qnn-profile-viewer</code>, <code>qnn-accuracy-debugger</code>, <code>qnn-platform-validator</code>, <code>qnn-context-binary-utility</code>, <code>qairt-dlc-info</code>.','When latency or accuracy is off.'],
+ qairt:['QAIRT SDK','Qualcomm AI Runtime — the one download','Bundles QNN, SNPE, Genie, the converters and tools, for Android, Linux, Windows on Snapdragon and QNX-class auto targets. Version 2.x, a new release roughly every month (2.50 in Sept 2026).','Pin its version everywhere.'],
+ qnn:['QNN','Qualcomm AI Engine Direct','Low-level C API. One shared library per backend, loaded with <code>dlopen</code>. Components: Backend, Device, Context, Graph, Tensor, Mem, Profile, Property, Signal, Log, OpPackage, System. Source-compatible across versions, not ABI-compatible.','Where you will spend most of your time.'],
+ snpe:['SNPE','Qualcomm Neural Processing SDK','The older, higher-level runtime. Loads a DLC, takes an ordered runtime list (CPU, GPU, GPU_FLOAT16, DSP, AIP) and falls back by itself. Custom ops are called UDOs.','Legacy products and some Linux multimedia plugins. New work goes to QNN.'],
+ genie:['Genie','Gen AI Inference Extensions','LLM runtime on top of QNN. APIs: GenieDialog, GenieEmbedding, GeniePipeline, GenieSampler, GenieTokenizer. Handles tokenising, KV cache, sampling, sliding window, speculative decoding, LoRA. Configured with one JSON. Engines: QnnHtp and QnnGenAiTransformer (CPU/GPU).','Any LLM or VLM language head.'],
+ ort:['ONNX Runtime QNN EP','Execution provider','Runs ONNX models through QNN with automatic CPU fallback. <code>backend_type</code> htp, gpu, cpu. Can cache or embed a context binary (<code>ep.context_enable</code>). Now developed in the <code>onnxruntime-qnn</code> repo.','Windows on Snapdragon, or when you want fallback handled for you.'],
+ litert:['LiteRT QNN delegate','TFLite delegate (QTLD)','Delegate that hands TFLite subgraphs to QNN. TensorFlow Lite is now named LiteRT.','Android apps already on TFLite.'],
+ et:['ExecuTorch Qualcomm backend','PyTorch-native path','Lowers an exported PyTorch program to QNN ahead of time into a <code>.pte</code>. Own quantizer with 8a8w, 16a8w, 16a4w, 16a16w and block-wise schemes.','If your team wants to stay in PyTorch end to end.'],
+ imsdk:['Qualcomm IM SDK','GStreamer plugins on Qualcomm Linux','Intelligent Multimedia SDK: plugins such as <code>qtimlqnn</code>, <code>qtimlsnpe</code>, <code>qtimltflite</code> that put inference inside a camera pipeline on Dragonwing boards.','Robotics and camera products on RB3 Gen 2 or IQ-series.'],
+ dlc:['DLC','Deep Learning Container','The model file: graph, weights, optional quantization encodings. Shared by QNN and SNPE.','The portable artifact you keep.'],
+ ctx:['Context binary','Compiled graph','Backend-specific serialised context. Fast to load, tied to SDK version and HTP arch.','The artifact you deploy.'],
+ oppkg:['Op package','Custom ops','Your own op implementation per backend: C++ for CPU, OpenCL for GPU, Hexagon C++ with HVX for HTP (needs the Hexagon SDK).','Only when rewriting the graph cannot avoid the op.'],
+ saver:['Saver / IR backends','Debug backends','<code>libQnnSaver.so</code> records every API call into replayable C. The IR backend dumps a graph to DLC.','Bug reports and reproducing customer issues.'],
+ fastrpc:['FastRPC','CPU ↔ DSP bridge','Kernel driver and <code>libcdsprpc.so</code>. The CPU-side stub marshals a call, the DSP-side skel executes it.','The cause of most "library not found" and latency-jitter questions.']
+};
+const LAYERS=[
+ ['Cloud & models',['hubmodels','workbench','hubapps','aimet','edge']],
+ ['Host tools',['conv','quant','ctxgen','netrun','dbg']],
+ ['Artifacts',['dlc','ctx','oppkg']],
+ ['Frameworks',['ort','litert','et','imsdk','genie']],
+ ['Runtime SDK',['qairt','qnn','snpe','saver']],
+ ['System',['fastrpc','aistack']]
+];
+const layersEl=$('#layers');
+LAYERS.forEach(([name,keys])=>{const row=el('div',{class:'chips'});keys.forEach(k=>row.append(el('button',{class:'gl','data-gl':k,'aria-pressed':'false',text:GL[k][0]})));layersEl.append(el('div',{class:'layer'},el('span',{text:name}),row));});
+function showGL(k){$$('.gl').forEach(b=>b.setAttribute('aria-pressed',b.dataset.gl===k));const g=GL[k];const p=$('#glPanel');p.innerHTML='';
+ p.append(el('div',{class:'bk-title'},el('h3',{text:g[0]}),el('span',{class:'muted',text:g[1]})),el('p',{html:g[2]}),el('p',{class:'small muted',html:'<b>When you touch it:</b> '+g[3]}));}
+layersEl.addEventListener('click',e=>{const b=e.target.closest('.gl');if(b)showGL(b.dataset.gl);});
+showGL('qairt');
+
+/* ---------- backends ---------- */
+const BK={
+ cpu:{n:'CPU backend',c:'--cpu',lib:'libQnnCpu.so',hw:'Kryo or Oryon Arm cores',prec:'FP32 and quantized INT8',good:'Runs nearly every op. Reference for correctness. No RPC hop, so tiny models finish before the NPU would wake up.',bad:'Highest energy per inference for real workloads. Competes with your control loop for cores.',use:'Pre/post-processing, NMS, fallback, debugging quantized graphs, very small MLPs.'},
+ gpu:{n:'GPU backend',c:'--gpu',lib:'libQnnGpu.so',hw:'Adreno GPU through OpenCL',prec:'FP32, FP16, hybrid. No fixed-point execution.',good:'Float models run without calibration. Wide op set. Can take OpenCL buffers directly.',bad:'No variable input or output dimensions. First start compiles kernels unless the kernel cache is on disk. Shares the GPU with rendering.',use:'Accuracy-sensitive float models, prototypes before quantization, anything the NPU rejects.'},
+ htp:{n:'HTP backend (the NPU)',c:'--htp',lib:'libQnnHtp.so + libQnnHtpPrepare.so + libQnnHtpV##Stub.so (CPU side), libQnnHtpV##Skel.so (DSP side)',hw:'Hexagon Tensor Processor in the compute DSP: scalar cores, HVX vector units, HMX tensor accelerator',prec:'Quantized 8- and 16-bit on all SoCs. 4-bit weights. FP16 on select SoCs. BF16 on Windows v81+.',good:'Best performance per watt by a wide margin. Offline-compiled binaries load fast. Weight sharing and multi-graph contexts.',bad:'Fixed-point first. Static shapes. Binary tied to SDK version and arch. Every call crosses FastRPC.',use:'Default target for any production vision, audio, transformer or LLM model.'},
+ dsp:{n:'DSP backend',c:'--dsp',lib:'libQnnDsp.so + libQnnDspV66Skel.so',hw:'Older Hexagon compute DSP (v65, v66) with HVX and no tensor accelerator',prec:'Quantized 8-bit',good:'Still the efficient option on older and lower-tier chips.',bad:'Smaller op set than HTP. Not the path on any chip that has an HTP.',use:'Legacy SoCs only. If your chip is v68 or later, you want HTP.'},
+ lpai:{n:'LPAI backend',c:'--lpai',lib:'libQnnLpai.so',hw:'eNPU inside the low-power audio DSP (aDSP). Hardware versions v5, v5_1, v6.',prec:'Quantized 8- or 16-bit only',good:'Milliwatt-class. Keeps running in island mode while the main CPU sleeps. Direct mode has no IPC at all.',bad:'Small op set, small memory. Offline context binary is mandatory. Mixed core selection not supported yet.',use:'Always-on audio, wake word, sensor and tactile classifiers, presence detection.'},
+ hta:{n:'HTA backend',c:'--hta',lib:'libQnnHta.so',hw:'Hexagon Tensor Accelerator, the fixed-function predecessor of the HTP on Snapdragon 855/865-era chips',prec:'Quantized 8-bit. 16-bit activations only with 8-bit weights.',good:'Was the first dedicated tensor hardware.',bad:'Very small op set (convs, add, mul, concat, argmax and little else). In SNPE it appears as the AIP runtime.',use:'Maintenance of old products. Nothing new.'}
+};
+function showBK(k){$$('#soc button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.bk===k));const b=BK[k];const p=$('#bkPanel');p.innerHTML='';p.style.setProperty('--c','var('+b.c+')');
+ const dl=el('dl',{class:'kv'});[['Hardware',b.hw],['Library',b.lib],['Precision',b.prec],['Strong at',b.good],['Weak at',b.bad],['Use it for',b.use]].forEach(([t,d])=>dl.append(el('dt',{text:t}),el('dd',{text:d})));
+ p.append(el('div',{class:'bk-title'},el('h3',{text:b.n})),dl);}
+$('#soc').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showBK(b.dataset.bk);});
+showBK('htp');
+
+/* ---------- ops ---------- */
+// columns: CPU fp32, CPU int8, GPU, HTP int8, HTP int16, HTP fp16, DSP, LPAI, HTA
+const COLS=[['CPU f32','--cpu'],['CPU i8','--cpu'],['GPU','--gpu'],['HTP i8','--htp'],['HTP i16','--htp'],['HTP f16','--htp'],['DSP','--dsp'],['LPAI','--lpai'],['HTA','--hta']];
+const V=`ArgbToRgb YYYNNNYNN|Argmax YYYYYYYYY|Argmin YYYYYYYYN|AxisAlignedBboxTransform YNNNNNNNN|Batchnorm YYYYYYYYN|BatchPermutation YNNNNNNNN|BatchToSpace YYYYYYYYN|BboxTransform YNNNNNNNN|BoxWithNmsLimit YNNNNNYNN|Buffer YNNNYYNYN|Cast YYYYYYYYN|ChannelShuffle YYYYYYYYN|Col2Im YNNNNNNNN|CollectRpnProposals YNNNNNNNN|CombinedNms YNNNNNNNN|Concat YYYYYYYYY|ConstantOfShape YNNNNNNNN|Conv1d YNNNNNNNN|Conv2d YYYYYYYYY|Conv3d YYNYYYYNN|Convert YYYYYYYYN|Correlation1D YNNNNNYNN|CreateSparse YNNYNNNNN|CropAndResize YNNNNNNNN|CumulativeSum YYYYYYNNN|DepthToSpace YYYYYYYYN|DepthWiseConv1d YNNNNNNNN|DepthWiseConv2d YYYYYYYYY|Dequantize YYYYYNYYN|DetectionOutput YYYYYYYNN|DistributeFpnProposals YNNNNNNNN|ElementWiseAbs YYYYYYYNN|ElementWiseAdd YYYYYYYYY|ElementWiseAnd YYYYNNNNN|ElementWiseAsin YNNYYNNNN|ElementWiseAtan YYNYYYNNN|ElementWiseBinary YYYYYYYNY|ElementWiseCeil YYNYYYYNN|ElementWiseCos YNYYYYNNN|ElementWiseDivide YYYYYYYYN|ElementWiseEqual YYYYYYYNN|ElementWiseExp YYYYYYYYN|ElementWiseFloor YYYYYYYNN|ElementWiseFloorDiv YNYYYYYNN|ElementWiseFmod YNNNNNNNN|ElementWiseGreater YYYYYYYNN|ElementWiseGreaterEqual YYYYYYYNN|ElementWiseLess YYYYYYYNN|ElementWiseLessEqual YYYYYYYNN|ElementWiseLog YYYYYYYYN|ElementWiseMaximum YYYYYYYYN|ElementWiseMinimum YYYYYYYYN|ElementWiseMod YNNNNNNNN|ElementWiseMultiply YYYYYYYYY|ElementWiseNeg YYYYYYYYN`;
+// after ElementWiseNeg: name gpu dsp htp(e=expected,?=unchecked,N)
+const U=`ElementWiseNeuron Y Y e|ElementWiseNot Y N e|ElementWiseNotEqual Y Y e|ElementWiseOr Y N e|ElementWisePower Y Y e|ElementWiseRound Y Y e|ElementWiseRsqrt Y Y e|ElementWiseSelect Y Y e|ElementWiseSign Y N e|ElementWiseSin Y N e|ElementWiseSoftplus Y N e|ElementWiseSquaredDifference Y Y e|ElementWiseSquareRoot Y Y e|ElementWiseSubtract Y Y e|ElementWiseUnary Y Y e|ElementWiseXor N Y ?|Elu Y Y e|ExpandDims Y N e|ExtractGlimpse N Y ?|ExtractPatches N Y ?|FullyConnected Y Y e|Gather Y Y e|GatherElements Y Y e|GatherNd Y Y e|Gelu Y N e|GenerateProposals N Y ?|GridSample Y N e|GroupNorm Y N e|Gru N N e|HardSwish Y Y e|InstanceNorm Y Y e|L2Norm Y Y e|L2Pool2d Y N ?|LayerNorm Y Y e|LogSoftmax Y Y e|Lrn Y Y e|Lstm Y Y e|MatMul Y Y e|Moments N Y ?|MultiClassNms N Y e|NonMaxSuppression N N e|NonZero N N e|Nv12ToRgb Y Y ?|OneHot N N e|Pack Y Y e|Pad Y Y e|PoolAvg2d Y Y e|PoolAvg3d N Y e|PoolMax2d Y Y e|PoolMax3d N Y e|Prelu Y Y e|Quantize N Y e|ReduceMax Y Y e|ReduceMean Y Y e|ReduceMin Y Y e|ReduceProd Y N e|ReduceSum Y Y e|Relu Y Y e|Relu6 Y Y e|ReluMinMax Y Y e|Reshape Y Y e|Resize Y Y e|ResizeBilinear Y Y e|ResizeNearestNeighbor Y Y e|RmsNorm Y N e|RoiAlign Y Y e|RoiPooling N Y ?|RotaryEmbedding Y N ?|ScatterElements Y N e|ScatterNd Y N e|Sigmoid Y Y e|Softmax Y Y e|SpaceToBatch Y Y e|SpaceToDepth Y Y e|Split Y Y e|Squeeze Y Y e|StridedSlice Y Y e|Tanh Y Y e|Tile Y Y e|TopK Y Y e|Transpose Y Y e|TransposeConv2d Y Y e|TransposeConv3d N N e|UnPack Y Y e`;
+const OPS=[];
+V.split('|').forEach(r=>{const [n,s]=r.split(' ');OPS.push({n,s:s.split(''),v:true});});
+U.split('|').forEach(r=>{const [n,g,d,h]=r.split(' ');OPS.push({n,s:['e','?',g,h,h,h,d,'?','?'],v:false});});
+const FILTERS=[['Any',-1],['GPU',2],['HTP i8',3],['HTP f16',5],['DSP',6],['LPAI',7]];
+let opMiss=-1;
+const missEl=$('#opMiss');missEl.append(el('span',{class:'small muted',text:'Missing on:'}));
+FILTERS.forEach(([t,i])=>missEl.append(el('button',{class:'chip','data-i':i,'aria-pressed':String(i===-1),text:t})));
+$('#opTable thead').append(el('tr',{},el('th',{text:'QNN op'}),...COLS.map(([t,c])=>{const th=el('th',{class:'c',text:t});th.style.color='var('+c+')';return th;})));
+const cell=v=>{const td=el('td',{class:'c'});if(v==='Y')td.append(el('span',{class:'dot y',title:'supported'}));else if(v==='e')td.append(el('span',{class:'dot e',title:'expected, not checked'}));else if(v==='N')td.append(el('span',{class:'dot n',title:'not supported'}));else td.append(el('span',{class:'q',text:'?'}));return td;};
+function paintOps(){const q=$('#opQ').value.trim().toLowerCase();const tb=$('#opTable tbody');tb.innerHTML='';let n=0;
+ OPS.forEach(o=>{if(q&&!o.n.toLowerCase().includes(q))return;if(opMiss>=0&&o.s[opMiss]!=='N')return;n++;tb.append(el('tr',{},el('td',{text:o.n}),...o.s.map(cell)));});
+ if(!n)tb.append(el('tr',{},el('td',{colspan:'10',class:'muted',text:'No op matches. Try a QNN name such as ElementWiseAdd, not the ONNX name.'})));
+ $('#opCount').textContent=n+' of '+OPS.length+' ops shown';}
+$('#opQ').addEventListener('input',paintOps);
+missEl.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;opMiss=+b.dataset.i;$$('button',missEl).forEach(x=>x.setAttribute('aria-pressed',String(x===b)));paintOps();});
+paintOps();
+
+/* ---------- wizard ---------- */
+const WQ=[
+ ['model','What is the model?',[['cnn','CNN / detector'],['tx','Transformer / ViT'],['llm','LLM / VLM'],['tiny','Tiny always-on'],['odd','Odd ops / branchy']]],
+ ['prec','Can it be quantized?',[['q','Yes, accuracy holds'],['f','No, float only']]],
+ ['goal','What matters most?',[['lat','Lowest latency'],['pw','Energy / thermals'],['aon','Runs while system sleeps'],['easy','Fastest to get working']]],
+ ['shape','Input shapes?',[['st','Static'],['dy','Dynamic']]]
+];
+const wz=store.get('qc.wiz',{model:'tx',prec:'q',goal:'pw',shape:'st'});
+const wq=$('#wizQ');
+WQ.forEach(([k,label,opts])=>{const row=el('div',{class:'chips',role:'group','aria-label':label});opts.forEach(([v,t])=>row.append(el('button',{class:'chip','data-k':k,'data-v':v,'aria-pressed':String(wz[k]===v),text:t})));wq.append(el('div',{class:'q-block'},el('b',{text:label}),row));});
+function verdict(){const {model,prec,goal,shape}=wz;let r;
+ if(model==='tiny'||goal==='aon'){r=prec==='f'?['lpai','LPAI, after you quantize','LPAI takes quantized 8- or 16-bit models only. A float tiny model has to stay on the CPU, which cannot sleep.',['Quantize to 8-bit, then build an offline context binary for the eNPU version (v5, v5_1, v6).','Check every op against the LPAI column first. The op set is small.','Use aDSP direct mode for the lowest latency.']]:['lpai','LPAI (eNPU)','Only the low-power island keeps running when the application processor is suspended.',['Offline context binary is mandatory.','Tune <code>fps</code> and <code>enpu_clock_scale</code> to the real duty cycle.','If the model does not fit, run a tiny gate on LPAI and wake the HTP for the big model.']];}
+ else if(model==='odd'){r=['cpu','CPU, with islands on HTP or GPU','Branchy logic, NMS and dynamic sizes belong on the CPU. Move the heavy static sub-graph out.',['Split the graph yourself at a clean tensor boundary. Do not rely on automatic partitioning.','Use ONNX Runtime with the QNN EP if you want fallback handled for you.','Pin the CPU threads away from your control loop.']];}
+ else if(shape==='dy'){r=['gpu','Fix the shapes first','No QNN accelerator backend likes dynamic dimensions. The GPU backend rejects variable input and output dims outright.',['Export one graph per resolution or sequence length and keep them in one context with shared weights (HTP v73+).','Pad to a fixed size and mask.','If shapes truly must vary, stay on the CPU.']];}
+ else if(prec==='f'){r=model==='llm'?['htp','HTP, but quantize','A float LLM is too large and too slow anywhere else on the chip. Budget time for w4a16 or w8a16 quantization.',['Start from an AI Hub Models recipe for a similar LLM.','Run it through Genie.','Float fallback for experiments: Genie\'s QnnGenAiTransformer engine on CPU or GPU.']]:['gpu','GPU in FP16 mode','Float models run on Adreno without calibration. HTP FP16 exists only on select newer SoCs and is usually slower than its fixed-point path.',['Try hybrid precision if FP16 loses accuracy.','Persist the kernel cache to avoid a slow first start.','On a v69+ flagship, also benchmark HTP FP16. It can win on energy.']];}
+ else if(goal==='easy'){r=['htp','HTP through AI Hub Workbench','Let the cloud do conversion, quantization and profiling on a real device, then download the assets.',['Compile to <code>qnn_dlc</code>, profile, then link to a context binary.','Read the per-layer profile for layers that left the NPU.','Reproduce locally once it works.']];}
+ else if(model==='llm'){r=['htp','HTP with Genie','LLMs fit the NPU when split into several context binaries with 4-bit weights.',['w4a16 with LPBQ is the common scheme.','Genie manages KV cache, sampling and context sliding.','Use <code>burst</code> during generation, drop to a saver profile when idle.']];}
+ else if(model==='tx'){r=['htp','HTP at w8a16','Transformers need 16-bit activations around LayerNorm, softmax and GELU. 8-bit weights are fine.',['Offline prepare with <code>O=3</code>.','If accuracy still drops, find the layer with QuantAnalyzer and use mixed precision.',goal==='lat'?'Set <code>burst</code> and RPC polling for lowest latency.':'Use <code>balanced</code> or <code>power_saver</code> and measure energy per inference.']];}
+ else{r=['htp','HTP at w8a8','Conv-heavy models are what the tensor accelerator was built for.',['Try w8a8 first, move to w8a16 if detection heads lose accuracy.','Keep NMS out of the graph and run it on the CPU.',goal==='lat'?'Set <code>burst</code>, raise VTCM, use shared buffers for the camera frame.':'Stay off <code>burst</code> for sustained workloads. It will throttle.']];}
+ const a=$('#wizA');a.style.setProperty('--c','var(--'+r[0]+')');a.innerHTML='';
+ const ul=el('ul',{class:'tight'});r[3].forEach(t=>ul.append(el('li',{html:t})));
+ a.append(el('div',{class:'eyebrow',text:'Recommendation'}),el('h3',{text:r[1]}),el('p',{text:r[2]}),ul);}
+wq.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;wz[b.dataset.k]=b.dataset.v;$$('button[data-k="'+b.dataset.k+'"]',wq).forEach(x=>x.setAttribute('aria-pressed',String(x===b)));store.set('qc.wiz',wz);verdict();});
+verdict();
+
+/* ---------- pipeline ---------- */
+const STEPS=[
+ {t:'Export',d:'Get a clean, static ONNX. This step decides how much pain comes later.',tips:['Fix batch and resolution. No dynamic axes.','Constant-fold and simplify. Remove int64 where you can.','Keep post-processing (NMS, decode) out of the graph.'],
+  sdk:`# PyTorch -> ONNX, static shapes
+torch.onnx.export(model, dummy, "model.onnx",
+                  opset_version=17,
+                  input_names=["image"], output_names=["out"])
+onnxsim model.onnx model_sim.onnx`,
+  hub:`import qai_hub as hub
+import torch
+
+traced = torch.jit.trace(model.eval(), dummy)   # or pass an ONNX file
+device = hub.Device("Dragonwing RB3 Gen 2 Vision Kit")  # hub.get_devices() lists names`},
+ {t:'Quantize',d:'Produce encodings: a scale and offset for every tensor.',tips:['200–500 representative samples are enough for calibration.','Start w8a8 for CNNs, w8a16 for transformers.','Evaluate the simulated model before going further.'],
+  sdk:`# AIMET (aimet-onnx); see the AIMET docs for the exact signature in your version
+from aimet_onnx.quantsim import QuantizationSimModel
+sim = QuantizationSimModel(onnx_model,
+                           default_param_bw=8, default_activation_bw=16)
+sim.compute_encodings(calib_batches)
+sim.export("out", "model_q")      # -> model_q.onnx + model_q.encodings`,
+  hub:`q = hub.submit_quantize_job(
+    model="model_sim.onnx",
+    calibration_data={"image": calib_list},
+    weights_dtype=hub.QuantizeDtype.INT8,
+    activations_dtype=hub.QuantizeDtype.INT16)
+quantized = q.get_target_model()   # ONNX with Q/DQ nodes`},
+ {t:'Convert',d:'ONNX to DLC. Layout becomes NHWC, encodings are baked in.',tips:['Check the converter log for ops it could not map.','<code>qairt-dlc-info</code> prints the resulting graph.','Alternative to AIMET: convert float, then <code>qairt-quantizer</code>.'],
+  sdk:`source $QAIRT_SDK_ROOT/bin/envsetup.sh
+
+qairt-converter --input_network out/model_q.onnx \\
+                --quantization_overrides out/model_q.encodings \\
+                --output_path model.dlc
+
+# or: calibrate inside the SDK instead of AIMET
+qairt-quantizer --input_dlc model_fp.dlc --input_list calib.txt \\
+                --act_bitwidth 16 --weights_bitwidth 8 \\
+                --use_per_channel_quantization --output_dlc model.dlc`,
+  hub:`c = hub.submit_compile_job(
+    model=quantized, device=device,
+    options="--target_runtime qnn_dlc --quantize_io")
+dlc = c.get_target_model()
+dlc.download("model.dlc")`},
+ {t:'Compile',d:'DLC to a context binary for one HTP arch. Runs on the x86 host.',tips:['This is where <code>O=3</code>, VTCM and HVX threads get fixed into the graph.','One binary per (QAIRT version, arch).','Put several graphs in one binary to share weights.'],
+  sdk:`qnn-context-binary-generator \\
+    --backend libQnnHtp.so \\
+    --model libQnnModelDlc.so --dlc_path model.dlc \\
+    --binary_file model_v73 --output_dir out \\
+    --config_file backend_ext.json      # points to htp_config.json`,
+  hub:`l = hub.submit_link_job([dlc], device=device,
+        options="--qnn_options default_graph_htp_optimizations=O=3")
+ctx = l.get_target_model()
+ctx.download("model_v73.bin")`},
+ {t:'Run',d:'Execute on the device and compare against the float reference.',tips:['Inputs are raw little-endian tensor files listed in a text file.','Run the same DLC on the CPU backend to isolate quantization error.','Compare cosine similarity or task metric, not single values.'],
+  sdk:`adb push out/model_v73.bin input_list.txt inputs/ /data/local/tmp/m/
+adb shell "cd /data/local/tmp/m && \\
+  export LD_LIBRARY_PATH=\$PWD/lib ADSP_LIBRARY_PATH=\$PWD/dsp && \\
+  ./qnn-net-run --backend libQnnHtp.so \\
+     --retrieve_context model_v73.bin \\
+     --input_list input_list.txt --output_dir out \\
+     --config_file backend_ext.json"`,
+  hub:`inf = hub.submit_inference_job(model=dlc, device=device,
+                               inputs={"image": [x_np]})
+out = inf.download_output_data()`},
+ {t:'Profile',d:'Per-layer time and which compute unit ran each layer.',tips:['<code>detailed</code> adds overhead. Use <code>basic</code> for headline numbers.','Look for layers on CPU first, slow layers second.','<code>optrace</code> gives a timeline you can open in a trace viewer.'],
+  sdk:`./qnn-net-run ... --profiling_level detailed
+qnn-profile-viewer --input_log out/qnn-profiling-data_0.log \\
+                   --output profile.csv`,
+  hub:`p = hub.submit_profile_job(model=dlc, device=device,
+        options="--max_profiler_iterations 100")
+prof = p.download_profile()
+# prof["execution_summary"], prof["execution_detail"] -> per-layer times + compute unit`},
+ {t:'Integrate',d:'Call it from your application.',tips:['QNN C API for full control and smallest footprint.','ONNX Runtime QNN EP for fallback handling and Windows.','ExecuTorch or LiteRT if the app is already there. Genie for LLMs.'],
+  sdk:`// C++ sketch
+dlopen("libQnnHtp.so");  QnnInterface_getProviders(&p, &n);
+auto q = p[0]->QNN_INTERFACE_VER_NAME;
+q.backendCreate(log, cfg, &backend);
+q.deviceCreate(log, devCfg, &device);
+q.contextCreateFromBinary(backend, device, ctxCfg,
+                          buf, size, &ctx, profile);
+q.graphRetrieve(ctx, "model", &graph);
+q.graphExecute(graph, in, nIn, out, nOut, profile, nullptr);`,
+  hub:`# ONNX Runtime with a precompiled context
+import onnxruntime as ort
+sess = ort.InferenceSession("model_ctx.onnx",
+    providers=["QNNExecutionProvider"],
+    provider_options=[{"backend_type": "htp",
+                       "htp_performance_mode": "burst",
+                       "enable_htp_shared_memory_allocator": "1"}])
+y = sess.run(None, {"image": x})`},
+ {t:'Ship',d:'Make it reproducible across a fleet.',tips:['Artifact metadata: QAIRT version, arch, soc model, quant scheme, source commit.','CI job builds binaries in a pinned Docker image.','Stage rollouts. Keep the previous binary and libs for rollback.'],
+  sdk:`# artifact layout
+model/
+  model.dlc              # portable, kept for rebuilds
+  model.encodings
+  model_v73_qairt2.50.bin
+  meta.json              # qairt, dsp_arch, soc_model, sha256, git rev
+lib/   libQnnHtp.so libQnnHtpV73Stub.so libQnnSystem.so
+dsp/   libQnnHtpV73Skel.so`,
+  hub:`# pin the toolchain in every job
+opts = "--target_runtime qnn_dlc --qairt_version 2.50"
+c = hub.submit_compile_job(model=quantized, device=device, options=opts)
+print(c.job_id, c.url)    # store job ids next to the artifact`}
+];
+let lane='sdk',step=0;
+const stepsEl=$('#steps');STEPS.forEach((s,i)=>stepsEl.append(el('button',{'data-i':i,'aria-pressed':String(i===0)},el('i',{text:String(i+1).padStart(2,'0')}),document.createTextNode(s.t))));
+function codebox(txt,id){const pre=el('pre',{id});pre.textContent=txt;return el('div',{class:'codebox'},el('button',{class:'copy','data-copy':id,text:'copy'}),pre);}
+function paintStep(){const s=STEPS[step];const p=$('#stepPanel');p.innerHTML='';const ul=el('ul',{class:'tight'});s.tips.forEach(t=>ul.append(el('li',{html:t})));
+ p.append(el('div',{class:'bk-title'},el('h3',{text:(step+1)+'. '+s.t}),el('span',{class:'muted',text:s.d})),codebox(s[lane],'stepCode'),ul);
+ $$('button',stepsEl).forEach((b,i)=>b.setAttribute('aria-pressed',String(i===step)));}
+stepsEl.addEventListener('click',e=>{const b=e.target.closest('button');if(b){step=+b.dataset.i;paintStep();}});
+$('#laneTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;lane=b.dataset.lane;$$('#laneTabs button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));paintStep();});
+paintStep();
+
+/* ---------- call flow ---------- */
+const FLOW=[
+ ['dlopen("libQnnHtp.so"), QnnInterface_getProviders','','Stub library loads. Nothing on the DSP yet.'],
+ ['QnnBackend_create, QnnDevice_create','RPC','Opens a FastRPC session, loads the skel into a process domain on the cDSP.'],
+ ['QnnContext_createFromBinary','RPC','Binary is mapped and deserialised on the DSP. Weights land in DSP-visible memory.'],
+ ['QnnGraph_retrieve','','Returns a handle to a graph already inside the context.'],
+ ['QnnDevice_getInfrastructure → setPowerConfig','RPC','Votes for clocks, voltage corner and sleep latency.'],
+ ['QnnMem_register (optional)','RPC','Maps your DMA-BUF into the DSP so tensors are not copied.'],
+ ['QnnGraph_execute / executeAsync','RPC','Scalar threads dispatch ops to HVX and HMX. Result written back to the shared buffer.'],
+ ['QnnProfile_getEvents (optional)','RPC','Pulls per-op timing recorded on the DSP.'],
+ ['QnnContext_free, QnnDevice_free, QnnBackend_free','RPC','Releases VTCM, HVX reservations and the power vote.']
+];
+const flow=$('#flow');flow.append(el('div',{class:'hd',text:'Your process (CPU)'}),el('div',{class:'hd'}),el('div',{class:'hd',text:'Hexagon NPU side'}));
+FLOW.forEach(([a,m,b])=>flow.append(el('div',{class:'cell'},el('code',{text:a})),el('div',{class:'cell mid',text:m?'⇄ '+m:''}),el('div',{class:'cell r',text:b})));
+
+/* ---------- config builder ---------- */
+const CF=[
+ ['perf','Performance profile',['burst','sustained_high_performance','high_performance','balanced','low_balanced','power_saver','low_power_saver','high_power_saver','default'],'burst'],
+ ['arch','HTP arch',['v68','v69','v73','v75','v79','v81'],'v73'],
+ ['hvx','HVX threads',['1','2','3','4'],'4'],
+ ['vtcm','VTCM (MB)',['2','4','8','16'],'8'],
+ ['O','Finalize optimisation',['1','2','3'],'3'],
+ ['fp16','Float graph as FP16',['off','on'],'off'],
+ ['rpc','RPC control latency (µs)',['0','100','1000'],'100'],
+ ['poll','RPC polling time (µs)',['0','1000','9999'],'9999'],
+ ['shm','Shared (zero-copy) buffers',['off','on'],'on'],
+ ['pd','Process domain',['unsigned','signed'],'unsigned']
+];
+const cf=store.get('qc.cfg',{});const form=$('#cfgForm');
+CF.forEach(([k,label,opts,def])=>{if(!opts.includes(cf[k]))cf[k]=def;const s=el('select',{id:'cfg-'+k});opts.forEach(o=>{const op=el('option',{value:o,text:o});if(o===cf[k])op.selected=true;s.append(op);});s.addEventListener('change',()=>{cf[k]=s.value;store.set('qc.cfg',cf);paintCfg();});form.append(el('label',{for:'cfg-'+k,text:label},s));});
+const CT=[['htp','htp_config.json'],['ext','backend_ext.json'],['cmd','qnn-net-run'],['ort','ONNX Runtime']];let ctab='htp';
+const ctabs=$('#cfgTabs');CT.forEach(([k,t])=>ctabs.append(el('button',{class:'chip','data-t':k,'aria-pressed':String(k===ctab),text:t})));
+ctabs.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;ctab=b.dataset.t;$$('button',ctabs).forEach(x=>x.setAttribute('aria-pressed',String(x===b)));paintCfg();});
+function paintCfg(){let out;
+ if(ctab==='htp'){const g={graph_names:['model'],vtcm_mb:+cf.vtcm,hvx_threads:+cf.hvx,O:+cf.O};if(cf.fp16==='on')g.fp16_relaxed_precision=1;
+  const core={core_id:0,perf_profile:cf.perf,rpc_control_latency:+cf.rpc};if(+cf.poll)core.rpc_polling_time=+cf.poll;
+  const o={graphs:[g],devices:[{device_id:0,dsp_arch:cf.arch,pd_session:cf.pd,cores:[core]}]};if(cf.shm==='on')o.memory={mem_type:'shared_buffer'};
+  out=JSON.stringify(o,null,2);}
+ else if(ctab==='ext'){out=JSON.stringify({backend_extensions:{shared_library_path:'libQnnHtpNetRunExtensions.so',config_file_path:'htp_config.json'}},null,2);}
+ else if(ctab==='cmd'){out='./qnn-net-run \\\n  --backend libQnnHtp.so \\\n  --retrieve_context model_'+cf.arch+'.bin \\\n  --input_list input_list.txt \\\n  --config_file backend_ext.json \\\n'+(cf.shm==='on'?'  --shared_buffer \\\n':'')+'  --profiling_level basic \\\n  --output_dir out';}
+ else{const ortPerf=cf.perf;const o={backend_type:'htp',htp_performance_mode:ortPerf,htp_graph_finalization_optimization_mode:cf.O,vtcm_mb:cf.vtcm,rpc_control_latency:cf.rpc,enable_htp_fp16_precision:cf.fp16==='on'?'1':'0',enable_htp_shared_memory_allocator:cf.shm==='on'?'1':'0',htp_arch:cf.arch.slice(1)};
+  out='import onnxruntime as ort\n\nopts = '+JSON.stringify(o,null,2)+'\n\nso = ort.SessionOptions()\nso.add_session_config_entry("session.disable_cpu_ep_fallback", "1")  # fail loudly on fallback\nsess = ort.InferenceSession("model.onnx", so,\n    providers=["QNNExecutionProvider"], provider_options=[opts])\n# HVX threads and polling time have no EP option; set them at offline compile.';}
+ $('#cfgOut').textContent=out;}
+paintCfg();
+
+/* ---------- copy ---------- */
+document.addEventListener('click',e=>{const b=e.target.closest('.copy');if(!b)return;const pre=document.getElementById(b.dataset.copy);if(!pre)return;
+ const ok=()=>{b.textContent='copied';setTimeout(()=>b.textContent='copy',1200);};
+ const sel=()=>{const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='selected';setTimeout(()=>b.textContent='copy',1500);};
+ try{navigator.clipboard.writeText(pre.textContent).then(ok,sel);}catch(_){sel();}});
+
+/* ---------- quiz ---------- */
+const QZ=[
+ ['A float-only depth model must run on a QCS6490 board (HTP v68). Where does it go?',['Adreno GPU in FP16 mode','HTP in FP16 mode','LPAI'],0,'v68 HTP is fixed-point only. FP16 on HTP came with later, select SoCs. The GPU runs float without calibration.'],
+ ['In SNPE on a Snapdragon 8 Gen 2 you select the runtime "DSP". What executes the model?',['A legacy Hexagon DSP without tensor hardware','The HTP, i.e. the NPU','The audio DSP'],1,'SNPE kept the old runtime name. On chips with an HTP, "DSP" means the HTP.'],
+ ['Your context binary was built with QAIRT 2.44. The device image ships 2.50 libraries. What do you do?',['Load it, binaries are forward compatible','Convert the binary with qairt-converter','Rebuild the binary with 2.50, or ship matching 2.44 libs and skel'],2,'A context binary is tied to the SDK version and HTP arch. Keep the DLC so you can rebuild.'],
+ ['One unsupported op sits in the middle of a quantized graph on HTP. What is the real cost?',['Only that op runs slower','Two extra CPU↔DSP crossings plus a dequantize and a quantize','None, HTP emulates it'],1,'The graph is split into NPU, CPU, NPU. Each boundary crosses FastRPC and converts tensors.'],
+ ['Inference is requested every 300 ms and latency jitters between 9 and 25 ms. Which knobs come first?',['burst profile plus RPC control latency and polling','More HVX threads','Larger batch'],0,'The NPU and the RPC path are going to sleep between calls. Keep them warm.'],
+ ['A 20 kB tactile slip classifier must run while the main CPU is suspended. Which backend?',['HTP with power_saver','CPU with one thread','LPAI'],2,'Only the low-power island runs with the application processor asleep. Quantize to 8 or 16 bit and build offline.'],
+ ['What does w8a16 mean?',['8-bit activations, 16-bit weights','8-bit weights, 16-bit activations','8 layers at 16-bit'],1,'Weights first, activations second. ExecuTorch writes the same thing as 16a8w.'],
+ ['You want camera frames to reach the NPU without a memcpy. What do you need?',['A larger VTCM','graphExecuteAsync','rpcmem / DMA-BUF buffers registered with QnnMem_register'],2,'Shared buffers are mapped into the DSP once. Tensors then carry a memory handle instead of a pointer.']
+];
+const ans=store.get('qc.quiz',{});const qb=$('#quizBox');
+QZ.forEach(([q,opts,right,why],i)=>{const box=el('div',{class:'opts'});const w=el('p',{class:'why',hidden:''});w.textContent=why;
+ opts.forEach((o,j)=>box.append(el('button',{'data-q':i,'data-j':j,text:o})));
+ qb.append(el('div',{class:'qcard'},el('b',{text:(i+1)+'. '+q}),box,w));});
+function paintQuiz(){let score=0,n=0;$$('.qcard',qb).forEach((c,i)=>{const a=ans[i];const right=QZ[i][2];$$('button',c).forEach((b,j)=>{b.classList.toggle('right',a!=null&&j===right);b.classList.toggle('wrong',a!=null&&j===a&&a!==right);});$('.why',c).hidden=a==null;if(a!=null){n++;if(a===right)score++;}});
+ $('#score').textContent=score+' / '+QZ.length;$('#scoreTxt').textContent=n<QZ.length?(QZ.length-n)+' left to answer.':score===QZ.length?'All correct. Go build a context binary.':score>=6?'Solid. Re-read the modules behind the misses.':'Go back through modules 02, 05 and 07.';}
+qb.addEventListener('click',e=>{const b=e.target.closest('button[data-q]');if(!b)return;ans[b.dataset.q]=+b.dataset.j;store.set('qc.quiz',ans);paintQuiz();});
+paintQuiz();
+})();
+</script>
+
+</body></html>

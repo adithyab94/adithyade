@@ -1,0 +1,14 @@
+<svg class="chart" viewBox="0 0 680 300" role="img" aria-label="Bar chart. A nearest-neighbour probe on 24 by 24 thumbnails names the task from the first frame in 4.7% of LIBERO-Goal episodes (below the 10% chance line), 91.2% of LIBERO-Spatial and 100% of LIBERO-Object." xmlns="http://www.w3.org/2000/svg">
+<text x="52.0" y="14.0" text-anchor="start" class="t-title">task named from the first frame, % of episodes</text>
+<line class="grid" x1="52" x2="668" y1="248.0" y2="248.0"/><text x="44.0" y="252.0" text-anchor="end">0</text><line class="grid" x1="52" x2="668" y1="199.4" y2="199.4"/><text x="44.0" y="203.4" text-anchor="end">25</text><line class="grid" x1="52" x2="668" y1="150.7" y2="150.7"/><text x="44.0" y="154.7" text-anchor="end">50</text><line class="grid" x1="52" x2="668" y1="102.1" y2="102.1"/><text x="44.0" y="106.1" text-anchor="end">75</text><line class="grid" x1="52" x2="668" y1="53.5" y2="53.5"/><text x="44.0" y="57.5" text-anchor="end">100</text>
+<g class="mark"><title>LIBERO-Goal: 4.7%</title><path class="m-a" d="M108.7,248.0 V241.9 Q108.7,238.9 111.7,238.9 H197.7 Q200.7,238.9 200.7,241.9 V248.0 Z"/><text x="154.7" y="220.5" text-anchor="middle" class="t-ink">4.7%</text><rect class="hit" x="52.0" y="34.0" width="205.3" height="214.0"/></g>
+<text x="154.7" y="268.0" text-anchor="middle" class="t-ink">LIBERO-Goal</text>
+<text x="154.7" y="284.0" text-anchor="middle">what I train on</text>
+<g class="mark"><title>LIBERO-Spatial: 91.2%</title><path class="m-ctx" d="M314.0,248.0 V73.6 Q314.0,70.6 317.0,70.6 H403.0 Q406.0,70.6 406.0,73.6 V248.0 Z"/><text x="360.0" y="62.6" text-anchor="middle" class="t-ink">91.2%</text><rect class="hit" x="257.3" y="34.0" width="205.3" height="214.0"/></g>
+<text x="360.0" y="268.0" text-anchor="middle" class="t-ink">LIBERO-Spatial</text>
+<g class="mark"><title>LIBERO-Object: 100.0%</title><path class="m-ctx" d="M519.3,248.0 V56.5 Q519.3,53.5 522.3,53.5 H608.3 Q611.3,53.5 611.3,56.5 V248.0 Z"/><text x="565.3" y="45.5" text-anchor="middle" class="t-ink">100.0%</text><rect class="hit" x="462.7" y="34.0" width="205.3" height="214.0"/></g>
+<text x="565.3" y="268.0" text-anchor="middle" class="t-ink">LIBERO-Object</text>
+<line class="ref" x1="52" x2="668" y1="228.5" y2="228.5"/>
+<text x="257.3" y="222.5" text-anchor="middle">chance, 10%</text>
+<line class="axis" x1="52" x2="668" y1="248" y2="248"/>
+</svg>

@@ -1,0 +1,32 @@
+<svg class="chart" viewBox="0 0 680 310" role="img" aria-label="Line chart. How often a pixel probe names the task, by frame within the episode: about 8% at frame 0, 51% by frame 8, 76% by frame 16 and 96% by frame 80." xmlns="http://www.w3.org/2000/svg">
+<text x="52.0" y="14.0" text-anchor="start" class="t-title">task named from pixels, % of episodes</text>
+<rect class="band" x="52.0" y="34" width="257.3" height="218"/>
+<text x="62.0" y="52.0" text-anchor="start" class="t-ink">first 8 frames:</text>
+<text x="62.0" y="68.0" text-anchor="start" class="t-ink">only the sentence</text>
+<text x="62.0" y="84.0" text-anchor="start" class="t-ink">says which task</text>
+<line class="grid" x1="52" x2="664" y1="252.0" y2="252.0"/><text x="44.0" y="256.0" text-anchor="end">0</text><line class="grid" x1="52" x2="664" y1="200.1" y2="200.1"/><text x="44.0" y="204.1" text-anchor="end">25</text><line class="grid" x1="52" x2="664" y1="148.2" y2="148.2"/><text x="44.0" y="152.2" text-anchor="end">50</text><line class="grid" x1="52" x2="664" y1="96.3" y2="96.3"/><text x="44.0" y="100.3" text-anchor="end">75</text><line class="grid" x1="52" x2="664" y1="44.4" y2="44.4"/><text x="44.0" y="48.4" text-anchor="end">100</text>
+<line class="ref" x1="52" x2="664" y1="231.2" y2="231.2"/>
+<text x="664.0" y="225.2" text-anchor="end">chance, 10%</text>
+<polyline class="l-a" points="52.0,236.2 84.2,236.2 116.3,231.4 148.5,224.2 180.6,210.9 244.9,182.0 309.3,145.7 373.6,137.4 439.2,93.8 527.0,79.5 664.0,51.9"/>
+<g class="mark"><title>frame 0: 7.6%</title><circle class="dot-a" cx="52.0" cy="236.2" r="4.5"/><rect class="hit" x="40.0" y="34.0" width="24.0" height="218.0"/></g>
+<g class="mark"><title>frame 1: 7.6%</title><circle class="dot-a" cx="84.2" cy="236.2" r="4.5"/><rect class="hit" x="72.2" y="34.0" width="24.0" height="218.0"/></g>
+<g class="mark"><title>frame 2: 9.9%</title><circle class="dot-a" cx="116.3" cy="231.4" r="4.5"/><rect class="hit" x="104.3" y="34.0" width="24.0" height="218.0"/></g>
+<g class="mark"><title>frame 3: 13.4%</title><circle class="dot-a" cx="148.5" cy="224.2" r="4.5"/><rect class="hit" x="136.5" y="34.0" width="24.0" height="218.0"/></g>
+<g class="mark"><title>frame 4: 19.8%</title><circle class="dot-a" cx="180.6" cy="210.9" r="4.5"/><rect class="hit" x="168.6" y="34.0" width="24.0" height="218.0"/></g>
+<g class="mark"><title>frame 6: 33.7%</title><circle class="dot-a" cx="244.9" cy="182.0" r="4.5"/><rect class="hit" x="232.9" y="34.0" width="24.0" height="218.0"/></g>
+<g class="mark"><title>frame 8: 51.2%</title><circle class="dot-a" cx="309.3" cy="145.7" r="4.5"/><rect class="hit" x="297.3" y="34.0" width="24.0" height="218.0"/></g>
+<g class="mark"><title>frame 10: 55.2%</title><circle class="dot-a" cx="373.6" cy="137.4" r="4.5"/><rect class="hit" x="361.6" y="34.0" width="24.0" height="218.0"/></g>
+<g class="mark"><title>frame 16: 76.2%</title><circle class="dot-a" cx="439.2" cy="93.8" r="4.5"/><rect class="hit" x="427.2" y="34.0" width="24.0" height="218.0"/></g>
+<g class="mark"><title>frame 30: 83.1%</title><circle class="dot-a" cx="527.0" cy="79.5" r="4.5"/><rect class="hit" x="515.0" y="34.0" width="24.0" height="218.0"/></g>
+<g class="mark"><title>frame 80: 96.4%</title><circle class="dot-a" cx="664.0" cy="51.9" r="4.5"/><rect class="hit" x="652.0" y="34.0" width="24.0" height="218.0"/></g>
+<text x="656.0" y="71.9" text-anchor="end" class="t-ink">96%</text>
+<line class="axis" x1="52" x2="664" y1="252" y2="252"/>
+<text x="52.0" y="270.0" text-anchor="middle">0</text>
+<text x="116.3" y="270.0" text-anchor="middle">2</text>
+<text x="180.6" y="270.0" text-anchor="middle">4</text>
+<text x="309.3" y="270.0" text-anchor="middle">8</text>
+<text x="439.2" y="270.0" text-anchor="middle">16</text>
+<text x="527.0" y="270.0" text-anchor="middle">30</text>
+<text x="664.0" y="270.0" text-anchor="middle">80</text>
+<text x="358.0" y="292.0" text-anchor="middle">frame within the episode (log scale past 10)</text>
+</svg>

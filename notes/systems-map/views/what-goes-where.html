@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){var ok=false;try{ok=localStorage.getItem("pai-notes")==="unlocked"}catch(e){ok=true}if(!ok)location.replace("../../../blog/#physical-ai-notes")})();</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What goes where · Physical AI Systems Map</title>
+<meta name="description" content="Stages by location and technique family, computed from stage data.">
+<script>try{var t=localStorage.getItem("pai.theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=gambarino@400&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700,400i&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/notes.css">
+<link rel="stylesheet" href="../../assets/theme-map.css">
+</head>
+<body data-page="view" data-id="view-matrix" data-root="../">
+<div class="pai-bar"><a class="pai-bar__name" href="../../../">Adithya Balaji</a><nav><a href="../../../blog/#physical-ai-notes">Physical-AI notes</a><a href="../../../blog/">Blog</a></nav></div>
+
+<a class="skip" href="#content">Skip to content</a>
+<div class="app">
+<aside class="rail" id="rail" aria-label="Site navigation"></aside>
+<div class="maincol">
+<header class="topbar" id="topbar"></header>
+<main class="page" id="content">
+<div data-crumbs></div>
+<header class="phead"><div class="eyebrow">Integration view</div><h1>What goes where</h1><p class="lede">Each stage scored 0–3 for where it runs and which technique families it relies on. Values come from the <code>where</code> and <code>tech</code> fields of each stage data file, so this matrix updates when a stage is edited. The Edge column takes the higher of Edge and Robot.</p></header>
+<div class="legend" style="margin-bottom:.75rem"><span>Dots: 0 not used · 1 occasional · 2 common · 3 central</span><span>Filter chips dim rows whose stage is not central to the selected technique or location.</span></div>
+<div data-render="matrix-where"><noscript><p>This view renders from the files in <code>data/</code> with JavaScript.</p></noscript></div>
+<div class="prose" style="margin-top:1.5rem">
+<h2>How to read it</h2>
+<p>Read a column top to bottom to see where a technique family lives in the pipeline. RL is concentrated in simulation, sim↔real and the control layer; imitation dominates data, curation and model training; world models now touch simulation, training, evaluation and the flywheel; in-context learning shows up wherever prompts, retrieval or coaching enter (models, deployment, flywheel). Read a row left to right to see what infrastructure and skills a stage needs.</p>
+</div>
+<div data-pager></div>
+</main>
+<footer class="foot" id="pagefoot"></footer>
+</div>
+</div>
+<script src="../data/meta.js"></script>
+<script src="../data/stage-00.js"></script>
+<script src="../data/stage-01.js"></script>
+<script src="../data/stage-02.js"></script>
+<script src="../data/stage-03.js"></script>
+<script src="../data/stage-04.js"></script>
+<script src="../data/stage-05.js"></script>
+<script src="../data/stage-06.js"></script>
+<script src="../data/stage-07.js"></script>
+<script src="../data/stage-08.js"></script>
+<script src="../data/stage-09.js"></script>
+<script src="../data/stage-10.js"></script>
+<script src="../data/stage-11.js"></script>
+<script src="../data/stage-12.js"></script>
+<script src="../data/stage-13.js"></script>
+<script src="../data/stage-14.js"></script>
+<script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){var ok=false;try{ok=localStorage.getItem("pai-notes")==="unlocked"}catch(e){ok=true}if(!ok)location.replace("../../../blog/#physical-ai-notes")})();</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>End-to-end traces · Physical AI Systems Map</title>
+<meta name="description" content="Running example MB-1 and humanoid H-1 traced through all pipeline stages with artifacts, shapes, topics and rates.">
+<script>try{var t=localStorage.getItem("pai.theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=gambarino@400&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700,400i&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/notes.css">
+<link rel="stylesheet" href="../../assets/theme-map.css">
+</head>
+<body data-page="view" data-id="view-traces" data-root="../">
+<div class="pai-bar"><a class="pai-bar__name" href="../../../">Adithya Balaji</a><nav><a href="../../../blog/#physical-ai-notes">Physical-AI notes</a><a href="../../../blog/">Blog</a></nav></div>
+
+<a class="skip" href="#content">Skip to content</a>
+<div class="app">
+<aside class="rail" id="rail" aria-label="Site navigation"></aside>
+<div class="maincol">
+<header class="topbar" id="topbar"></header>
+<main class="page" id="content">
+<div data-crumbs></div>
+<header class="phead"><div class="eyebrow">Integration view</div><h1>End-to-end traces</h1><p class="lede">Two concrete systems traced through all 15 stages. <b>MB-1</b>: a bimanual mobile manipulator mating automotive wire-harness connectors (contact-rich, IL-heavy). <b>H-1</b>: a 29-DoF humanoid doing tote handling and loco-manipulation (RL- and sim-heavy). Each section shows the real artifacts at the hand-off: file formats, tensor shapes, topic names and rates.</p></header>
+<section class="sec" id="summary"><header><span class="num">··</span><h2>The systems in one paragraph each</h2></header>
+<div class="twocol">
+<div class="panel"><div class="eyebrow">Running example</div><h3>MB-1 · connector mating</h3><p>Holonomic base, torso lift, two 7-DoF torque-controlled arms, parallel grippers with visuo-tactile fingertips, wrist F/T, head RGB-D, two wrist cameras, wrist microphone, Livox Mid-360. Jetson AGX Thor + PREEMPT_RT controller + safety PLC. Policy: GR00T N1.7 fine-tune with F/T and tactile tokens, chunks of 50×24 at ≈8 Hz with RTC over 1 kHz impedance control. Acceptance: ≥95 % first-pass success, ≤45 s cycle, ≤0.5 interventions per robot-hour, insertion force &lt;80 N.</p></div>
+<div class="panel"><div class="eyebrow">Second trace</div><h3>H-1 · humanoid tote handling</h3><p>29-DoF humanoid with dexterous hands. A sim-trained RL whole-body tracking controller (SONIC-class) runs at 50 Hz producing PD targets; a VLA emits motion targets at 10–25 Hz. Data is dominated by mocap, VR whole-body teleop and egocentric human video. Diverges from MB-1 in stages 00, 02, 05, 06, 08, 09 and 14: no statically safe state, sim is the main training ground, and RL owns the fast layer.</p></div>
+</div></section>
+<div data-render="traces"><noscript><p>This view renders from the files in <code>data/</code> with JavaScript.</p></noscript></div>
+<div data-pager></div>
+</main>
+<footer class="foot" id="pagefoot"></footer>
+</div>
+</div>
+<script src="../data/meta.js"></script>
+<script src="../data/stage-00.js"></script>
+<script src="../data/stage-01.js"></script>
+<script src="../data/stage-02.js"></script>
+<script src="../data/stage-03.js"></script>
+<script src="../data/stage-04.js"></script>
+<script src="../data/stage-05.js"></script>
+<script src="../data/stage-06.js"></script>
+<script src="../data/stage-07.js"></script>
+<script src="../data/stage-08.js"></script>
+<script src="../data/stage-09.js"></script>
+<script src="../data/stage-10.js"></script>
+<script src="../data/stage-11.js"></script>
+<script src="../data/stage-12.js"></script>
+<script src="../data/stage-13.js"></script>
+<script src="../data/stage-14.js"></script>
+<script src="../assets/app.js"></script>
+</body>
+</html>

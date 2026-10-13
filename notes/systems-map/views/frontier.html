@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){var ok=false;try{ok=localStorage.getItem("pai-notes")==="unlocked"}catch(e){ok=true}if(!ok)location.replace("../../../blog/#physical-ai-notes")})();</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Frontier scan · Physical AI Systems Map</title>
+<meta name="description" content="Frontier concepts 2025-04 to 2026-10 with pipeline placement and verdicts.">
+<script>try{var t=localStorage.getItem("pai.theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=gambarino@400&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700,400i&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/notes.css">
+<link rel="stylesheet" href="../../assets/theme-map.css">
+</head>
+<body data-page="view" data-id="view-frontier" data-root="../">
+<div class="pai-bar"><a class="pai-bar__name" href="../../../">Adithya Balaji</a><nav><a href="../../../blog/#physical-ai-notes">Physical-AI notes</a><a href="../../../blog/">Blog</a></nav></div>
+
+<a class="skip" href="#content">Skip to content</a>
+<div class="app">
+<aside class="rail" id="rail" aria-label="Site navigation"></aside>
+<div class="maincol">
+<header class="topbar" id="topbar"></header>
+<main class="page" id="content">
+<div data-crumbs></div>
+<header class="phead"><div class="eyebrow">Integration view</div><h1>Frontier scan</h1><p class="lede">Concepts and methods that became important between April 2025 and October 2026, each placed in the pipeline with a readiness level and a verdict. <b>Breakthrough</b> marks qualitatively new capability with credible evidence; <b>important</b> marks enabling advances; <b>incremental</b> marks refinements. Company-reported results are labelled as such.</p></header>
+<section class="sec" id="timeline" style="border-top:0;margin-top:0;padding-top:0"><header><span class="num">··</span><h2>Timeline</h2></header>
+<p class="small muted" style="margin-bottom:.5rem">Dates are announcement or arXiv-submission dates; arXiv-only items are placed to the nearest week. Click a label to jump to its entry.</p>
+<div data-render="frontier-timeline"><noscript><p>This view renders from the files in <code>data/</code> with JavaScript.</p></noscript></div></section>
+<section class="sec" id="structure"><header><span class="num">··</span><h2>Effect on the pipeline structure</h2></header>
+<div class="prose"><p>The scan did not require new top-level stages. It added sub-areas inside existing stages: world models as data engines and simulators (<a href="../stages/05-simulation-synthetic.html">05</a>, <a href="../stages/10-evaluation.html">10</a>), WAMs and steerable/in-context models (<a href="../stages/07-models-training.html">07</a>), RL post-training of generalists (<a href="../stages/08-reinforcement-learning.html">08</a>, <a href="../stages/13-data-flywheel.html">13</a>), reward and progress models (<a href="../stages/04-curation-annotation.html">04</a>), and runtime monitors (<a href="../stages/12-deployment-fleet.html">12</a>). The biggest structural change is that <b>world models now appear in five stages</b> and the <b>flywheel feeds RL directly</b>, not only data collection.</p></div></section>
+<section class="sec" id="items"><header><span class="num">··</span><h2>Entries</h2></header>
+<div data-render="frontier"><noscript><p>This view renders from the files in <code>data/</code> with JavaScript.</p></noscript></div></section>
+<div data-pager></div>
+</main>
+<footer class="foot" id="pagefoot"></footer>
+</div>
+</div>
+<script src="../data/meta.js"></script>
+<script src="../data/frontier.js"></script>
+<script src="../assets/app.js"></script>
+</body>
+</html>

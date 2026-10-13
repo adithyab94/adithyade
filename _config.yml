@@ -1,0 +1,58 @@
+title: Adithya Balaji
+description: >-
+  I'm a physical AI engineer in München, helping robots learn to see, think,
+  understand, and touch the world.
+author: Adithya Balaji
+email: adithya.b94@gmail.com
+github: adithyab94
+linkedin: adithya-balaji
+
+# Set these when the site goes live, e.g. url: "https://adithyab94.github.io"
+url: ""
+baseurl: ""
+
+# Posts live at /blog/<slug>/
+permalink: /blog/:title/
+timezone: Europe/Berlin
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter_opts:
+    disable: true
+
+plugins:
+  - jekyll-feed
+
+feed:
+  path: /blog/feed.xml
+
+collections:
+  offline:
+    output: true
+    permalink: /offline/:name/
+
+defaults:
+  - scope:
+      path: ""
+      type: offline
+    values:
+      layout: offline-entry
+      nav: Offline
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      nav: Blog
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - places-lived-footer.html
+  - vendor
+  - .jekyll-cache
+  - .bundle-cache
+  - serve.sh

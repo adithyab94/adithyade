@@ -1,0 +1,130 @@
+---
+layout: default
+nav: Work
+permalink: /work/
+title: Work
+description: "Things Adithya Balaji has built: VLA policies, tactile sensing, edge inference, perception and certifiable AI."
+---
+    <section class="page-head wrap">
+      <p class="eyebrow reveal">Work</p>
+      <h1 class="page-head__title reveal">Things I've <em>built</em>, broken, and built again.</h1>
+      <p class="lede reveal">
+        Mostly robots that learn, and the plumbing that gets them from a training run to a real machine.
+      </p>
+    </section>
+
+    <section class="work work--page wrap">
+      <div class="cards">
+        <a class="card reveal" href="{{ '/blog/what-work-gloves-do-to-hand-tracking/' | relative_url }}">
+          <span class="card__kind">Study · glove-gap</span>
+          <div class="card__body">
+          <h3>What work gloves do to hand tracking <span class="arrow">→</span></h3>
+          <p>
+            How gloves break 3D hand-pose estimation for human-video robot learning, and which capture
+            choices fix it: thin gloves for finger pose, a second camera for position.
+          </p>
+          <p class="card__tags">WiLoR · HaMeR · MediaPipe · DexYCB</p>
+          </div>
+        </a>
+        <a class="card reveal" href="{{ '/blog/the-policy-that-ignored-the-instruction/' | relative_url }}">
+          <span class="card__kind">Study · smolvlm2-act</span>
+          <div class="card__body">
+          <h3>The policy that ignored the instruction <span class="arrow">→</span></h3>
+          <p>
+            Fine-tuning SmolVLM2-500M into a LIBERO-Goal policy, finding out why it ignored language,
+            and taking it from 0% to 20% by changing only the frame sampler.
+          </p>
+          <p class="card__tags">VLA · LIBERO · LoRA</p>
+          </div>
+        </a>
+        <a class="card reveal" href="https://github.com/adithyab94/jetson-gr00t-observer" target="_blank" rel="noopener">
+          <span class="card__kind">Open source</span>
+          <div class="card__body">
+          <h3>jetson-gr00t-observer <span class="arrow">↗</span></h3>
+          <p>
+            A profiling toolkit for running NVIDIA's GR00T N1.5 on Jetson. It breaks inference latency into the vision encoder,
+            the language backbone and the diffusion action head, so you can see where the milliseconds go.
+          </p>
+          <p class="card__tags">TensorRT · Jetson · Grafana</p>
+          </div>
+        </a>
+        <div class="card reveal">
+          <span class="card__kind">Neura Robotics</span>
+          <div class="card__body">
+          <h3>Giving VLAs a sense of touch</h3>
+          <p>
+            Adding tactile encoders as a new observation alongside vision and language,
+            so manipulation policies can feel contact instead of guessing it.
+          </p>
+          <p class="card__tags">VLA · Tactile · LoRA</p>
+          </div>
+        </div>
+        <div class="card reveal">
+          <span class="card__kind">Neura Robotics</span>
+          <div class="card__body">
+          <h3>Real-time policies on the edge</h3>
+          <p>
+            Quantising and compiling VLA and diffusion policies for Jetson and Qualcomm NPUs,
+            with INT8/FP8 and CUDA Graphs, for sub-30&nbsp;ms humanoid control.
+          </p>
+          <p class="card__tags">TensorRT · AIMET · CUDA</p>
+          </div>
+        </div>
+        <div class="card reveal">
+          <span class="card__kind">Neura Robotics</span>
+          <div class="card__body">
+          <h3>Shipping models to a fleet</h3>
+          <p>
+            An edge MLOps pipeline for versioning models, evaluating them systematically,
+            and rolling them out over the air to robots in stages.
+          </p>
+          <p class="card__tags">MLOps · OTA</p>
+          </div>
+        </div>
+        <div class="card reveal">
+          <span class="card__kind">Huber Automotive</span>
+          <div class="card__body">
+          <h3>Seeing with more than cameras</h3>
+          <p>
+            Fusing camera, LiDAR and radar for autonomous mobility and target tracking,
+            with INT8 detection models running inside tight embedded power budgets.
+          </p>
+          <p class="card__tags">Sensor fusion · ROS 2 · C++</p>
+          </div>
+        </div>
+        <div class="card reveal">
+          <span class="card__kind">Huber × Fraunhofer IPA</span>
+          <div class="card__body">
+          <h3>VeoPipe</h3>
+          <p>
+            A certifiable, reproducible AI development pipeline for embedded robotics,
+            with standardised testing and traceability built in.
+          </p>
+          <p class="card__tags">Safety · MLOps</p>
+          </div>
+        </div>
+        <div class="card reveal">
+          <span class="card__kind">Centrale Nantes</span>
+          <div class="card__body">
+          <h3>Human-to-humanoid motion</h3>
+          <p>
+            Motion capture and force plates, a Hanavan body model and Newton–Euler dynamics,
+            mapped onto a humanoid through inverse kinematics for upper-body imitation.
+          </p>
+          <p class="card__tags">Mocap · Dynamics · IK</p>
+          </div>
+        </div>
+        <div class="card reveal">
+          <span class="card__kind">Reliev · Thesis</span>
+          <div class="card__body">
+          <h3>Listening to the heart</h3>
+          <p>
+            Deep learning on ECG and IMU signals for epileptic seizure detection,
+            from data ingestion and denoising to active learning.
+          </p>
+          <p class="card__tags">Biosignals · CNN / RNN</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  

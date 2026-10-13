@@ -1,0 +1,36 @@
+# Physical-AI notes listed on /blog/ after unlocking. Pages live in notes/<slug>/.
+- title: "Fewer bits, same robot"
+  url: /notes/quantization/
+  kind: Optimization
+  summary: "Number formats, calibration, GPTQ, AWQ and SmoothQuant, rooflines, fusion, CUDA graphs and TensorRT, each with a widget to poke at."
+  tags: "quantization · TensorRT · CUDA graphs"
+- title: "Qualcomm AI stack field guide"
+  url: /notes/qualcomm/
+  kind: Edge NPUs
+  summary: "QAIRT, QNN, the Hexagon NPU and its siblings, op support, picking a backend, and getting from a checkpoint to a tuned context binary."
+  tags: "Hexagon · QNN · AIMET"
+- title: "Physical AI systems map"
+  url: /notes/systems-map/
+  kind: Overview
+  summary: "The whole pipeline in fifteen stages, from sensors and data collection to training, edge inference, fleets and safety."
+  tags: "systems · data · deployment"
+- title: "Foundation models, read like code"
+  url: /notes/foundation-models/
+  kind: Models
+  summary: "ViT, CLIP, DINOv2, LLaVA, OpenVLA and π0.5: clickable architectures, the math, tensor shapes step by step, and the lines of code that matter."
+  tags: "ViT · CLIP · DINOv2 · LLaVA · OpenVLA · π0.5"
+- title: "GR00T N1.6 → ONNX → TensorRT"
+  url: /notes/gr00t-tensorrt/
+  kind: Deployment
+  summary: "Splitting a VLA into six graphs, building engines on the target, binding tensors, and proving the actions didn't move."
+  tags: "GR00T · ONNX · TensorRT · Jetson Thor"
+- title: "Real2sim: TSDF scans vs Gaussian splats"
+  url: /notes/real2sim/
+  kind: Reconstruction
+  summary: "Two ways to turn the real world into a sim asset: robot-guided RGB-D fusion, and a 3D Gaussian splatting pipeline."
+  tags: "TSDF · 3DGS · nerfstudio"
+- title: "Self-supervised tactile encoders"
+  url: /notes/tactile-ssl/
+  kind: Touch
+  summary: "Learning one representation from very different touch sensors with per-sensor stems, a shared transformer and the DINOv2 recipe."
+  tags: "tactile · DINOv2 · iBOT · KoLeo"

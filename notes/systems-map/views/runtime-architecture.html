@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){var ok=false;try{ok=localStorage.getItem("pai-notes")==="unlocked"}catch(e){ok=true}if(!ok)location.replace("../../../blog/#physical-ai-notes")})();</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Runtime architecture · Physical AI Systems Map</title>
+<meta name="description" content="On-robot processes with rates, compute targets, learned vs classical, and the safety layer.">
+<script>try{var t=localStorage.getItem("pai.theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=gambarino@400&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700,400i&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/notes.css">
+<link rel="stylesheet" href="../../assets/theme-map.css">
+</head>
+<body data-page="view" data-id="view-runtime" data-root="../">
+<div class="pai-bar"><a class="pai-bar__name" href="../../../">Adithya Balaji</a><nav><a href="../../../blog/#physical-ai-notes">Physical-AI notes</a><a href="../../../blog/">Blog</a></nav></div>
+
+<a class="skip" href="#content">Skip to content</a>
+<div class="app">
+<aside class="rail" id="rail" aria-label="Site navigation"></aside>
+<div class="maincol">
+<header class="topbar" id="topbar"></header>
+<main class="page" id="content">
+<div data-crumbs></div>
+<header class="phead"><div class="eyebrow">Integration view</div><h1>On-robot runtime architecture</h1><p class="lede">Every process on MB-1 (with the humanoid H-1 addition), grouped by compute target with its rate. Learned components are indigo, classical components slate, certified safety red. The command path runs left to right from policy to drives; the safety path is independent of every learned component.</p></header>
+<div class="diagram"><svg viewBox="0 0 1100 520" role="img" aria-labelledby="rtTitle rtDesc"><title id="rtTitle">On-robot runtime architecture</title><desc id="rtDesc">Processes grouped by compute target with rates; learned components in indigo, classical in slate, certified safety in red; arrows show the command path from policy to drives and the independent safety stop path.</desc><defs><marker id="rta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--line-strong)"/></marker><marker id="rtas" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--bad)"/></marker></defs><g class="rt-group"><rect class="grp" x="10" y="30" width="225" height="410" rx="6"/><text class="gl" x="22" y="50">CLOUD / WORKCELL · async</text></g><g class="rt-group"><rect class="grp" x="250" y="30" width="300" height="410" rx="6"/><text class="gl" x="262" y="50">ONBOARD GPU · Jetson AGX Thor</text></g><g class="rt-group"><rect class="grp" x="565" y="30" width="270" height="410" rx="6"/><text class="gl" x="577" y="50">REAL-TIME CPU · PREEMPT_RT</text></g><g class="rt-group"><rect class="grp" x="850" y="30" width="240" height="410" rx="6"/><text class="gl" x="862" y="50">DRIVES & CERTIFIED SAFETY</text></g><g class="rt-proc infra"><rect x="22" y="70" width="200" height="44" rx="4"/><text x="32" y="88">Fleet backend & telemetry</text><text class="hz" x="32" y="105">metrics 1–10 Hz · bulk at dock</text></g><g class="rt-proc infra"><rect x="22" y="130" width="200" height="44" rx="4"/><text x="32" y="148">Remote assist console</text><text class="hz" x="32" y="165">on monitor alarms</text></g><g class="rt-proc learned"><rect x="22" y="190" width="200" height="44" rx="4"/><text x="32" y="208">Reasoner API (optional S2)</text><text class="hz" x="32" y="225">0.1–1 Hz · e.g. ER-class VLM</text></g><g class="rt-proc learned"><rect x="262" y="70" width="276" height="44" rx="4"/><text x="272" y="88">S2 task reasoner (small VLM)</text><text class="hz" x="272" y="105">0.1–2 Hz → subtask, prompt, subgoal</text></g><g class="rt-proc learned"><rect x="262" y="130" width="276" height="44" rx="4"/><text x="272" y="148">Perception for control</text><text class="hz" x="272" y="165">15–30 Hz · poses, ESDF map</text></g><g class="rt-proc learned"><rect x="262" y="190" width="276" height="44" rx="4"/><text x="272" y="208">S1 visuomotor policy (VLA / WAM)</text><text class="hz" x="272" y="225">5–15 Hz · chunk 50×24 · TRT NVFP4/FP8</text></g><g class="rt-proc learned"><rect x="262" y="250" width="276" height="44" rx="4"/><text x="272" y="268">Runtime monitor</text><text class="hz" x="272" y="285">per chunk · OOD, entropy, value stall</text></g><g class="rt-proc learned"><rect x="262" y="370" width="276" height="44" rx="4" stroke-dasharray="5 3"/><text x="272" y="388">Humanoid only: whole-body tracker</text><text class="hz" x="272" y="405">50 Hz → PD targets · priority stream</text></g><g class="rt-proc classical"><rect x="577" y="70" width="246" height="44" rx="4"/><text x="587" y="88">Action server (RTC, interpolation)</text><text class="hz" x="587" y="105">50–200 Hz · clock alignment, blending</text></g><g class="rt-proc classical"><rect x="577" y="130" width="246" height="44" rx="4"/><text x="587" y="148">Safety filter + diff-IK QP</text><text class="hz" x="587" y="165">0.5–1 kHz · limits, CBF, workspace</text></g><g class="rt-proc classical"><rect x="577" y="190" width="246" height="44" rx="4"/><text x="587" y="208">Cartesian impedance / joint PD</text><text class="hz" x="587" y="225">1 kHz · force caps, stiffness</text></g><g class="rt-proc learned"><rect x="577" y="250" width="246" height="44" rx="4"/><text x="587" y="268">Residual actor (RL)</text><text class="hz" x="587" y="285">50 Hz · bounded Δpose</text></g><g class="rt-proc classical"><rect x="577" y="310" width="246" height="44" rx="4"/><text x="587" y="328">State estimation</text><text class="hz" x="587" y="345">0.2–1 kHz proprio · 10 Hz LiDAR</text></g><g class="rt-proc infra"><rect x="577" y="370" width="246" height="44" rx="4"/><text x="587" y="388">Logger (MCAP ring buffer)</text><text class="hz" x="587" y="405">all topics · event upload</text></g><g class="rt-proc classical"><rect x="862" y="190" width="216" height="44" rx="4"/><text x="872" y="208">Drive servo loops</text><text class="hz" x="872" y="225">4–40 kHz · current / torque</text></g><g class="rt-proc safety"><rect x="862" y="310" width="216" height="44" rx="4"/><text x="872" y="328">Safety PLC + scanners</text><text class="hz" x="872" y="345">≈1–10 ms · PL d / SIL 2-class</text></g><text x="862" y="380" style="fill:var(--muted);font-family:var(--font-mono);font-size:10.5px">independent of every learned</text><text x="862" y="394" style="fill:var(--muted);font-family:var(--font-mono);font-size:10.5px">component: E-stop, SSM, SLS, STO</text><g class="rt-group"><rect class="grp" x="250" y="458" width="840" height="48" rx="6"/><text class="gl" x="262" y="478">SENSORS · PTP-synced</text><text x="262" y="496" style="fill:var(--fg);font-size:11px">cameras 30 Hz (global shutter, hw trigger) · F/T 1 kHz · tactile 30–60 Hz · joints 0.5–1 kHz (EtherCAT DC) · IMU 0.2–1 kHz · LiDAR 10 Hz · audio 48 kHz</text></g><path class="rt-flow" d="M262,92 C242,92 242,212 262,212" marker-end="url(#rta)"/><path class="rt-flow" d="M400,174 V188" marker-end="url(#rta)"/><path class="rt-flow" d="M400,234 V248" marker-end="url(#rta)"/><path class="rt-flow" d="M538,212 C558,212 557,92 577,92" marker-end="url(#rta)"/><path class="rt-flow" d="M700,114 V128" marker-end="url(#rta)"/><path class="rt-flow" d="M700,174 V188" marker-end="url(#rta)"/><path class="rt-flow" d="M577,272 C557,272 557,152 577,152" marker-end="url(#rta)"/><path class="rt-flow" d="M823,212 H860" marker-end="url(#rta)"/><path class="rt-flow" d="M262,272 C240,272 240,152 224,152" marker-end="url(#rta)"/><path class="rt-flow" d="M538,392 C560,392 556,222 577,222" stroke-dasharray="5 3" marker-end="url(#rta)"/><path class="rt-flow safety" d="M970,308 V236" marker-end="url(#rtas)"/><text x="978" y="276" style="fill:var(--bad);font-family:var(--font-mono);font-size:10.5px">STO / stop</text><path class="rt-flow" d="M400,458 V442" marker-end="url(#rta)"/><path class="rt-flow" d="M700,458 V442" marker-end="url(#rta)"/><path class="rt-flow" d="M970,458 V442" marker-end="url(#rta)"/></svg>
+</div>
+<div class="legend"><span><span class="sw box" style="background:var(--t-fm-bg);border-color:var(--t-fm)"></span>learned</span><span><span class="sw box" style="background:var(--t-classical-bg);border-color:var(--t-classical)"></span>classical</span><span><span class="sw box" style="border-color:var(--bad)"></span>certified safety</span><span><span class="sw box"></span>infrastructure</span><span>dashed: humanoid-only path</span></div>
+<section class="sec" id="processes"><header><span class="num">··</span><h2>Process table</h2></header>
+<p class="small muted" style="margin-bottom:.6rem">Sort by rate or compute. The last column is the designed behaviour when the process misses its deadline or fails.</p>
+<div data-render="runtime-table"><noscript><p>This view renders from the files in <code>data/</code> with JavaScript.</p></noscript></div></section>
+<section class="sec" id="rules"><header><span class="num">··</span><h2>Design rules this layout encodes</h2></header>
+<ul class="prose">
+<li>No learned component sits on the path between the safety controller and the drives.</li>
+<li>Every learned output passes through a classical filter that enforces limits before reaching a controller (<a href="../stages/09-classical-control.html">stage 09</a>).</li>
+<li>Slow components (reasoner, policy) are asynchronous to fast ones; their deadline misses degrade capability, not stability.</li>
+<li>On humanoids the fastest learned component (whole-body tracker) gets a dedicated priority so a slow VLA chunk can never starve balance control.</li>
+<li>Every process emits telemetry with the version tuple; the logger keeps a ring buffer for incident bundles.</li>
+</ul></section>
+<div data-pager></div>
+</main>
+<footer class="foot" id="pagefoot"></footer>
+</div>
+</div>
+<script src="../data/meta.js"></script>
+<script src="../data/views.js"></script>
+<script src="../assets/app.js"></script>
+</body>
+</html>

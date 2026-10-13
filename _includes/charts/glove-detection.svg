@@ -1,0 +1,21 @@
+<svg class="chart" viewBox="0 0 680 250" role="img" aria-label="Bar chart of the drop in hand detection compared with bare hands. MediaPipe: 87 to 90 points with synthetic gloves, 94 with real gloves. WiLoR: 0 to 4 points with synthetic gloves, 35 to 48 with real gloves." xmlns="http://www.w3.org/2000/svg">
+<text x="0.0" y="14.0" text-anchor="start" class="t-title">drop in hands detected vs bare hands, percentage points</text>
+<rect class="m-b" x="0.0" y="31.0" width="10" height="10" rx="2"/><text x="16.0" y="40.0" text-anchor="start" class="t-ink">synthetic gloves</text><rect class="m-a" x="157.2" y="31.0" width="10" height="10" rx="2"/><text x="173.2" y="40.0" text-anchor="start" class="t-ink">real gloves</text>
+<line class="grid" x1="150.0" x2="150.0" y1="54" y2="216"/>
+<text x="150.0" y="234.0" text-anchor="middle">0</text>
+<line class="grid" x1="272.5" x2="272.5" y1="54" y2="216"/>
+<text x="272.5" y="234.0" text-anchor="middle">−25</text>
+<line class="grid" x1="395.0" x2="395.0" y1="54" y2="216"/>
+<text x="395.0" y="234.0" text-anchor="middle">−50</text>
+<line class="grid" x1="517.5" x2="517.5" y1="54" y2="216"/>
+<text x="517.5" y="234.0" text-anchor="middle">−75</text>
+<line class="grid" x1="640.0" x2="640.0" y1="54" y2="216"/>
+<text x="640.0" y="234.0" text-anchor="middle">−100</text>
+<text x="0.0" y="90.0" text-anchor="start" class="t-ink">MediaPipe</text>
+<g class="mark"><title>MediaPipe, synthetic gloves: −87 to −90 pp</title><path class="m-b" d="M150.0,64.0 H573.3 Q576.3,64.0 576.3,67.0 V83.0 Q576.3,86.0 573.3,86.0 H150.0 Z"/><rect class="m-b" x="576.3" y="64.0" width="14.7" height="22" rx="3" opacity="0.4"/><text x="599.0" y="80.0" text-anchor="start" class="t-ink">−87 to −90</text><rect class="hit" x="150.0" y="62.0" width="490.0" height="26.0"/></g>
+<g class="mark"><title>MediaPipe, real gloves: −94 pp</title><path class="m-a" d="M150.0,92.0 H607.6 Q610.6,92.0 610.6,95.0 V111.0 Q610.6,114.0 607.6,114.0 H150.0 Z"/><text x="618.6" y="108.0" text-anchor="start" class="t-ink">−94</text><rect class="hit" x="150.0" y="90.0" width="490.0" height="26.0"/></g>
+<text x="0.0" y="164.0" text-anchor="start" class="t-ink">WiLoR</text>
+<g class="mark"><title>WiLoR, synthetic gloves: −0 to −4 pp</title><path class="m-b" d="M150.0,138.0 H151.5 Q152.9,138.0 152.9,139.5 V158.5 Q152.9,160.0 151.5,160.0 H150.0 Z"/><rect class="m-b" x="150.0" y="138.0" width="19.6" height="22" rx="3" opacity="0.4"/><text x="177.6" y="154.0" text-anchor="start" class="t-ink">−0 to −4</text><rect class="hit" x="150.0" y="136.0" width="490.0" height="26.0"/></g>
+<g class="mark"><title>WiLoR, real gloves: −35 to −48 pp</title><path class="m-a" d="M150.0,166.0 H318.5 Q321.5,166.0 321.5,169.0 V185.0 Q321.5,188.0 318.5,188.0 H150.0 Z"/><rect class="m-a" x="321.5" y="166.0" width="63.7" height="22" rx="3" opacity="0.4"/><text x="393.2" y="182.0" text-anchor="start" class="t-ink">−35 to −48</text><rect class="hit" x="150.0" y="164.0" width="490.0" height="26.0"/></g>
+<line class="axis" x1="150.0" x2="150.0" y1="54" y2="216"/>
+</svg>

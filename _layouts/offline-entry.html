@@ -1,0 +1,62 @@
+---
+layout: default
+---
+{%- if page.kind == "roll" -%}
+{%- assign dir = '/assets/offline/' | append: page.folder | append: '/' -%}
+{%- assign files = site.static_files | where_exp: "f", "f.path contains dir" | sort: "path" -%}
+<article class="roll-page">
+  <header class="roll-page__head wrap">
+    <p class="post__kicker"><a href="{{ '/offline/' | relative_url }}">Offline</a> · Roll</p>
+    <h1 class="page-head__title">{{ page.title }}{% if page.sample %} <em class="badge">sample</em>{% endif %}</h1>
+    <dl class="post__meta">
+      {%- if page.camera %}<dt>Camera</dt><dd>{{ page.camera }}</dd>{% endif %}
+      {%- if page.film %}<dt>Film</dt><dd>{{ page.film }}</dd>{% endif %}
+      {%- if page.place %}<dt>Where</dt><dd>{{ page.place }}</dd>{% endif %}
+      <dt>When</dt><dd>{{ page.date | date: "%B %Y" }}</dd>
+    </dl>
+    {%- if content != "" %}<div class="roll-page__notes">{{ content }}</div>{% endif %}
+  </header>
+
+  <div class="sheet sheet--full wrap" aria-label="Contact sheet">
+    {%- assign n = 0 %}
+    {%- for f in files %}
+      {%- if f.basename contains '-thumb' %}{% continue %}{% endif %}
+      {%- assign n = n | plus: 1 %}
+    <a class="sheet__frame" href="#frame-{{ n }}"><img src="{{ f.path | replace: '.jpg', '-thumb.jpg' | relative_url }}" alt="" loading="lazy"><i>{{ n }}</i></a>
+    {%- endfor %}
+  </div>
+
+  <div class="frames">
+    {%- assign n = 0 %}
+    {%- for f in files %}
+      {%- if f.basename contains '-thumb' %}{% continue %}{% endif %}
+      {%- assign n = n | plus: 1 %}
+      {%- assign caption = page.captions[f.basename] %}
+    <figure class="frame" id="frame-{{ n }}" data-lightbox="roll" data-src="{{ f.path | relative_url }}" data-caption="{{ caption | default: page.title }} · {{ n }}">
+      <img src="{{ f.path | relative_url }}" alt="{{ caption | default: 'Frame' }} {{ n }} from {{ page.title }}" loading="lazy">
+      <figcaption><span>{{ n | prepend: '0' | slice: -2, 2 }}</span>{% if caption %} {{ caption }}{% endif %}</figcaption>
+    </figure>
+    {%- endfor %}
+  </div>
+
+  <footer class="post__foot wrap"><a class="text-link" href="{{ '/offline/' | relative_url }}">← Offline</a></footer>
+</article>
+{% include lightbox.html %}
+{%- else -%}
+{%- assign words = content | strip_html | number_of_words -%}
+<article class="post">
+  <header class="post__head">
+    <p class="post__kicker"><a href="{{ '/offline/' | relative_url }}">Offline</a> · {{ page.kind | capitalize }}</p>
+    <h1 class="post__title">{{ page.title }}</h1>
+    {%- if page.subtitle %}<p class="post__subtitle">{{ page.subtitle }}</p>{% endif %}
+    <dl class="post__meta">
+      <dt>{% if page.status == "in-progress" %}Started{% else %}Written{% endif %}</dt><dd>{{ page.date | date: "%B %-d, %Y" }}</dd>
+      {%- if page.status == "in-progress" %}<dt>Status</dt><dd><em class="badge">in progress</em></dd>{% else %}<dt>Reading</dt><dd>{{ words | divided_by: 230 | plus: 1 }} min</dd>{% endif %}
+    </dl>
+  </header>
+  <div class="post__body">
+{{ content }}
+  </div>
+  <footer class="post__foot"><a class="text-link" href="{{ '/offline/' | relative_url }}">← Offline</a></footer>
+</article>
+{%- endif -%}

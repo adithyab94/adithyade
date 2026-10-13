@@ -1,0 +1,132 @@
+---
+layout: default
+nav: Offline
+title: Offline
+permalink: /offline/
+description: "Film photographs, books, films, and writing by Adithya Balaji that has nothing to do with robots."
+---
+{%- assign rolls = site.offline | where: "kind", "roll" | sort: "date" | reverse -%}
+{%- assign latest = rolls | first -%}
+{%- assign dir = '/assets/offline/' | append: latest.folder | append: '/' -%}
+{%- assign latest_files = site.static_files | where_exp: "f", "f.path contains dir" | sort: "path" -%}
+
+    <section class="page-head wrap">
+      <p class="eyebrow reveal">Offline</p>
+      <h1 class="page-head__title reveal">Where I touch grass.</h1>
+      <p class="lede reveal">
+        Film photographs, books, films, and writing that has nothing to do with robots.
+      </p>
+    </section>
+
+    <section class="lt-wrap" aria-label="A light table with negatives and prints from the latest roll">
+      <div class="lighttable" id="lighttable">
+        <div class="lt-surface">
+          {%- comment -%} Negative strip: the first six frames, inverted. Hover or tap to see them as positives. {%- endcomment %}
+          <div class="lt-strip" aria-label="Negative strip">
+            <span class="lt-strip__edge">{{ latest.film | split: " · " | first | upcase }}</span>
+            <div class="lt-strip__frames">
+              {%- assign n = 0 %}
+              {%- for f in latest_files %}
+                {%- if f.basename contains '-thumb' or n >= 6 %}{% continue %}{% endif %}
+                {%- assign n = n | plus: 1 %}
+              <button class="neg" type="button" data-lightbox="table" data-src="{{ f.path | relative_url }}" data-caption="{{ latest.title }} · frame {{ n }}">
+                <img src="{{ f.path | replace: '.jpg', '-thumb.jpg' | relative_url }}" alt="Frame {{ n }} of {{ latest.title }}, as a negative" loading="lazy">
+                <span class="neg__no">{{ n }}</span>
+              </button>
+              {%- endfor %}
+            </div>
+          </div>
+
+          {%- comment -%} Loose prints: frames 3–6, scattered and draggable. {%- endcomment %}
+          {%- assign spots = "33,40,-5|50,46,4|67,38,-3|83,44,5" | split: "|" %}
+          {%- assign n = 0 %}{%- assign p = 0 %}
+          {%- for f in latest_files %}
+            {%- if f.basename contains '-thumb' %}{% continue %}{% endif %}
+            {%- assign n = n | plus: 1 %}
+            {%- if n < 3 or p >= 4 %}{% continue %}{% endif %}
+            {%- assign spot = spots[p] | split: "," %}
+          <figure class="print" style="--x:{{ spot[0] }}%;--y:{{ spot[1] }}%;--r:{{ spot[2] }}deg" data-lightbox="table" data-src="{{ f.path | relative_url }}" data-caption="{{ latest.title }} · frame {{ n }}">
+            <span class="tape" aria-hidden="true"></span>
+            <img src="{{ f.path | replace: '.jpg', '-thumb.jpg' | relative_url }}" alt="Print of frame {{ n }} from {{ latest.title }}" draggable="false">
+            <figcaption>{{ n | prepend: '0' | slice: -2, 2 }} · {{ latest.title }}</figcaption>
+          </figure>
+            {%- assign p = p | plus: 1 %}
+          {%- endfor %}
+
+          <div class="lt-label" aria-hidden="true">
+            <b>{{ latest.title }}</b>
+            <span>{{ latest.camera }}</span>
+            <span>{{ latest.film }}</span>
+          </div>
+        </div>
+      </div>
+      <p class="lt-hint wrap">Drag the prints around. Hover the negatives. Click anything to see it big.</p>
+    </section>
+
+    <section class="rolls wrap">
+      <p class="section-label reveal">Rolls</p>
+      <div class="roll-list">
+        {%- for roll in rolls %}
+        {%- assign rdir = '/assets/offline/' | append: roll.folder | append: '/' -%}
+        {%- assign rfiles = site.static_files | where_exp: "f", "f.path contains rdir" | sort: "path" -%}
+        <a class="roll reveal" href="{{ roll.url | relative_url }}">
+          <div class="sheet">
+            {%- assign n = 0 %}
+            {%- for f in rfiles %}
+              {%- if f.basename contains '-thumb' %}{% continue %}{% endif %}
+              {%- assign n = n | plus: 1 %}
+              {%- if n > 6 %}{% break %}{% endif %}
+            <span class="sheet__frame"><img src="{{ f.path | replace: '.jpg', '-thumb.jpg' | relative_url }}" alt="" loading="lazy"><i>{{ n }}</i></span>
+            {%- endfor %}
+          </div>
+          <span class="roll__title">{{ roll.title }}{% if roll.sample %} <em class="badge">sample</em>{% endif %}</span>
+          <span class="roll__meta">{{ roll.camera }} · {{ roll.film }} · {{ roll.date | date: "%b %Y" }}</span>
+        </a>
+        {%- endfor %}
+      </div>
+    </section>
+
+    {%- assign writing = site.offline | where_exp: "e", "e.kind != 'roll'" | where_exp: "e", "e.status != 'in-progress'" | sort: "date" | reverse %}
+    <section class="writing wrap">
+      <p class="section-label reveal">Writing</p>
+      <div class="chips reveal" role="group" aria-label="Filter writing">
+        <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
+        <button class="chip" type="button" data-filter="books" aria-pressed="false">Books</button>
+        <button class="chip" type="button" data-filter="films" aria-pressed="false">Films</button>
+        <button class="chip" type="button" data-filter="words" aria-pressed="false">Words</button>
+      </div>
+      <ol class="archive" id="archive">
+        {%- for e in writing %}
+        <li data-kind="{{ e.kind }}">
+          <a href="{{ e.url | relative_url }}">
+            <span class="archive__title">{{ e.title }}</span>
+            <span class="archive__kind">{{ e.kind }}</span>
+            <span class="archive__date">{{ e.date | date: "%b %-d, %Y" }}</span>
+          </a>
+        </li>
+        {%- endfor %}
+        <li class="archive__empty"{% if writing.size > 0 %} hidden{% endif %}>Nothing finished yet. A few things are marinating below.</li>
+      </ol>
+    </section>
+
+    {%- assign cooking = site.offline | where: "status", "in-progress" | sort: "date" | reverse %}
+    <section class="marinating marinating--offline wrap">
+      <svg class="jar reveal" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20 10h24M22 10v6c-5 3-8 7-8 13v21a6 6 0 0 0 6 6h24a6 6 0 0 0 6-6V29c0-6-3-10-8-13v-6"/>
+        <path d="M14 36c6-3 12 3 18 0s12-3 18 0" opacity=".5"/>
+        <circle class="bubble" cx="26" cy="48" r="2"/>
+        <circle class="bubble" cx="36" cy="46" r="1.6"/>
+        <circle class="bubble" cx="31" cy="50" r="1.3"/>
+      </svg>
+      <p class="section-label reveal">Still marinating</p>
+      <ul class="upcoming">
+        {%- for e in cooking %}
+        <li class="reveal"><a href="{{ e.url | relative_url }}">{{ e.title }}</a> <span>in progress</span></li>
+        {%- endfor %}
+        {%- for idea in site.data.marinating %}
+        <li class="reveal">{{ idea.title }} <span>{{ idea.state }}</span></li>
+        {%- endfor %}
+      </ul>
+    </section>
+
+{% include lightbox.html %}

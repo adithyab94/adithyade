@@ -1,0 +1,20 @@
+<svg class="chart" viewBox="0 0 680 262" role="img" aria-label="Range chart of how much of the glove-induced error each fix removes. Hand position: two calibrated views 72 to 88%, thin nitrile glove 67 to 87%. Finger pose: two calibrated views only 3 to 49%, thin nitrile glove 73 to 92%." xmlns="http://www.w3.org/2000/svg">
+<text x="0.0" y="14.0" text-anchor="start" class="t-title">share of the glove damage removed, %</text>
+<rect class="m-a" x="0.0" y="31.0" width="10" height="10" rx="2"/><text x="16.0" y="40.0" text-anchor="start" class="t-ink">add a second calibrated camera</text><rect class="m-b" x="258.0" y="31.0" width="10" height="10" rx="2"/><text x="274.0" y="40.0" text-anchor="start" class="t-ink">switch to a thin nitrile glove</text>
+<line class="grid" x1="150.0" x2="150.0" y1="54" y2="228"/>
+<text x="150.0" y="246.0" text-anchor="middle">0%</text>
+<line class="grid" x1="267.5" x2="267.5" y1="54" y2="228"/>
+<text x="267.5" y="246.0" text-anchor="middle">25%</text>
+<line class="grid" x1="385.0" x2="385.0" y1="54" y2="228"/>
+<text x="385.0" y="246.0" text-anchor="middle">50%</text>
+<line class="grid" x1="502.5" x2="502.5" y1="54" y2="228"/>
+<text x="502.5" y="246.0" text-anchor="middle">75%</text>
+<line class="grid" x1="620.0" x2="620.0" y1="54" y2="228"/>
+<text x="620.0" y="246.0" text-anchor="middle">100%</text>
+<text x="0.0" y="90.0" text-anchor="start" class="t-ink">Hand position</text>
+<g class="mark"><title>Hand position, 2 calibrated views: 72 to 88%</title><rect class="m-a" x="488.4" y="64.0" width="75.2" height="22" rx="3"/><text x="571.6" y="80.0" text-anchor="start" class="t-ink">72–88%</text><rect class="hit" x="150.0" y="62.0" width="470.0" height="26.0"/></g>
+<g class="mark"><title>Hand position, thin nitrile glove: 67 to 87%</title><rect class="m-b" x="464.9" y="92.0" width="94.0" height="22" rx="3"/><text x="566.9" y="108.0" text-anchor="start" class="t-ink">67–87%</text><rect class="hit" x="150.0" y="90.0" width="470.0" height="26.0"/></g>
+<text x="0.0" y="164.0" text-anchor="start" class="t-ink">Finger pose</text>
+<g class="mark"><title>Finger pose, 2 calibrated views: 3 to 49%</title><rect class="m-a" x="164.1" y="138.0" width="216.2" height="22" rx="3"/><text x="388.3" y="154.0" text-anchor="start" class="t-ink">3–49%</text><rect class="hit" x="150.0" y="136.0" width="470.0" height="26.0"/></g>
+<g class="mark"><title>Finger pose, thin nitrile glove: 73 to 92%</title><rect class="m-b" x="493.1" y="166.0" width="89.3" height="22" rx="3"/><text x="590.4" y="182.0" text-anchor="start" class="t-ink">73–92%</text><rect class="hit" x="150.0" y="164.0" width="470.0" height="26.0"/></g>
+</svg>
