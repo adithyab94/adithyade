@@ -50,7 +50,7 @@
   --radius: 6px;
   --measure: 72ch;
   color-scheme: light;}
-:root:root:root{--bg:#f2f6ea;--surface:#fbfcf8;--surface-2:#e8ede0;--fg:#232220;--muted:#6f6e66;--line:#d5d9cb;--line-strong:#b4b8a8;--accent:#232220;--accent-ink:#232220;--accent-soft:#e6ecd8;--shadow:none;--font-display:"Gambarino",Georgia,serif;--font-body:"Switzer",system-ui,sans-serif;--font-mono:"Fragment Mono",ui-monospace,monospace;color-scheme:light}
+:root:root:root{--bg:#f2f6ea;--surface:#fbfcf8;--surface-2:#e8ede0;--fg:#232220;--muted:#6f6e66;--line:#d5d9cb;--line-strong:#b4b8a8;--accent:#232220;--accent-ink:#232220;--accent-soft:#e6ecd8;--shadow:none;--font-display:"Switzer",system-ui,sans-serif;--font-body:"Switzer",system-ui,sans-serif;--font-mono:"Fragment Mono",ui-monospace,monospace;color-scheme:light}
 h1,h2{font-weight:400!important;letter-spacing:-.02em}
 h3{font-family:"Switzer",system-ui,sans-serif;font-weight:500}
 #themeBtn,[data-theme-toggle],#themeToggle,.theme-toggle{display:none!important}

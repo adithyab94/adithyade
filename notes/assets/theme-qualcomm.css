@@ -3,7 +3,7 @@
   --accent:#232220;--accent-soft:#e6ecd8;--ok:#1f7a4a;--warn:#9a6a00;--bad:#b3362f;
   --cpu:#2f66b3;--gpu:#2e8548;--htp:#a8366f;--dsp:#a86a08;--lpai:#0d7f86;--hta:#6b7480;
   --code-bg:#e9eee0;--code-fg:#232220;--code-dim:#85847c;
-  --f-display:"Gambarino",Georgia,serif;--f-body:"Switzer",system-ui,sans-serif;--f-mono:"Fragment Mono",ui-monospace,monospace;
+  --f-display:"Switzer",system-ui,sans-serif;--f-body:"Switzer",system-ui,sans-serif;--f-mono:"Fragment Mono",ui-monospace,monospace;
   color-scheme:light}
 body{font-size:16.5px;line-height:1.65}
 h1,h2{text-transform:none!important;font-weight:400!important;letter-spacing:-.02em}
@@ -11,7 +11,7 @@ h1{font-size:clamp(2.6rem,6vw,4.2rem);line-height:1}
 h2{font-size:clamp(1.9rem,3.4vw,2.5rem)}
 h3{font-family:"Switzer",system-ui,sans-serif;font-weight:500;font-size:1.2rem}
 .rail .brand{text-transform:none;font-weight:400;font-size:1.45rem}
-.verdict h3{text-transform:none;font-family:"Gambarino",Georgia,serif;font-weight:400}
+.verdict h3{text-transform:none;font-family:"Switzer",system-ui,sans-serif;font-weight:400}
 .soc button b{text-transform:none;font-family:"Switzer",system-ui,sans-serif;font-weight:600;font-size:1rem}
 .score{font-weight:400}
 .sec-head{border-top-width:1px}

@@ -9,7 +9,9 @@
   --line: rgba(35, 34, 32, 0.14);
   --highlight: #e6ec8f;
 
-  --serif: "Gambarino", Georgia, "Times New Roman", serif;
+  /* Headings use the same grotesk as the body, tracked tight (as on nantesbuch.de). */
+  --serif: "Switzer", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --accent-serif: "Gambarino", Georgia, "Times New Roman", serif;
   --sans: "Switzer", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "Fragment Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
@@ -140,7 +142,7 @@ mark {
   font-family: var(--serif);
   font-size: clamp(32px, 5vw, 50px);
   line-height: 1.04;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.03em;
   color: var(--ink);
   margin: 0 0 28px;
 }
@@ -173,7 +175,7 @@ a:hover .arrow { transform: translateX(3px); }
   font-weight: 400;
   font-size: clamp(42px, 6.6vw, 70px);
   line-height: 1;
-  letter-spacing: -0.028em;
+  letter-spacing: -0.035em;
   color: var(--ink);
   margin: 0 0 24px;
 }
@@ -187,13 +189,13 @@ a:hover .arrow { transform: translateX(3px); }
   font-weight: 400;
   font-size: clamp(42px, 7vw, 76px);
   line-height: 1;
-  letter-spacing: -0.028em;
+  letter-spacing: -0.035em;
   color: var(--ink);
   margin: 0 0 32px;
 }
 
 .hero__hi {
-  font-family: var(--serif);
+  font-family: var(--accent-serif);
   font-size: clamp(22px, 2.6vw, 30px);
   line-height: 1.2;
   letter-spacing: -0.015em;
@@ -303,7 +305,7 @@ a:hover .arrow { transform: translateX(3px); }
   font-weight: 400;
   font-size: clamp(32px, 4.4vw, 44px);
   line-height: 1;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.03em;
   color: var(--ink);
   margin: 0 0 18px;
 }
@@ -467,7 +469,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
   font-family: var(--serif);
   font-size: clamp(28px, 3.6vw, 36px);
   line-height: 1.04;
-  letter-spacing: -0.022em;
+  letter-spacing: -0.028em;
   color: var(--ink);
   text-decoration: underline;
   text-decoration-color: transparent;
@@ -491,7 +493,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
   font-weight: 400;
   font-size: clamp(30px, 4.4vw, 44px);
   line-height: 1.05;
-  letter-spacing: -0.022em;
+  letter-spacing: -0.028em;
   color: var(--ink);
   margin: 0 0 18px;
 }
