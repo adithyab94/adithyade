@@ -17,7 +17,7 @@
 
   --max: 920px;
   /* One rhythm between sections: each section adds space above itself only. */
-  --section-gap: clamp(32px, 4.5vh, 56px);
+  --section-gap: clamp(44px, 6vh, 76px);
 }
 
 * { box-sizing: border-box; }
