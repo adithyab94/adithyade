@@ -697,6 +697,20 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
   color: var(--muted);
 }
 
+.footer__copy a { color: inherit; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+.footer__copy a:hover { color: var(--ink); text-decoration-color: var(--ink); }
+
+/* ---------- Privacy page ---------- */
+
+.privacy { padding-bottom: var(--section-gap); }
+.privacy > * { max-width: 680px; }
+.privacy h2 { margin: 2em 0 0.5em; font-family: var(--serif); font-weight: 400; font-size: 24px; letter-spacing: -0.02em; color: var(--ink); }
+.privacy p, .privacy li { font-size: 17px; }
+.privacy ul { padding-left: 1.2em; }
+.privacy li { margin-bottom: 0.4em; }
+.privacy a { color: var(--ink); text-underline-offset: 3px; }
+.privacy__updated { margin-top: 2.5em; font-family: var(--mono); font-size: 15.15px; color: var(--muted); }
+
 /* ---------- Reveal ---------- */
 
 .js .reveal {

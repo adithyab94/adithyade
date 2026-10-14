@@ -4,7 +4,7 @@
     I'm building things on <a href="https://github.com/{{ site.github }}" target="_blank" rel="noopener">GitHub</a>,
     and occasionally posting on <a href="https://www.linkedin.com/in/{{ site.linkedin }}/" target="_blank" rel="noopener">LinkedIn</a>.
   </p>
-  <p class="footer__copy">© {{ site.time | date: "%Y" }} {{ site.author }}</p>
+  <p class="footer__copy">© {{ site.time | date: "%Y" }} {{ site.author }} · No cookies, no tracking · <a href="{{ '/privacy/' | relative_url }}">Privacy</a></p>
 </footer>
 
 <div class="stage" id="stage" aria-label="A small 3D street of places I've lived: Dharmapuri, Chennai, Nantes, Ulm and München">
@@ -15,8 +15,8 @@
 <script type="importmap">
   {
     "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+      "three": "{{ '/assets/vendor/three/three.module.js' | relative_url }}",
+      "three/addons/": "{{ '/assets/vendor/three/addons/' | relative_url }}"
     }
   }
 </script>
