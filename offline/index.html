@@ -18,49 +18,41 @@ description: "Film photographs, books, films, and writing by Adithya Balaji that
       </p>
     </section>
 
-    <section class="lt-wrap" aria-label="A light table with negatives and prints from the latest roll">
+    {%- comment -%} Every frame from every roll, for the light table to shuffle on each visit. {%- endcomment %}
+    <script type="application/json" id="frames">[
+      {%- assign first = true %}
+      {%- for roll in rolls %}
+        {%- assign rdir = '/assets/offline/' | append: roll.folder | append: '/' -%}
+        {%- assign rfiles = site.static_files | where_exp: "f", "f.path contains rdir" | sort: "path" -%}
+        {%- assign n = 0 %}
+        {%- for f in rfiles %}
+          {%- if f.basename contains '-thumb' %}{% continue %}{% endif %}
+          {%- assign n = n | plus: 1 %}
+      {% unless first %},{% endunless %}{"src": {{ f.path | relative_url | jsonify }}, "thumb": {{ f.path | replace: '.jpg', '-thumb.jpg' | relative_url | jsonify }}, "n": {{ n }}, "roll": {{ roll.title | jsonify }}}
+          {%- assign first = false %}
+        {%- endfor %}
+      {%- endfor %}
+    ]</script>
+    <script type="application/json" id="film-stocks">{{ latest.films | jsonify }}</script>
+
+    <section class="lt-wrap" aria-label="A light table with negatives and prints">
       <div class="lighttable" id="lighttable">
-        <div class="lt-surface">
-          {%- comment -%} Negative strip: the first six frames, inverted. Hover or tap to see them as positives. {%- endcomment %}
-          <div class="lt-strip" aria-label="Negative strip">
-            <span class="lt-strip__edge">{{ latest.film | split: " · " | first | upcase }}</span>
-            <div class="lt-strip__frames">
-              {%- assign n = 0 %}
-              {%- for f in latest_files %}
-                {%- if f.basename contains '-thumb' or n >= 6 %}{% continue %}{% endif %}
-                {%- assign n = n | plus: 1 %}
-              <button class="neg" type="button" data-lightbox="table" data-src="{{ f.path | relative_url }}" data-caption="{{ latest.title }} · frame {{ n }}">
-                <img src="{{ f.path | replace: '.jpg', '-thumb.jpg' | relative_url }}" alt="Frame {{ n }} of {{ latest.title }}, as a negative" loading="lazy">
-                <span class="neg__no">{{ n }}</span>
-              </button>
-              {%- endfor %}
-            </div>
+        <div class="lt-surface" id="ltSurface">
+          {%- comment -%} Contact sheet: 8 random frames as negatives, two strips of four. Filled by offline.js. {%- endcomment %}
+          <div class="lt-sheet" id="ltSheet" aria-label="Contact sheet of negatives">
+            <div class="lt-sheet__strip"><span class="lt-sheet__edge"></span><div class="lt-sheet__frames"></div></div>
+            <div class="lt-sheet__strip"><span class="lt-sheet__edge"></span><div class="lt-sheet__frames"></div></div>
           </div>
 
-          {%- comment -%} Loose prints: frames 3–6, scattered and draggable. {%- endcomment %}
-          {%- assign spots = "33,40,-5|50,46,4|67,38,-3|83,44,5" | split: "|" %}
-          {%- assign n = 0 %}{%- assign p = 0 %}
-          {%- for f in latest_files %}
-            {%- if f.basename contains '-thumb' %}{% continue %}{% endif %}
-            {%- assign n = n | plus: 1 %}
-            {%- if n < 3 or p >= 4 %}{% continue %}{% endif %}
-            {%- assign spot = spots[p] | split: "," %}
-          <figure class="print" style="--x:{{ spot[0] }}%;--y:{{ spot[1] }}%;--r:{{ spot[2] }}deg" data-lightbox="table" data-src="{{ f.path | relative_url }}" data-caption="{{ latest.title }} · frame {{ n }}">
-            <span class="tape" aria-hidden="true"></span>
-            <img src="{{ f.path | replace: '.jpg', '-thumb.jpg' | relative_url }}" alt="Print of frame {{ n }} from {{ latest.title }}" draggable="false">
-            <figcaption>{{ n | prepend: '0' | slice: -2, 2 }} · {{ latest.title }}</figcaption>
-          </figure>
-            {%- assign p = p | plus: 1 %}
-          {%- endfor %}
-
-          <div class="lt-label" aria-hidden="true">
-            <b>{{ latest.title }}</b>
+          <a class="lt-more" href="{{ latest.url | relative_url }}">
+            <b>See all {{ latest_files.size | divided_by: 2 }} photos <span class="arrow">→</span></b>
             <span>{{ latest.camera }}</span>
             <span>{{ latest.film }}</span>
-          </div>
+          </a>
+          <noscript><p class="lt-noscript">Turn on JavaScript to shuffle the light table, or <a href="{{ latest.url | relative_url }}">see every photo</a>.</p></noscript>
         </div>
       </div>
-      <p class="lt-hint wrap">Drag the prints around. Hover the negatives. Click anything to see it big.</p>
+      <p class="lt-hint">A new hand every visit. Drag the prints anywhere on the page, hover the negatives, click anything to see it big.</p>
     </section>
 
     <section class="rolls wrap">
