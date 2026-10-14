@@ -631,8 +631,25 @@
       const r = cv.getBoundingClientRect();
       camXTo = ((e.clientX - r.left) / r.width - 0.5) * 1.2;
     });
-    cv.addEventListener('pointerleave', () => { setHover(null); camXTo = 0; });
-    cv.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') pick(e.clientX, e.clientY); });
+    cv.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { setHover(null); camXTo = 0; } });
+
+    // ── touch: tap a landmark to show its name, tap elsewhere to hide it ──
+    // Phones fire pointerleave right after a tap, so taps get their own path.
+    let tapX = 0, tapY = 0, tapT = 0, pausedAt = -1, driftT = 0, lastT = 0;
+    cv.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'mouse') return;
+      tapX = e.clientX; tapY = e.clientY; tapT = performance.now();
+    });
+    cv.addEventListener('pointerup', e => {
+      if (e.pointerType === 'mouse') return;
+      const moved = Math.abs(e.clientX - tapX) + Math.abs(e.clientY - tapY);
+      if (moved > 10 || performance.now() - tapT > 600) return;   // a scroll or a long press, not a tap
+      pick(e.clientX, e.clientY);
+      pausedAt = hovered ? clock.getElapsedTime() : -1;            // hold the drift while a label is open
+    });
+    document.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'mouse' && e.target !== cv && hovered) { setHover(null); pausedAt = -1; }
+    });
 
     // ── loop ───────────────────────────────────────────────
     const clock = new THREE.Clock();
@@ -661,7 +678,9 @@
       }
 
       camX += (camXTo - camX) * 0.04;
-      const drift = reduced ? 0 : panAmp * Math.sin(t * 0.09);
+      if (pausedAt < 0) driftT += t - lastT;                       // drift time stands still while a tapped label is open
+      lastT = t;
+      const drift = reduced ? 0 : panAmp * Math.sin(driftT * 0.09);
       camera.position.set(camX + drift, camY, dist);
       camera.rotation.set(0, 0, 0);
       camera.updateMatrixWorld();
