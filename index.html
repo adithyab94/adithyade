@@ -2,18 +2,18 @@
 layout: default
 nav: Home
 permalink: /
-description: "I'm a physical AI engineer in München, helping robots learn to see, think, understand, and touch the world."
+description: "I'm a physical AI engineer in München, helping robots learn to see, understand, and touch the world."
 ---
     <section class="hero wrap">
       <p class="hero__hi reveal">Hi, I'm Adithya</p>
       <h1 class="hero__title reveal">
         I'm a physical AI engineer helping robots learn to
-        <em>see</em>, <em>think</em>, <em>understand</em>, and <em>touch</em> the world.
+        <em>see</em>, <em>understand</em>, and <em>touch</em> the world.
       </h1>
       <p class="hero__aside reveal">I also get them running on the robot itself: small chips, tight power budgets, real-time deadlines.</p>
       <p class="hero__meta reveal">
         Currently in <span class="pin">📍 München</span>, building robot foundation models at <a class="org-link" href="https://neura-robotics.com/" target="_blank" rel="noopener">Neura&nbsp;Robotics</a>.
-        <a class="note note--hero label-lg" href="#story">It's a long story ↓</a>
+        <span class="hero__links"><a class="note note--hero label-lg" href="#story">It's a long story ↓</a><a class="label-lg hero__cv" href="{{ '/assets/cv/Adithya_Balaji_CV.pdf' | relative_url }}" target="_blank" rel="noopener">Or the short version: CV (PDF) ↗</a></span>
       </p>
     </section>
 
@@ -55,7 +55,7 @@ description: "I'm a physical AI engineer in München, helping robots learn to se
           <span class="threads__n">03</span>
           <div>
             <h3>Thinking fast</h3>
-            <p>Fitting big models onto small computers, so a robot can decide what to do in <mark>under 30&nbsp;milliseconds</mark>.</p>
+            <p>Fitting big models onto small computers, so a robot can decide what to do <mark>in real time</mark>.</p>
           </div>
         </li>
         <li class="reveal">
@@ -166,42 +166,41 @@ description: "I'm a physical AI engineer in München, helping robots learn to se
       <a class="text-link label-lg reveal" href="{{ '/work/' | relative_url }}">See all my work <span class="arrow">→</span></a>
     </section>
 
-    <section class="curious wrap" id="working-with-me">
-      <p class="section-label label-lg reveal">Working with me</p>
+    <section class="curious wrap" id="how-i-work">
+      <p class="section-label label-lg reveal">How I like to work</p>
       <p class="curious__intro reveal">
         I'm happiest on problems where a model works in a demo but not yet in the field. I usually deliver two things:
-        the working system, and the measurements that explain what was going wrong before. When I'm exploring a new team,
-        these are the questions I like to ask.
+        the working system, and the measurements that explain what was going wrong before.
       </p>
       <ol class="asks">
         <li class="reveal">
           <details>
-            <summary><h3>Ship first, or polish first?</h3><span class="asks__arrow" aria-hidden="true">↓</span></summary>
-            <p>I lean towards shipping early and learning from real use, but I care about craft too. I'd like to know where the balance sits.</p>
+            <summary><h3>Ship early, keep the craft.</h3><span class="asks__arrow" aria-hidden="true">↓</span></summary>
+            <p>I'd rather put something real in front of users and learn from it than polish in a vacuum. But shipping fast is not an excuse for sloppy work.</p>
           </details>
         </li>
         <li class="reveal">
           <details>
-            <summary><h3>What happens when something fails in the field?</h3><span class="asks__arrow" aria-hidden="true">↓</span></summary>
-            <p>Whether failures get traced back to a root cause and shared openly, or quietly patched and forgotten. How a team handles failure says a lot about it.</p>
+            <summary><h3>Trace failures to the root.</h3><span class="asks__arrow" aria-hidden="true">↓</span></summary>
+            <p>When something breaks in the field, I want to know why, write it down and share it, not quietly patch it. How a team handles failure says a lot about it.</p>
           </details>
         </li>
         <li class="reveal">
           <details>
-            <summary><h3>What would I own?</h3><span class="asks__arrow" aria-hidden="true">↓</span></summary>
-            <p>I do my best work when I'm responsible for an outcome, not just a list of tasks.</p>
+            <summary><h3>Own outcomes, not tickets.</h3><span class="asks__arrow" aria-hidden="true">↓</span></summary>
+            <p>I do my best work when I'm responsible for a result end to end, from the first measurement to the robot that actually works.</p>
           </details>
         </li>
         <li class="reveal">
           <details>
-            <summary><h3>How do people grow here?</h3><span class="asks__arrow" aria-hidden="true">↓</span></summary>
-            <p>Whether senior engineers make time for others, and whether there's room for me to mentor someone who could one day take over my work.</p>
+            <summary><h3>Grow the people around me.</h3><span class="asks__arrow" aria-hidden="true">↓</span></summary>
+            <p>I enjoy mentoring, including helping someone get good enough to take over my work. Teams get stronger when knowledge doesn't sit with one person.</p>
           </details>
         </li>
         <li class="reveal">
           <details>
-            <summary><h3>Is whole-system thinking valued, and what shapes how engineers work together?</h3><span class="asks__arrow" aria-hidden="true">↓</span></summary>
-            <p>Some of the best fixes come from stepping back and looking at the whole pipeline. I'm curious which habits, reviews and rituals are deliberate here.</p>
+            <summary><h3>Think in whole systems.</h3><span class="asks__arrow" aria-hidden="true">↓</span></summary>
+            <p>Some of the best fixes come from stepping back and looking at the whole pipeline, from data to deployment. I like teams that make that kind of thinking a habit.</p>
           </details>
         </li>
       </ol>
@@ -211,7 +210,11 @@ description: "I'm a physical AI engineer in München, helping robots learn to se
       <p class="big reveal">
         I'm always happy to chat, whether that's about <em>robots</em>, research, or interesting problems.
       </p>
-      <a class="button reveal" href="mailto:adithya.b94@gmail.com">Say hello <span class="arrow">→</span></a>
+      <div class="hello__actions reveal">
+        <a class="button" href="mailto:{{ site.email }}">Say hello <span class="arrow">→</span></a>
+        <a class="button button--ghost" href="{{ '/assets/cv/Adithya_Balaji_CV.pdf' | relative_url }}" target="_blank" rel="noopener">Download CV <span class="arrow">↓</span></a>
+      </div>
+      <p class="hello__plain reveal">or write to <span class="email-plain">{{ site.email | replace: "@", " [at] " }}</span></p>
       <p class="aside reveal">
         I speak Tamil at home, English at work, French when I'm feeling brave, and German&hellip;
         <span class="note note--inline">ich übe noch.</span>

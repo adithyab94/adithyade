@@ -42,7 +42,7 @@ description: "This site sets no cookies and collects no personal data."
 
       <h2>Contact</h2>
       <p>
-        Responsible for this site: Adithya Balaji, <a href="mailto:{{ site.email }}">{{ site.email }}</a>.
+        Responsible for this site: Adithya Balaji, <a href="mailto:{{ site.email }}">{{ site.email | replace: "@", " [at] " }}</a>.
       </p>
       <p class="privacy__updated">Last updated {{ site.time | date: "%B %Y" }}</p>
     </section>

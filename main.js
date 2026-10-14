@@ -46,7 +46,7 @@ if ("IntersectionObserver" in window) {
     [".threads li:nth-child(2)", 0.80, -0.01, 0.24, 7], // camera, right of "Feeling"
     [".hero", -0.04, 0.05, 0.19, -11],                // film, top left
     ["#story .section-label", -0.03, -0.30, 0.18, -6], // robot, just above "How I got here"
-    ["#working-with-me .section-label", 0.85, -0.34, 0.17, 14], // arm, above "Working with me"
+    ["#how-i-work .section-label", 0.85, -0.34, 0.17, 14], // arm, above "How I like to work"
   ];
 
   let z = 10;
