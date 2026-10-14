@@ -349,6 +349,22 @@ a.label-lg:hover { color: var(--ink); }
   50% { opacity: 0.25; }
 }
 
+/* ---------- Links to organisations ---------- */
+
+.org-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.2s;
+}
+
+.org-link:hover { text-decoration-color: var(--ink); }
+
+.note-link, .card__kind--link { color: inherit; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+.note-link:hover, .card__kind--link:hover { color: var(--ink); text-decoration-color: var(--ink); }
+
 /* ---------- Work (ruled list) ---------- */
 
 .work { padding-top: var(--section-gap); padding-bottom: 0; }
