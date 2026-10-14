@@ -18,13 +18,13 @@
   {%- endif %}
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%23232220'/><text x='50%' y='58%' font-family='Georgia,serif' font-size='40' fill='%23f2f6ea' text-anchor='middle' dominant-baseline='middle'>a</text></svg>">
   <link rel="preload" href="{{ '/assets/fonts/switzer-400.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="{{ '/assets/fonts/fonts.css' | relative_url }}">
-  <link rel="stylesheet" href="{{ '/style.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/fonts/fonts.css' | relative_url }}?v={{ site.time | date: '%s' }}">
+  <link rel="stylesheet" href="{{ '/style.css' | relative_url }}?v={{ site.time | date: '%s' }}">
   {%- if page.layout == 'post' or page.collection == 'offline' %}
-  <link rel="stylesheet" href="{{ '/post.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/post.css' | relative_url }}?v={{ site.time | date: '%s' }}">
   {%- endif %}
   {%- if page.nav == 'Offline' %}
-  <link rel="stylesheet" href="{{ '/offline.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/offline.css' | relative_url }}?v={{ site.time | date: '%s' }}">
   {%- endif %}
   {% feed_meta %}
   <script>document.documentElement.classList.add("js")</script>

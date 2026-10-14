@@ -7,4 +7,4 @@
   </figure>
   <button class="lightbox__nav lightbox__nav--next" type="button" aria-label="Next photo">→</button>
 </div>
-<script src="{{ '/offline.js' | relative_url }}" defer></script>
+<script src="{{ '/offline.js' | relative_url }}?v={{ site.time | date: '%s' }}" defer></script>
