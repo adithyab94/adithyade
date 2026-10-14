@@ -26,6 +26,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 80px; }
 
 body {
   margin: 0;
+  overflow-x: clip;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -266,7 +267,11 @@ a.label-lg:hover { color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .sticker { animation: none; } }
 
 /* Below 1300px the stickers sit in a row under the hero, so make room for it. */
-@media (max-width: 1299px) { .hero { padding-bottom: 84px; } }
+/* Below 1300px the stickers are scattered in open space above and below the hero text,
+   like a desk seen from above. The size unit tracks the screen width, capped for tablets. */
+@media (max-width: 1299px) {
+  .hero { padding-top: min(70vw, 520px); padding-bottom: min(48vw, 370px); }
+}
 
 /* ---------- Thesis ---------- */
 

@@ -39,13 +39,14 @@ if ("IntersectionObserver" in window) {
     [() => chapters()[2], "left", 0.41, 117, 104, 4],                                    // robot, by the brain-and-heart chapter
     [() => chapters()[4], "right", 0.38, -68, 96, 10],                                   // arm, by "Teaching humanoids."
   ];
-  // Phones: a small row of stickers in the gap under the hero.
+  // Phones and tablets: scattered in the open space above and below the hero text,
+  // some bleeding off the edges. [zone, x, y, width, rotation], all in units of the screen width.
   const NARROW = [
-    [0.02, 0, 58, 6],
-    [0.22, 0, 66, -5],
-    [0.46, 0, 46, -8],
-    [0.63, 0, 42, 4],
-    [0.8, 0, 38, 10],
+    ["top", 0.70, 0.10, 0.30, 12],     // chip, top right, off the edge
+    ["top", 0.30, 0.27, 0.36, 5],      // camera, middle
+    ["top", -0.05, 0.07, 0.30, -11],   // film, top left, off the edge
+    ["bottom", 0.06, 0.06, 0.27, -7],  // robot, under the text, left
+    ["bottom", 0.72, 0.02, 0.25, 15],  // arm, right, off the edge
   ];
 
   let z = 10;
@@ -53,7 +54,6 @@ if ("IntersectionObserver" in window) {
     const wide = window.innerWidth >= 1300;
     const content = (hero.querySelector(".hero__title") || hero).getBoundingClientRect();
     const r = hero.getBoundingClientRect();
-    let cursor = r.left + window.scrollX + 16;      // phones/tablets: a packed row under the hero
     stickers.forEach((el, i) => {
       if (el.dataset.moved) return;
       el.style.setProperty("--d", `${-i * 1.3}s`);
@@ -70,12 +70,15 @@ if ("IntersectionObserver" in window) {
         el.style.left = `${x + window.scrollX}px`;
         el.style.top = `${tr.top + window.scrollY + dy}px`;
       } else {
-        const [, , w, rot] = NARROW[i];
+        const unit = Math.min(window.innerWidth, 760);
+        const [zone, fx, fy, fw, rot] = NARROW[i];
+        const w = fw * unit;
+        const pad = parseFloat(getComputedStyle(hero).paddingBottom);
+        const zoneTop = zone === "top" ? r.top + window.scrollY : r.bottom + window.scrollY - pad;
         el.style.setProperty("--w", `${w}px`);
         el.style.setProperty("--r", `${rot}deg`);
-        el.style.left = `${cursor}px`;
-        cursor += w + 10;
-        el.style.top = `${r.top + window.scrollY + r.height - 70}px`;
+        el.style.left = `${fx * window.innerWidth}px`;
+        el.style.top = `${zoneTop + fy * unit}px`;
       }
       el.classList.add("is-placed");
     });
