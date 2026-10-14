@@ -29,14 +29,15 @@ if ("IntersectionObserver" in window) {
   document.body.appendChild(layer);
   const stickers = [...layer.querySelectorAll(".sticker")];
 
-  // Wide screens: one sticker per section, alternating margins down the page.
-  // [section selector, side, how far down the section (0-1), width, rotation]
+  // Wide screens: hand-placed next to specific lines of the page.
+  // [anchor element, side, share of the margin from the text, offset from the anchor's top, width, rotation]
+  const chapters = () => document.querySelectorAll("#story .chapter h2");
   const WIDE = [
-    [".hero", "right", 0.05, 140, 6],          // chip
-    [".story", "left", 0.38, 160, -5],         // camera
-    [".thesis", "left", 0.12, 112, -8],        // film
-    [".work", "right", 0.25, 106, 4],          // robot
-    ["#working-with-me", "left", 0.2, 92, 10], // arm
+    [() => document.querySelector(".hero .note--hero"), "right", 0.11, -68, 140, 6],   // chip, by "It's a long story"
+    [() => chapters()[0], "right", 0.19, 31, 166, -5],                                   // camera, by "Cars, then data."
+    [() => document.querySelector(".thesis .big"), "left", 0.23, -31, 113, -8],         // film, by "Robots used to be…"
+    [() => chapters()[2], "left", 0.41, 117, 104, 4],                                    // robot, by the brain-and-heart chapter
+    [() => chapters()[4], "right", 0.38, -68, 96, 10],                                   // arm, by "Teaching humanoids."
   ];
   // Phones: a small row of stickers in the gap under the hero.
   const NARROW = [
@@ -57,15 +58,17 @@ if ("IntersectionObserver" in window) {
       if (el.dataset.moved) return;
       el.style.setProperty("--d", `${-i * 1.3}s`);
       if (wide) {
-        const [sel, side, fy, w, rot] = WIDE[i];
-        const sec = document.querySelector(sel) || hero;
-        const sr = sec.getBoundingClientRect();
+        const [anchor, side, frac, dy, w, rot] = WIDE[i];
+        const target = anchor() || hero;
+        const tr = target.getBoundingClientRect();
+        const margin = side === "left" ? content.left : window.innerWidth - content.right;
         el.style.setProperty("--w", `${w}px`);
         el.style.setProperty("--r", `${rot}deg`);
-        const gap = 70 + (i % 2) * 30;
-        const x = side === "left" ? content.left - gap - w : content.right + gap;
+        const x = side === "left"
+          ? Math.min(content.left - frac * margin, content.left - w - 16)              // never over the text
+          : Math.min(Math.max(content.right + frac * margin, content.right + 16), window.innerWidth - w - 8);
         el.style.left = `${x + window.scrollX}px`;
-        el.style.top = `${sr.top + window.scrollY + sr.height * fy}px`;
+        el.style.top = `${tr.top + window.scrollY + dy}px`;
       } else {
         const [, , w, rot] = NARROW[i];
         el.style.setProperty("--w", `${w}px`);
