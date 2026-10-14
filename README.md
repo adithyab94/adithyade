@@ -39,8 +39,8 @@ python3 _scripts/add_roll.py ~/path/to/scans "Roll name" --camera "..." --film "
 This resizes the scans into `assets/offline/<roll-name>/` and creates `_offline/<roll-name>.md`, where you can
 add a few lines and per-frame captions. The newest roll is the one shown on the light table.
 
-**Writing:** create `_offline/<slug>.md` with `title`, `date`, `kind` (`books`, `films` or `words`) and an optional
-`subtitle`. Add `status: in-progress` to list it under "Still marinating". Personal ideas without a page yet go in
+**Writing:** create `_offline/<slug>.md` with `title`, `date`, `kind: writing` and an optional `subtitle`.
+Everything lists under Writing, newest first. Add `status: in-progress` to list it under "Still marinating". Personal ideas without a page yet go in
 `_data/marinating.yml`.
 
 ## Physical-AI notes

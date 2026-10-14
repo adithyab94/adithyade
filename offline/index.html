@@ -45,54 +45,23 @@ description: "Film photographs, books, films, and writing by Adithya Balaji that
           </div>
 
           <a class="lt-more" href="{{ latest.url | relative_url }}">
-            <b>See all {{ latest_files.size | divided_by: 2 }} photos <span class="arrow">→</span></b>
+            <b>See all photos <span class="arrow">→</span></b>
             <span>{{ latest.camera }}</span>
             <span>{{ latest.film }}</span>
           </a>
           <noscript><p class="lt-noscript">Turn on JavaScript to shuffle the light table, or <a href="{{ latest.url | relative_url }}">see every photo</a>.</p></noscript>
         </div>
       </div>
-      <p class="lt-hint">A new hand every visit. Drag the prints anywhere on the page, hover the negatives, click anything to see it big.</p>
-    </section>
-
-    <section class="rolls wrap">
-      <p class="section-label reveal">Rolls</p>
-      <div class="roll-list">
-        {%- for roll in rolls %}
-        {%- assign rdir = '/assets/offline/' | append: roll.folder | append: '/' -%}
-        {%- assign rfiles = site.static_files | where_exp: "f", "f.path contains rdir" | sort: "path" -%}
-        <a class="roll reveal" href="{{ roll.url | relative_url }}">
-          <div class="sheet">
-            {%- assign n = 0 %}
-            {%- for f in rfiles %}
-              {%- if f.basename contains '-thumb' %}{% continue %}{% endif %}
-              {%- assign n = n | plus: 1 %}
-              {%- if n > 6 %}{% break %}{% endif %}
-            <span class="sheet__frame"><img src="{{ f.path | replace: '.jpg', '-thumb.jpg' | relative_url }}" alt="" loading="lazy"><i>{{ n }}</i></span>
-            {%- endfor %}
-          </div>
-          <span class="roll__title">{{ roll.title }}{% if roll.sample %} <em class="badge">sample</em>{% endif %}</span>
-          <span class="roll__meta">{{ roll.camera }} · {{ roll.film }} · {{ roll.date | date: "%b %Y" }}</span>
-        </a>
-        {%- endfor %}
-      </div>
     </section>
 
     {%- assign writing = site.offline | where_exp: "e", "e.kind != 'roll'" | where_exp: "e", "e.status != 'in-progress'" | sort: "date" | reverse %}
     <section class="writing wrap">
       <p class="section-label reveal">Writing</p>
-      <div class="chips reveal" role="group" aria-label="Filter writing">
-        <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
-        <button class="chip" type="button" data-filter="books" aria-pressed="false">Books</button>
-        <button class="chip" type="button" data-filter="films" aria-pressed="false">Films</button>
-        <button class="chip" type="button" data-filter="words" aria-pressed="false">Words</button>
-      </div>
       <ol class="archive" id="archive">
         {%- for e in writing %}
-        <li data-kind="{{ e.kind }}">
+        <li>
           <a href="{{ e.url | relative_url }}">
             <span class="archive__title">{{ e.title }}</span>
-            <span class="archive__kind">{{ e.kind }}</span>
             <span class="archive__date">{{ e.date | date: "%b %-d, %Y" }}</span>
           </a>
         </li>

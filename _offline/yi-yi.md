@@ -1,6 +1,6 @@
 ---
 title: Yi Yi
-kind: films
+kind: writing
 status: in-progress
 date: 2026-10-13
 subtitle: "On Edward Yang's Yi Yi (A One and a Two, 2000). Still writing this one."
