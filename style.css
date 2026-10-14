@@ -17,7 +17,7 @@
 
   --max: 920px;
   /* One rhythm between sections: each section adds space above itself only. */
-  --section-gap: clamp(44px, 6vh, 76px);
+  --section-gap: clamp(56px, 8vh, 96px);
 }
 
 * { box-sizing: border-box; }
@@ -415,6 +415,56 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
 /* ---------- Curious ---------- */
 
 .curious { padding-top: var(--section-gap); padding-bottom: 0; }
+
+.curious__intro { max-width: 640px; margin: 0 0 28px; font-size: 18px; }
+
+.asks { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+
+.asks li { padding: 0; border-bottom: 1px solid var(--line); counter-increment: ask; }
+
+.asks summary {
+  display: grid;
+  grid-template-columns: 40px 1fr 28px;
+  column-gap: 16px;
+  align-items: baseline;
+  padding: 20px 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.asks summary::-webkit-details-marker { display: none; }
+
+.asks summary::before {
+  content: counter(ask, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 15.15px;
+  color: var(--muted);
+}
+
+.asks h3 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(21px, 2.2vw, 24px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.asks__arrow {
+  justify-self: end;
+  font-size: 20px;
+  color: var(--muted);
+  transition: transform 0.25s ease, color 0.2s;
+}
+
+.asks summary:hover .asks__arrow { color: var(--ink); }
+.asks details[open] .asks__arrow { transform: rotate(180deg); }
+.asks summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+
+.asks p { margin: -8px 0 0; padding: 0 44px 22px 56px; max-width: 680px; font-size: 16.5px; }
+
+.asks { counter-reset: ask; }
 
 .questions { list-style: none; margin: 0; padding: 0; }
 
