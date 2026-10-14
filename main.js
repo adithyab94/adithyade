@@ -39,14 +39,15 @@ if ("IntersectionObserver" in window) {
     [() => chapters()[2], "left", 0.41, 117, 104, 4],                                    // robot, by the brain-and-heart chapter
     [() => chapters()[4], "right", 0.38, -68, 96, 10],                                   // arm, by "Teaching humanoids."
   ];
-  // Phones and tablets: scattered in the open space above and below the hero text,
-  // some bleeding off the edges. [zone, x, y, width, rotation], all in units of the screen width.
+  // Phones and tablets: two above the intro, the rest in small clearings opened before later
+  // sections (see .has-sticker in style.css), alternating sides and bleeding off the edge.
+  // [anchor, x, y below the anchor's top, width, rotation]; x, y and width in units of the screen width.
   const NARROW = [
-    ["top", 0.70, 0.10, 0.30, 12],     // chip, top right, off the edge
-    ["top", 0.30, 0.27, 0.36, 5],      // camera, middle
-    ["top", -0.05, 0.07, 0.30, -11],   // film, top left, off the edge
-    ["bottom", 0.06, 0.06, 0.27, -7],  // robot, under the text, left
-    ["bottom", 0.72, 0.02, 0.25, 15],  // arm, right, off the edge
+    [".hero", 0.70, 0.05, 0.26, 12],               // chip, top right
+    [".thesis", 0.68, 0.06, 0.30, 7],               // camera, before "Robots used to be…"
+    [".hero", -0.04, 0.03, 0.24, -11],              // film, top left
+    ["#story", -0.03, 0.05, 0.22, -6],              // robot, before "How I got here"
+    ["#working-with-me", 0.76, 0.04, 0.21, 14],     // arm, before "Working with me"
   ];
 
   let z = 10;
@@ -71,20 +72,19 @@ if ("IntersectionObserver" in window) {
         el.style.top = `${tr.top + window.scrollY + dy}px`;
       } else {
         const unit = Math.min(window.innerWidth, 760);
-        const [zone, fx, fy, fw, rot] = NARROW[i];
-        const w = fw * unit;
-        const pad = parseFloat(getComputedStyle(hero).paddingBottom);
-        const zoneTop = zone === "top" ? r.top + window.scrollY : r.bottom + window.scrollY - pad;
-        el.style.setProperty("--w", `${w}px`);
+        const [sel, fx, fy, fw, rot] = NARROW[i];
+        const anchor = document.querySelector(sel) || hero;
+        el.style.setProperty("--w", `${fw * unit}px`);
         el.style.setProperty("--r", `${rot}deg`);
         el.style.left = `${fx * window.innerWidth}px`;
-        el.style.top = `${zoneTop + fy * unit}px`;
+        el.style.top = `${anchor.getBoundingClientRect().top + window.scrollY + fy * unit}px`;
       }
       el.classList.add("is-placed");
     });
   }
 
   addEventListener("load", place);
+  if (document.fonts) document.fonts.ready.then(place);   // text reflows once the web fonts arrive
   addEventListener("resize", place);
   place();
 

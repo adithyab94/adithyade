@@ -267,10 +267,12 @@ a.label-lg:hover { color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .sticker { animation: none; } }
 
 /* Below 1300px the stickers sit in a row under the hero, so make room for it. */
-/* Below 1300px the stickers are scattered in open space above and below the hero text,
-   like a desk seen from above. The size unit tracks the screen width, capped for tablets. */
+/* Below 1300px there are no side margins, so the stickers sit in clearings:
+   one above the intro, and one before each section that carries a sticker. */
 @media (max-width: 1299px) {
-  .hero { padding-top: min(70vw, 520px); padding-bottom: min(48vw, 370px); }
+  .hero { padding-top: min(44vw, 330px); }
+  .thesis, #story, #working-with-me { padding-top: calc(var(--section-gap) + min(26vw, 200px)); }
+}
 }
 
 /* ---------- Thesis ---------- */
