@@ -523,6 +523,7 @@
       dharmapuri: { t: 'Dharmapuri', s: 'Avvaiyar & Adhiyaman', make: gopuram },
       chennai: { t: 'Chennai', s: 'Central Station', make: chennaiCentral,
                  live: () => { const d = chennaiNow(); return 'Central Station · ' + pad2(d.getUTCHours()) + ':' + pad2(d.getUTCMinutes()) + ' IST'; } },
+      bretagne: { t: 'Nantes', s: 'Tour Bretagne', make: () => backBuilding({ body: P.tower, trim: 0x7FA393, floors: 12, w: 3.2, glassy: true }) },
       nantes: { t: 'Nantes', s: 'Tour LU', make: tourLU },
       ulm: { t: 'Ulm', s: 'Münster', make: ulmMunster },
       metzger: { t: 'Ulm', s: 'Metzgerturm', make: metzgerturm },
@@ -530,7 +531,7 @@
     };
     const street = [
       T(10), T(6),                              // spill past the left edge
-      'core', T(0), LM.dharmapuri, T(1), LM.chennai, T(2), T(3), LM.nantes, T(4), T(5),
+      'core', T(0), LM.dharmapuri, T(1), LM.chennai, T(2), LM.bretagne, T(3), LM.nantes, T(4), T(5),
       LM.ulm, LM.metzger, T(6), T(7), LM.muc, T(8), T(9), 'core',
       T(11), T(1)                               // spill past the right edge
     ];
@@ -553,7 +554,6 @@
     // a back row of taller blocks for depth
     const backs = [
       { at: 0.07, o: { body: P.mustard, floors: 8, w: 3.4 } },
-      { at: 0.31, o: { body: P.tower, trim: 0x7FA393, floors: 10, w: 3.2, glassy: true } },
       { at: 0.48, o: { body: P.cream, floors: 9, w: 3.0, extra: 'glass' } },
       { at: 0.72, o: { body: P.terracotta, floors: 8, w: 3.4 } },
       { at: 0.93, o: { body: P.blue, floors: 9, w: 3.0 } }
