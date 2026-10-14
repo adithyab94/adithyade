@@ -19,7 +19,7 @@ if ("IntersectionObserver" in window) {
   items.forEach((el) => el.classList.add("is-visible"));
 }
 
-// Floating stickers around the hero: placed in the margins, draggable anywhere on the page.
+// Floating stickers down the home page margins, draggable anywhere on the page.
 (function () {
   const layer = document.getElementById("stickers");
   const hero = document.querySelector(".hero");
@@ -29,13 +29,14 @@ if ("IntersectionObserver" in window) {
   document.body.appendChild(layer);
   const stickers = [...layer.querySelectorAll(".sticker")];
 
-  // [x, y, width, rotation] as fractions of the hero box. Wide screens use the side margins.
+  // Wide screens: one sticker per section, alternating margins down the page.
+  // [section selector, side, how far down the section (0-1), width, rotation]
   const WIDE = [
-    [1.03, -0.02, 140, 6],   // chip, right of the headline
-    [1.03, 0.66, 160, -5],   // camera, right, lower
-    [-0.25, 0.04, 116, -8],  // film, left margin
-    [-0.23, 0.56, 106, 4],   // robot, left margin
-    [1.2, 0.34, 88, 10],     // arm, far right
+    [".hero", "right", 0.05, 140, 6],          // chip
+    [".story", "left", 0.38, 160, -5],         // camera
+    [".thesis", "left", 0.12, 112, -8],        // film
+    [".work", "right", 0.25, 106, 4],          // robot
+    ["#working-with-me", "left", 0.2, 92, 10], // arm
   ];
   // Phones: a small row of stickers in the gap under the hero.
   const NARROW = [
@@ -48,24 +49,31 @@ if ("IntersectionObserver" in window) {
 
   let z = 10;
   function place() {
-    const r = hero.getBoundingClientRect();
-    const top = r.top + window.scrollY, left = r.left + window.scrollX;
-    const inner = hero.querySelector(".hero__title") || hero;
-    const ir = inner.getBoundingClientRect();
     const wide = window.innerWidth >= 1300;
-    const spots = wide ? WIDE : NARROW;
-    const boxL = wide ? ir.left + window.scrollX : left + 16;
-    const boxW = wide ? ir.width : r.width - 32;
-    let cursor = boxL;                         // phones/tablets: pack the row from the left
+    const content = (hero.querySelector(".hero__title") || hero).getBoundingClientRect();
+    const r = hero.getBoundingClientRect();
+    let cursor = r.left + window.scrollX + 16;      // phones/tablets: a packed row under the hero
     stickers.forEach((el, i) => {
       if (el.dataset.moved) return;
-      const [fx, fy, w, rot] = spots[i];
-      el.style.setProperty("--w", `${w}px`);
-      el.style.setProperty("--r", `${rot}deg`);
       el.style.setProperty("--d", `${-i * 1.3}s`);
-      if (wide) el.style.left = `${boxL + boxW * fx}px`;
-      else { el.style.left = `${cursor}px`; cursor += w + 10; }
-      el.style.top = wide ? `${top + r.height * fy}px` : `${top + r.height - 70}px`;
+      if (wide) {
+        const [sel, side, fy, w, rot] = WIDE[i];
+        const sec = document.querySelector(sel) || hero;
+        const sr = sec.getBoundingClientRect();
+        el.style.setProperty("--w", `${w}px`);
+        el.style.setProperty("--r", `${rot}deg`);
+        const gap = 70 + (i % 2) * 30;
+        const x = side === "left" ? content.left - gap - w : content.right + gap;
+        el.style.left = `${x + window.scrollX}px`;
+        el.style.top = `${sr.top + window.scrollY + sr.height * fy}px`;
+      } else {
+        const [, , w, rot] = NARROW[i];
+        el.style.setProperty("--w", `${w}px`);
+        el.style.setProperty("--r", `${rot}deg`);
+        el.style.left = `${cursor}px`;
+        cursor += w + 10;
+        el.style.top = `${r.top + window.scrollY + r.height - 70}px`;
+      }
       el.classList.add("is-placed");
     });
   }
