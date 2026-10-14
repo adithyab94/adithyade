@@ -87,7 +87,7 @@ mark {
 
 .nav__links a {
   font-family: var(--mono);
-  font-size: 14px;
+  font-size: 15.15px;
   color: var(--muted);
   text-decoration: none;
   transition: color 0.2s;
@@ -131,7 +131,7 @@ mark {
 .section-label,
 .note {
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 15.15px;
   line-height: 1.5;
   letter-spacing: 0.01em;
   color: var(--muted);
@@ -256,7 +256,7 @@ a.label-lg:hover { color: var(--ink); }
 
 .threads__n {
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 15.15px;
   color: var(--muted);
   flex-shrink: 0;
 }
@@ -310,7 +310,7 @@ a.label-lg:hover { color: var(--ink); }
 .chapter__when { display: flex; flex-direction: column; gap: 2px; padding-top: 6px; }
 
 .chapter__place,
-.chapter__years { font-family: var(--mono); font-size: 13px; }
+.chapter__years { font-family: var(--mono); font-size: 15.15px; }
 
 .chapter__place { color: var(--ink); }
 .chapter__years { color: var(--muted); }
@@ -383,7 +383,7 @@ a.label-lg:hover { color: var(--ink); }
 
 .card__kind {
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 15.15px;
   line-height: 1.5;
   color: var(--muted);
   padding-top: 6px;
@@ -407,7 +407,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
 
 .card .card__tags {
   font-family: var(--mono);
-  font-size: 12.5px;
+  font-size: 15.15px;
   color: var(--muted);
   margin: 0;
 }
@@ -466,7 +466,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
 
 .upcoming li span {
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 15.15px;
   letter-spacing: 0;
   color: var(--muted);
   white-space: nowrap;
@@ -489,7 +489,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
 
 .post-list__date {
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 15.15px;
   color: var(--muted);
   padding-top: 8px;
 }
@@ -513,7 +513,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
 
 .post-list__sub { font-size: 16.5px; max-width: 600px; }
 
-.post-list__meta { font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+.post-list__meta { font-family: var(--mono); font-size: 15.15px; color: var(--muted); }
 
 /* ---------- Physical-AI notes (blog page) ---------- */
 
@@ -535,7 +535,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
 .pai__hint {
   display: block;
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 15.15px;
   line-height: 1.6;
   color: var(--muted);
   margin-bottom: 12px;
@@ -557,7 +557,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
 .pai__row input:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
 .pai__row .button { border: 0; cursor: pointer; }
 
-.pai__msg { min-height: 1.6em; margin: 10px 0 0; font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+.pai__msg { min-height: 1.6em; margin: 10px 0 0; font-family: var(--mono); font-size: 15.15px; color: var(--muted); }
 
 .pai__list { margin-top: 26px; }
 
@@ -603,7 +603,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
 .footer__copy {
   margin: 0;
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 15.15px;
   color: var(--muted);
 }
 
@@ -664,7 +664,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
   position: absolute;
   transform: translate(-50%, -100%);
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 15.15px;
   color: var(--ink);
   white-space: nowrap;
   padding: 4px 9px;
