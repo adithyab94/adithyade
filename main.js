@@ -42,11 +42,11 @@ if ("IntersectionObserver" in window) {
   // Phones and tablets: tucked against the screen edges next to specific lines, partly off-screen.
   // [anchor, x, y below the anchor's top, width, rotation]; x, y and width in units of the screen width.
   const NARROW = [
-    [".hero .note--hero", 0.80, -0.09, 0.26, 12],     // chip, right of "It's a long story"
-    [".threads li:nth-child(2)", 0.78, -0.02, 0.30, 7], // camera, right of "Feeling"
-    [".hero", -0.04, 0.03, 0.24, -11],                // film, top left
-    ["#story .section-label", -0.03, -0.38, 0.22, -6], // robot, just above "How I got here"
-    ["#working-with-me .section-label", 0.84, -0.42, 0.21, 14], // arm, above "Working with me"
+    [".hero .note--hero", 0.82, -0.07, 0.21, 12],     // chip, right of "It's a long story"
+    [".threads li:nth-child(2)", 0.80, -0.01, 0.24, 7], // camera, right of "Feeling"
+    [".hero", -0.04, 0.05, 0.19, -11],                // film, top left
+    ["#story .section-label", -0.03, -0.30, 0.18, -6], // robot, just above "How I got here"
+    ["#working-with-me .section-label", 0.85, -0.34, 0.17, 14], // arm, above "Working with me"
   ];
 
   let z = 10;

@@ -22,9 +22,10 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+html { overflow-x: clip; scroll-behavior: smooth; scroll-padding-top: 80px; }
 
 body {
+  position: relative;
   margin: 0;
   overflow-x: clip;
   min-height: 100vh;
@@ -236,7 +237,10 @@ a.label-lg:hover { color: var(--ink); }
 
 /* ---------- Floating stickers around the hero ---------- */
 
-.stickers { position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 6; }
+/* The layer spans the whole page and clips anything hanging off the edges, so stickers
+   can never make the page wider than the screen (phones would zoom out to fit). */
+.stickers { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 6; }
+.sticker { pointer-events: auto; }
 
 .sticker {
   position: absolute;
