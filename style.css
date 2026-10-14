@@ -233,6 +233,41 @@ a.label-lg:hover { color: var(--ink); }
 
 .note--hero { display: block; margin-top: 28px; }
 
+/* ---------- Floating stickers around the hero ---------- */
+
+.stickers { position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 6; }
+
+.sticker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--w, 150px);
+  height: auto;
+  rotate: var(--r, 0deg);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  opacity: 0;
+  transition: opacity 0.6s ease, scale 0.2s ease;
+  animation: bob 6s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+
+.sticker.is-placed { opacity: 1; }
+.sticker:hover { scale: 1.04; }
+.sticker.is-dragging { cursor: grabbing; scale: 1.08; animation-play-state: paused; }
+
+@keyframes bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -8px; }
+}
+
+@media (prefers-reduced-motion: reduce) { .sticker { animation: none; } }
+
+/* Below 1300px the stickers sit in a row under the hero, so make room for it. */
+@media (max-width: 1299px) { .hero { padding-bottom: 84px; } }
+
 /* ---------- Thesis ---------- */
 
 .thesis { padding-top: var(--section-gap); padding-bottom: 0; }
