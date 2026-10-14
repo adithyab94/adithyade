@@ -17,7 +17,7 @@
 
   --max: 920px;
   /* One rhythm between sections: each section adds space above itself only. */
-  --section-gap: clamp(48px, 7vh, 88px);
+  --section-gap: clamp(32px, 4.5vh, 56px);
 }
 
 * { box-sizing: border-box; }
@@ -184,7 +184,7 @@ a:hover .arrow { transform: translateX(3px); }
 
 /* ---------- Hero ---------- */
 
-.hero { padding-top: clamp(80px, 12vh, 160px); padding-bottom: 0; }
+.hero { padding-top: clamp(64px, 10vh, 130px); padding-bottom: 0; }
 
 .hero__title {
   font-family: var(--serif);
