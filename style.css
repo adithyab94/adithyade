@@ -329,8 +329,8 @@ a.label-lg:hover { color: var(--ink); }
 
 .chapter__body strong { color: var(--ink); font-weight: 500; }
 
-.chapter__body .note { margin-top: 4px; }
-.chapter__body .note::before { content: "— "; }
+.chapter__body .note { margin-top: 6px; font-size: 15.5px; line-height: 1.5; color: var(--text); }
+.chapter__body .note::before { content: "— "; color: var(--muted); }
 
 .chapter--now .chapter__place::after {
   content: "";
