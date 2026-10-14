@@ -16,6 +16,8 @@
   --mono: "Fragment Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --max: 920px;
+  /* One rhythm between sections: each section adds space above itself only. */
+  --section-gap: clamp(48px, 7vh, 88px);
 }
 
 * { box-sizing: border-box; }
@@ -168,7 +170,7 @@ a:hover .arrow { transform: translateX(3px); }
 
 /* ---------- Page intro (Work / Blog / About) ---------- */
 
-.page-head { padding-top: clamp(70px, 12vh, 160px); padding-bottom: clamp(40px, 6vh, 80px); }
+.page-head { padding-top: clamp(64px, 10vh, 130px); padding-bottom: clamp(28px, 4vh, 48px); }
 
 .page-head__title {
   font-family: var(--serif);
@@ -182,7 +184,7 @@ a:hover .arrow { transform: translateX(3px); }
 
 /* ---------- Hero ---------- */
 
-.hero { padding-top: clamp(98px, 14vh, 196px); padding-bottom: clamp(40px, 6vh, 72px); }
+.hero { padding-top: clamp(80px, 12vh, 160px); padding-bottom: 0; }
 
 .hero__title {
   font-family: var(--serif);
@@ -220,7 +222,7 @@ a:hover .arrow { transform: translateX(3px); }
 
 /* ---------- Thesis ---------- */
 
-.thesis { padding-top: clamp(16px, 2vh, 32px); padding-bottom: clamp(70px, 10vh, 140px); }
+.thesis { padding-top: var(--section-gap); padding-bottom: 0; }
 
 .threads {
   list-style: none;
@@ -260,7 +262,7 @@ a:hover .arrow { transform: translateX(3px); }
 
 /* ---------- Story ---------- */
 
-.story { padding-bottom: clamp(56px, 8vh, 112px); }
+.story { padding-top: var(--section-gap); padding-bottom: 0; }
 
 .route { width: 100%; height: auto; margin: 0 0 56px; overflow: visible; }
 
@@ -336,8 +338,8 @@ a:hover .arrow { transform: translateX(3px); }
 
 /* ---------- Work (ruled list) ---------- */
 
-.work { padding-top: clamp(70px, 10vh, 140px); padding-bottom: clamp(70px, 10vh, 140px); }
-.work--page { padding-top: 0; }
+.work { padding-top: var(--section-gap); padding-bottom: 0; }
+.work--page { padding-top: 0; padding-bottom: var(--section-gap); }
 
 .cards { margin: 16px 0 36px; border-bottom: 1px solid var(--line); }
 
@@ -383,7 +385,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
 
 /* ---------- Curious ---------- */
 
-.curious { padding-top: clamp(56px, 8vh, 112px); padding-bottom: clamp(70px, 10vh, 140px); }
+.curious { padding-top: var(--section-gap); padding-bottom: 0; }
 
 .questions { list-style: none; margin: 0; padding: 0; }
 
@@ -443,7 +445,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
 
 /* ---------- Blog index ---------- */
 
-.posts { padding-bottom: clamp(40px, 6vh, 80px); }
+.posts { padding-bottom: 0; }
 
 .post-list { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--line); }
 
@@ -486,7 +488,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
 
 /* ---------- Physical-AI notes (blog page) ---------- */
 
-.pai { padding-top: clamp(56px, 9vh, 112px); padding-bottom: clamp(56px, 8vh, 100px); }
+.pai { padding-top: var(--section-gap); padding-bottom: var(--section-gap); }
 
 .pai__title {
   font-family: var(--serif);
@@ -533,7 +535,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
 
 /* ---------- Hello ---------- */
 
-.hello { padding-top: clamp(70px, 10vh, 140px); padding-bottom: clamp(84px, 12vh, 168px); }
+.hello { padding-top: var(--section-gap); padding-bottom: var(--section-gap); }
 
 .button {
   display: inline-flex;
