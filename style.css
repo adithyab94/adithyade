@@ -182,7 +182,7 @@ a:hover .arrow { transform: translateX(3px); }
 
 /* ---------- Hero ---------- */
 
-.hero { padding-top: clamp(98px, 14vh, 196px); padding-bottom: clamp(84px, 12vh, 168px); }
+.hero { padding-top: clamp(98px, 14vh, 196px); padding-bottom: clamp(40px, 6vh, 72px); }
 
 .hero__title {
   font-family: var(--serif);
@@ -220,7 +220,7 @@ a:hover .arrow { transform: translateX(3px); }
 
 /* ---------- Thesis ---------- */
 
-.thesis { padding-top: clamp(48px, 6vh, 84px); padding-bottom: clamp(70px, 10vh, 140px); }
+.thesis { padding-top: clamp(16px, 2vh, 32px); padding-bottom: clamp(70px, 10vh, 140px); }
 
 .threads {
   list-style: none;
@@ -556,7 +556,7 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
 
 .footer {
   padding-top: 28px;
-  padding-bottom: 40px;
+  padding-bottom: 0;
   border-top: 1px solid var(--line);
 }
 
@@ -620,8 +620,8 @@ a.card:hover .arrow { transform: translate(2px, -2px); }
 .stage {
   position: relative;
   width: 100%;
-  height: clamp(240px, 30vw, 560px);
-  margin-top: 24px;
+  height: clamp(220px, 25vw, 470px);
+  margin-top: 8px;
   overflow: hidden;
 }
 
