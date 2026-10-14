@@ -39,15 +39,14 @@ if ("IntersectionObserver" in window) {
     [() => chapters()[2], "left", 0.41, 117, 104, 4],                                    // robot, by the brain-and-heart chapter
     [() => chapters()[4], "right", 0.38, -68, 96, 10],                                   // arm, by "Teaching humanoids."
   ];
-  // Phones and tablets: two above the intro, the rest in small clearings opened before later
-  // sections (see .has-sticker in style.css), alternating sides and bleeding off the edge.
+  // Phones and tablets: tucked against the screen edges next to specific lines, partly off-screen.
   // [anchor, x, y below the anchor's top, width, rotation]; x, y and width in units of the screen width.
   const NARROW = [
-    [".hero", 0.70, 0.05, 0.26, 12],               // chip, top right
-    [".thesis", 0.68, 0.06, 0.30, 7],               // camera, before "Robots used to be…"
-    [".hero", -0.04, 0.03, 0.24, -11],              // film, top left
-    ["#story", -0.03, 0.05, 0.22, -6],              // robot, before "How I got here"
-    ["#working-with-me", 0.76, 0.04, 0.21, 14],     // arm, before "Working with me"
+    [".hero .note--hero", 0.80, -0.09, 0.26, 12],     // chip, right of "It's a long story"
+    [".threads li:nth-child(2)", 0.78, -0.02, 0.30, 7], // camera, right of "Feeling"
+    [".hero", -0.04, 0.03, 0.24, -11],                // film, top left
+    ["#story .section-label", -0.03, -0.38, 0.22, -6], // robot, just above "How I got here"
+    ["#working-with-me .section-label", 0.84, -0.42, 0.21, 14], // arm, above "Working with me"
   ];
 
   let z = 10;
@@ -101,8 +100,9 @@ if ("IntersectionObserver" in window) {
     });
     el.addEventListener("pointermove", (e) => {
       if (e.pointerId !== id) return;
-      const maxX = document.documentElement.scrollWidth - el.offsetWidth;
-      el.style.left = `${Math.min(Math.max(0, bx + e.pageX - sx), maxX)}px`;
+      // may hang up to 60% off either edge, like a sticker on the edge of a desk
+      const w = el.offsetWidth, maxX = window.innerWidth - w * 0.4;
+      el.style.left = `${Math.min(Math.max(-w * 0.6, bx + e.pageX - sx), maxX)}px`;
       el.style.top = `${Math.max(0, by + e.pageY - sy)}px`;
       el.dataset.moved = "1";
     });
