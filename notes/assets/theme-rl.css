@@ -1,0 +1,31 @@
+/* RL playground -> site theme (applied after the page's own, recoloured stylesheet) */
+:root:root:root{--mono:"Fragment Mono",ui-monospace,monospace;--line:rgba(35,34,32,.12);--line2:rgba(35,34,32,.2);--radius:10px;color-scheme:light}
+body{font-family:"Switzer",system-ui,sans-serif;font-size:16.5px;background:#f2f6ea}
+body::before{background:#f2f6ea}
+h1,h2,h3,h4{font-weight:500;letter-spacing:-.02em}
+.hero h2,.ch-head h2{font-weight:400;letter-spacing:-.03em;line-height:1.05}
+.hero{background:#fbfcf8;border-radius:12px}
+.hero h2 .grad{background:none;color:#232220;-webkit-text-fill-color:currentColor}
+.hero canvas{opacity:.18}
+.sidebar{border-right:1px solid rgba(35,34,32,.12)}
+.brand-logo{background:#232220;color:#f2f6ea;box-shadow:none;border-radius:8px}
+.ring .fg{stroke:#232220!important}
+.card{box-shadow:none;backdrop-filter:none}
+.card.widget{border-color:rgba(35,34,32,.16)}
+.ch-head .kicker,.nav .group,.stat .k,table.cmp th,.chip,.ctrl,.legend,.side-note,.tag{font-family:"Fragment Mono",ui-monospace,monospace;letter-spacing:0;text-transform:none}
+.ch-head .kicker{color:#6f6e66;font-weight:400}
+button,.btn{border-radius:6px;font-weight:500}
+button.primary{background:#232220;color:#f2f6ea;box-shadow:none}
+button.primary:hover{box-shadow:none;opacity:.88}
+button.cyan{background:#3e6fb0;color:#fff}
+input[type=range]::-webkit-slider-thumb{background:#232220;box-shadow:none}
+input[type=range]::-moz-range-thumb{background:#232220}
+.flip-front{background:#fbfcf8}
+.sm-bar>div{background:#3e6fb0}
+.qrow.best .bar div{background:#a8701a}
+.pcard.back{background:repeating-linear-gradient(45deg,#56408a,#56408a 6px,#6b4fa8 6px,#6b4fa8 12px)}
+.felt-label{color:#e7f3ea}
+.nav a.active{background:rgba(35,34,32,.06);border-color:rgba(35,34,32,.18)}
+.nav a.done .num{background:#2f7d5f;color:#fff}
+.sidebar{top:var(--pai-bar-h,49px)}
+@media (max-width:900px){.sidebar{top:0}}

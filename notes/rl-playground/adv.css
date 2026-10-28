@@ -1,0 +1,19 @@
+/* Advanced chapters: numbered topic headings inside one chapter */
+h3.topic{display:flex;align-items:baseline;gap:12px;font-size:clamp(22px,2.4vw,28px);font-weight:400;letter-spacing:-.02em;line-height:1.15;margin:56px 0 12px;padding-top:22px;border-top:1px solid rgba(35,34,32,.12)}
+h3.topic span{font-family:"Fragment Mono",ui-monospace,monospace;font-size:13px;color:#6f6e66;letter-spacing:0;min-width:22px}
+section.chapter > p{max-width:76ch}
+ul.tight{max-width:76ch;padding-left:20px;margin:8px 0 16px}
+ul.tight li{margin:6px 0}
+label.ctrl input[type=checkbox]{accent-color:#232220;margin-right:6px}
+.nav .group.adv{margin-top:18px}
+/* Franka widget */
+#peg-widget .peg-live{display:none}
+#peg-widget.is-live .peg-live{display:block}
+#peg-widget.is-live .peg-gate{display:none}
+.peg-gate{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:28px 18px;border:1px dashed rgba(35,34,32,.2);border-radius:10px;background:rgba(35,34,32,.03)}
+.peg-stage{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:14px;align-items:start}
+#peg-canvas{width:100%;display:block;border-radius:10px;border:1px solid rgba(35,34,32,.12);touch-action:none;cursor:grab}
+#peg-top{width:100%;display:block;border-radius:8px;border:1px solid rgba(35,34,32,.12)}
+.peg-side{display:flex;flex-direction:column;gap:10px}
+.peg-side .stats{margin:0}
+@media (max-width:760px){.peg-stage{grid-template-columns:1fr}.peg-side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.peg-side .callout{grid-column:1/-1}}

@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){var ok=false;try{ok=localStorage.getItem("pai-notes")==="unlocked"}catch(e){ok=true}if(!ok)location.replace("../../blog/#physical-ai-notes")})();</script>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RL Playground · Physical-AI notes</title>
+<link rel="stylesheet" href="../assets/katex/katex.min.css">
+<script defer src="../assets/katex/katex.min.js"></script>
+<script defer src="../assets/katex/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="adv.css">
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/notes.css">
+<link rel="stylesheet" href="../assets/theme-rl.css">
+</head>
+<body>
+<div class="pai-bar"><a class="pai-bar__name" href="../../">Adithya Balaji</a><nav><a href="../../blog/#physical-ai-notes">Physical-AI notes</a><a href="../../blog/">Blog</a></nav></div>
+
+
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-logo">RL</div>
+    <div><h1>RL Playground</h1><small>Sutton &amp; Barto, then robots</small></div>
+  </div>
+  <div class="progress-box">
+    <svg class="ring" viewBox="0 0 54 54">
+      <defs><linearGradient id="ringGrad" x1="0" x2="1"><stop offset="0" stop-color="#3e6fb0"/><stop offset="1" stop-color="#6b4fa8"/></linearGradient></defs>
+      <circle class="bg" cx="27" cy="27" r="22"/><circle class="fg" cx="27" cy="27" r="22"/>
+    </svg>
+    <div><div class="pct">0%</div><div class="lbl">chapters studied</div></div>
+  </div>
+  <nav class="nav">
+    <a href="#top"><span class="num"><span>★</span></span>Start here</a>
+    <div class="group">The problem</div>
+    <a href="#ch1" data-ch="ch1"><span class="num"><span>1</span></span>Intro, bandits &amp; tic-tac-toe</a>
+    <div class="group">Tabular methods</div>
+    <a href="#ch3" data-ch="ch3"><span class="num"><span>3</span></span>Finite MDPs &amp; Bellman</a>
+    <a href="#ch4" data-ch="ch4"><span class="num"><span>4</span></span>Dynamic Programming</a>
+    <a href="#ch5" data-ch="ch5"><span class="num"><span>5</span></span>Monte Carlo</a>
+    <a href="#ch6" data-ch="ch6"><span class="num"><span>6</span></span>Temporal-Difference</a>
+    <div class="group">Approximation</div>
+    <a href="#ch9" data-ch="ch9"><span class="num"><span>9</span></span>Function approx. (9–10)</a>
+    <a href="#ch13" data-ch="ch13"><span class="num"><span>13</span></span>Policy gradient</a>
+    <div class="group adv">Advanced: robot RL</div>
+    <a href="#advA" data-ch="advA"><span class="num"><span>A</span></span>Fundamentals for robots</a>
+    <a href="#advB" data-ch="advB"><span class="num"><span>B</span></span>Deep RL workhorses</a>
+    <a href="#advC" data-ch="advC"><span class="num"><span>C</span></span>The robot RL pipeline</a>
+    <a href="#advD" data-ch="advD"><span class="num"><span>D</span></span>Humanoids</a>
+    <a href="#advE" data-ch="advE"><span class="num"><span>E</span></span>Imitation meets RL</a>
+    <a href="#advF" data-ch="advF"><span class="num"><span>F</span></span>Deployment</a>
+    <div class="group">Review</div>
+    <a href="#cheat" data-ch="cheat"><span class="num"><span>✎</span></span>Cheat sheet &amp; flashcards</a>
+  </nav>
+  <div class="side-note">Book: <a href="http://incompleteideas.net/book/the-book-2nd.html" target="_blank" rel="noopener">Sutton &amp; Barto, 2nd edition</a>, free online from the authors.</div>
+</aside>
+
+<main>
+<!-- ======================================================= HERO -->
+<header class="hero" id="top">
+  <canvas id="hero-canvas"></canvas>
+  <h2>Learn RL by <span class="grad">playing with it</span>.</h2>
+  <p>An interactive companion to <i>Reinforcement Learning: An Introduction</i> by Sutton &amp; Barto. Every chapter has a short summary, the key equations, a pointer to the book, live simulations you can poke at, and a quiz. Mark chapters as studied and your progress is saved in this browser.</p>
+  <p>Then an <b>advanced track</b> takes it to real robots: PPO, SAC and world models, sim-to-real, humanoids, residual RL on a Franka arm running live in MuJoCo, offline and real-world RL, safety and edge deployment. Same format: maths, something to play with, a quiz.</p>
+  <div class="chips">
+    <span class="chip">🎰 bandit duel</span><span class="chip">❌⭕ self-learning tic-tac-toe</span><span class="chip">🧮 Bellman equation explorer</span>
+    <span class="chip">🗺️ paint-your-own DP gridworld</span><span class="chip">🃏 Monte Carlo blackjack</span><span class="chip">🧗 cliff walking race</span>
+    <span class="chip">🚗 mountain car</span><span class="chip">🎯 policy gradient on a tricky corridor</span>
+  </div>
+  <div class="chips"><span class="chip">🔩 Franka peg-in-hole, live in MuJoCo</span><span class="chip">✂️ PPO clip vs no clip</span><span class="chip">🤖 sim-to-real deploy</span><span class="chip">🏎️ DAgger</span><span class="chip">🧍 a slow brain on a fast spine</span><span class="chip">🗄️ offline Q off the data</span><span class="chip">🛡️ safety filter</span><span class="chip">⏲️ control-loop budget</span></div>
+  <div class="chips">
+  </div>
+</header>
+
+<!-- ======================================================= CH 1 -->
+<section class="chapter" id="ch1" data-ch="ch1" style="--accent:#3e6fb0">
+  <div class="ch-head">
+    <div><div class="kicker">Chapter 1 (+ Ch. 2 bandits)</div><h2>The Reinforcement Learning Problem</h2></div>
+    <div class="ch-actions">
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Ch. 1</a>
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Tic-tac-toe</a>
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Bandits</a>
+      <button class="done-btn" data-ch="ch1"></button>
+    </div>
+  </div>
+  <p class="lead">An <b>agent</b> interacts with an <b>environment</b>. At each step it sees a state, takes an action, and receives a scalar <b>reward</b>. Nobody tells it which action was right. It has to discover, by trial and error, behaviour that maximizes reward <i>in the long run</i>, which means trading off <b>exploration</b> against <b>exploitation</b>.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>The agent–environment loop <span class="tag">Fig. 3.1</span></h3>
+      <svg class="loop-svg" viewBox="0 0 560 280">
+        <defs>
+          <linearGradient id="ag" x1="0" x2="1"><stop offset="0" stop-color="#6b4fa8"/><stop offset="1" stop-color="#3e6fb0"/></linearGradient>
+          <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6f6e66"/></marker>
+        </defs>
+        <rect x="190" y="20" width="180" height="64" rx="16" fill="url(#ag)" opacity=".9"/>
+        <text x="280" y="60" text-anchor="middle" font-size="22" font-weight="800">🤖 Agent</text>
+        <rect x="170" y="196" width="220" height="64" rx="16" fill="#fbfcf8" stroke="#3b4a80"/>
+        <text x="280" y="236" text-anchor="middle" font-size="20" font-weight="700">🌍 Environment</text>
+        <path id="pA" d="M370,52 C470,52 470,228 390,228" fill="none" stroke="#6f6e66" stroke-width="2" marker-end="url(#ah)"/>
+        <path id="pS" d="M170,236 C60,236 60,60 190,60" fill="none" stroke="#6f6e66" stroke-width="2" marker-end="url(#ah)"/>
+        <path id="pR" d="M170,214 C100,214 100,76 190,76" fill="none" stroke="#6f6e66" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#ah)"/>
+        <text x="478" y="146" font-size="15" fill="#c4673f">action Aₜ</text>
+        <text x="8" y="140" font-size="15" fill="#3e6fb0">state Sₜ₊₁</text>
+        <text x="96" y="160" font-size="14" fill="#a8701a">reward Rₜ₊₁</text>
+        <circle r="7" fill="#c4673f"><animateMotion dur="3s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.33;1" calcMode="linear"><mpath href="#pA"/></animateMotion></circle>
+        <circle r="7" fill="#3e6fb0"><animateMotion dur="3s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.33;0.66;1" calcMode="linear"><mpath href="#pS"/></animateMotion></circle>
+        <circle r="6" fill="#a8701a"><animateMotion dur="3s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.33;0.66;1" calcMode="linear"><mpath href="#pR"/></animateMotion></circle>
+      </svg>
+      <p class="sub" style="margin-top:8px">The agent's goal is to maximize the expected <b>return</b>, the (discounted) sum of future rewards. That is the <i>reward hypothesis</i>.</p>
+    </div>
+    <div class="card">
+      <h3>Four elements of RL <span class="tag">Sec. 1.3 — click to flip</span></h3>
+      <div class="grid2" style="grid-template-columns:1fr 1fr;gap:10px">
+        <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><span class="ico">🧭</span><b>Policy</b><small>π(a|s)</small></div><div class="flip-face flip-back">A mapping from states to actions (or action probabilities). It is the agent's behaviour, and could be a lookup table, a rule, or a neural net.</div></div></div>
+        <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><span class="ico">🍬</span><b>Reward signal</b><small>Rₜ</small></div><div class="flip-face flip-back">Defines the goal. It is immediate and intrinsic: what is good <i>right now</i>. The agent can't change how rewards are computed.</div></div></div>
+        <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><span class="ico">💎</span><b>Value function</b><small>v(s), q(s,a)</small></div><div class="flip-face flip-back">What is good <i>in the long run</i>: the expected total future reward from a state. Actions are chosen based on values, but values must be estimated from experience.</div></div></div>
+        <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><span class="ico">🔮</span><b>Model</b><small>p(s′, r | s, a)</small></div><div class="flip-face flip-back">Optional. It predicts how the environment responds, which enables <b>planning</b>. Methods without one are <b>model-free</b> trial-and-error learners.</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card widget">
+    <h3>🎰 Bandit duel: you vs. the bot <span class="tag">Ch. 2 · exploration vs exploitation</span></h3>
+    <p class="sub">There are 10 slot machines, each with a hidden mean payout q*(a) ~ N(0,1) and noisy rewards. You and the bot each get 50 pulls. Click a machine to pull it; the bot pulls at the same time (pink dot). Can you balance exploring and exploiting better than an algorithm?</p>
+    <div class="controls">
+      <label class="ctrl">Bot strategy
+        <select id="bandit-method"><option value="eps">ε-greedy</option><option value="ucb">UCB (c=2)</option><option value="opt">Optimistic Q₀=5</option></select></label>
+      <label class="ctrl">ε <input type="range" id="bandit-eps" min="0" max="0.5" step="0.01" value="0.1"><output for="bandit-eps"></output></label>
+      <button id="bandit-new" class="primary">🔄 New bandit</button>
+      <button id="bandit-reveal">👁 Reveal q*</button>
+    </div>
+    <div class="bandit-row" id="bandit-row"></div>
+    <div class="stats">
+      <div class="stat"><div class="k">your total</div><div class="v" id="b-you-total">0</div></div>
+      <div class="stat"><div class="k">pulls</div><div class="v" id="b-you-n">0</div></div>
+      <div class="stat"><div class="k">bot total</div><div class="v" id="b-ag-total">0</div></div>
+      <div class="stat"><div class="k">best arm</div><div class="v" id="b-ag-best">???</div></div>
+    </div>
+    <div class="callout" id="bandit-log"></div>
+    <canvas class="plot" id="bandit-race" data-h="200"></canvas>
+  </div>
+
+  <div class="card widget">
+    <h3>🧪 The 10-armed testbed <span class="tag">Fig. 2.2 / 2.3 / 2.4</span></h3>
+    <p class="sub">Average 1000 steps over many random bandit problems. Greedy gets stuck, ε-greedy keeps improving, optimistic initial values explore early on purpose, and UCB explores where it is most uncertain.</p>
+    <div class="controls">
+      <label class="ctrl">runs <select id="bx-runs"><option>100</option><option selected>300</option><option>1000</option><option>2000</option></select></label>
+      <button id="bx-run" class="primary">▶ Run experiment</button>
+      <span class="ctrl" id="bx-status"></span>
+    </div>
+    <div class="grid2">
+      <canvas class="plot" id="bx-reward" data-h="260"></canvas>
+      <canvas class="plot" id="bx-opt" data-h="260"></canvas>
+    </div>
+    <div class="eqbox">$$Q_{n+1} = Q_n + \frac{1}{n}\big[R_n - Q_n\big] \qquad A_t = \arg\max_a \Big[Q_t(a) + c\sqrt{\tfrac{\ln t}{N_t(a)}}\Big]$$</div>
+    <p class="sub">General pattern used throughout the book: <code>NewEstimate ← OldEstimate + StepSize · [Target − OldEstimate]</code></p>
+  </div>
+
+  <div class="card widget">
+    <h3>❌⭕ Tic-tac-toe that learns from experience <span class="tag">Sec. 1.5</span></h3>
+    <p class="sub">The book's opening example. The bot (✕) keeps a table V(s) holding its estimated probability of winning from each board. After every greedy move it nudges the previous board's value toward the new one: \(V(S_t) \leftarrow V(S_t) + \alpha\,[V(S_{t+1}) - V(S_t)]\), which is a <b>temporal-difference</b> update. Train it, then play against it. The % numbers show its value estimate for each move it is considering.</p>
+    <div class="ttt-wrap">
+      <div>
+        <div class="ttt" id="ttt"></div>
+        <div class="controls"><button id="ttt-new" class="primary">New game</button><label class="check"><input type="checkbox" id="ttt-learn" checked> keep learning while playing</label></div>
+        <div class="callout" id="ttt-msg" style="max-width:270px"></div>
+        <div class="mono" id="ttt-score"></div>
+      </div>
+      <div style="flex:1;min-width:300px">
+        <div class="controls" id="ttt-train-controls">
+          <label class="ctrl">opponent <select id="ttt-opp"><option value="random">random</option><option value="smart" selected>smart-ish (wins/blocks)</option></select></label>
+          <button data-n="2000" class="cyan">Train 2k games</button>
+          <button data-n="20000" class="primary">Train 20k games</button>
+          <button id="ttt-reset" class="ghost">Forget everything</button>
+        </div>
+        <div class="controls">
+          <label class="ctrl">step-size α <input type="range" id="ttt-alpha" min="0.01" max="1" step="0.01" value="0.2"><output for="ttt-alpha"></output></label>
+          <label class="ctrl">explore ε <input type="range" id="ttt-eps" min="0" max="0.5" step="0.01" value="0.1"><output for="ttt-eps"></output></label>
+        </div>
+        <div class="stats"><div class="stat"><div class="k">games trained</div><div class="v" id="ttt-games">0</div></div><div class="stat"><div class="k">states in table</div><div class="v" id="ttt-states">0</div></div></div>
+        <canvas class="plot" id="ttt-chart" data-h="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="card"><h3>🧠 Quiz</h3><div class="quiz" data-quiz="ch1"></div></div>
+</section>
+
+<!-- ======================================================= CH 3 -->
+<section class="chapter" id="ch3" data-ch="ch3" style="--accent:#6b4fa8">
+  <div class="ch-head">
+    <div><div class="kicker">Chapter 3</div><h2>Finite Markov Decision Processes</h2></div>
+    <div class="ch-actions">
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Ch. 3</a>
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Value functions</a>
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Optimality</a>
+      <button class="done-btn" data-ch="ch3"></button>
+    </div>
+  </div>
+  <p class="lead">An MDP formalizes the full RL problem. The dynamics \(p(s',r\mid s,a)\) give the probability of each next state and reward, and the <b>Markov property</b> says that the current state captures everything relevant from the past. The agent wants to maximize the expected <b>return</b> \(G_t\). <b>Value functions</b> tell us how good states and actions are, and the <b>Bellman equations</b> express them recursively.</p>
+
+  <div class="grid3">
+    <div class="key"><b>Return</b><p>\(G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \dots = R_{t+1} + \gamma G_{t+1}\)</p></div>
+    <div class="key"><b>State value</b><p>\(v_\pi(s) = \mathbb{E}_\pi[G_t \mid S_t = s]\)</p></div>
+    <div class="key"><b>Action value</b><p>\(q_\pi(s,a) = \mathbb{E}_\pi[G_t \mid S_t = s, A_t = a]\)</p></div>
+  </div>
+
+  <div class="card widget">
+    <h3>🧮 Discounting playground <span class="tag">Sec. 3.3</span></h3>
+    <p class="sub">Click rewards to change them. Each chip shows its \(G_t\), computed backwards with \(G_t = R_{t+1} + \gamma G_{t+1}\). Low γ makes the agent short-sighted; γ → 1 makes it far-sighted.</p>
+    <div class="controls"><label class="ctrl">γ <input type="range" id="ret-gamma" min="0" max="1" step="0.01" value="0.9"><output for="ret-gamma"></output></label>
+      <div class="stat"><div class="k">G₀</div><div class="v" id="ret-G"></div></div>
+      <div class="stat"><div class="k">effective horizon 1/(1−γ)</div><div class="v" id="ret-horizon"></div></div></div>
+    <div class="reward-chips" id="ret-chips"></div>
+    <canvas class="plot" id="ret-chart" data-h="200"></canvas>
+  </div>
+
+  <div class="card eq">
+    <h3>The Bellman equations</h3>
+    <div class="eqbox">$$v_\pi(s) = \sum_a \pi(a\mid s) \sum_{s',r} p(s',r\mid s,a)\,\big[r + \gamma\, v_\pi(s')\big]$$
+    $$v_*(s) = \max_a \sum_{s',r} p(s',r\mid s,a)\,\big[r + \gamma\, v_*(s')\big] \qquad q_*(s,a) = \sum_{s',r} p(s',r\mid s,a)\big[r + \gamma \max_{a'} q_*(s',a')\big]$$</div>
+    <p class="sub">The value of a state equals the expected immediate reward plus the discounted value of where you land. The equation for \(v_\pi\) is linear; the optimality equation has a max, which makes it nonlinear.</p>
+  </div>
+
+  <div class="card widget">
+    <h3>🔍 Bellman equation explorer <span class="tag">Example 3.5 gridworld</span></h3>
+    <p class="sub">Every move from <b>A</b> teleports you to <b>A′</b> with reward +10, and every move from <b>B</b> teleports you to <b>B′</b> with reward +5. Bumping into the edge gives −1. <b>Click any cell</b> to see its Bellman equation with real numbers. The dashed cyan cells are its successors.</p>
+    <div class="controls">
+      <div class="tabs" id="bell-mode" style="margin:0"><button class="sel" data-mode="pi">v_π (random policy)</button><button data-mode="star">v_* + optimal policy</button></div>
+      <label class="ctrl">γ <input type="range" id="bell-gamma" min="0" max="0.99" step="0.01" value="0.9"><output for="bell-gamma"></output></label>
+      <label class="ctrl">A reward <input type="range" id="bell-ra" min="0" max="20" step="1" value="10"><output for="bell-ra"></output></label>
+      <label class="ctrl">B reward <input type="range" id="bell-rb" min="0" max="20" step="1" value="5"><output for="bell-rb"></output></label>
+    </div>
+    <div class="grid2">
+      <canvas class="grid" id="bell-grid" style="width:100%;max-width:420px" data-h="420"></canvas>
+      <div class="explain" id="bell-explain"></div>
+    </div>
+    <div class="callout amber">Try this: set A's reward to 4 or less in v_* mode and watch the optimal policy switch to going for B instead. Then lower γ and see the agent become myopic.</div>
+  </div>
+
+  <div class="card widget" id="robot">
+    <h3>🤖 Recycling robot <span class="tag">Example 3.3</span></h3>
+    <p class="sub">With a high battery, the robot can <i>search</i> for cans (r_search) or <i>wait</i> (r_wait). Searching drains the battery to low with probability 1−α. With a low battery, searching keeps it low with probability β; otherwise the battery dies and the robot is rescued (−3). It can also <i>recharge</i>. The bars show \(q_*\) for each action, and the best one is highlighted.</p>
+    <div class="controls">
+      <label class="ctrl">α <input type="range" id="rob-alpha" min="0" max="1" step="0.01" value="0.8"><output for="rob-alpha"></output></label>
+      <label class="ctrl">β <input type="range" id="rob-beta" min="0" max="1" step="0.01" value="0.4"><output for="rob-beta"></output></label>
+      <label class="ctrl">r_search <input type="range" id="rob-rs" min="0" max="5" step="0.1" value="2"><output for="rob-rs"></output></label>
+      <label class="ctrl">r_wait <input type="range" id="rob-rw" min="0" max="5" step="0.1" value="1"><output for="rob-rw"></output></label>
+      <label class="ctrl">γ <input type="range" id="rob-gamma" min="0" max="0.99" step="0.01" value="0.9"><output for="rob-gamma"></output></label>
+    </div>
+    <div class="robot-states"><div class="rstate" id="rob-high"></div><div class="rstate" id="rob-low"></div></div>
+  </div>
+
+  <div class="card"><h3>🧠 Quiz</h3><div class="quiz" data-quiz="ch3"></div></div>
+</section>
+
+<!-- ======================================================= CH 4 -->
+<section class="chapter" id="ch4" data-ch="ch4" style="--accent:#2f7d5f">
+  <div class="ch-head">
+    <div><div class="kicker">Chapter 4</div><h2>Dynamic Programming</h2></div>
+    <div class="ch-actions">
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Ch. 4</a>
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Policy iteration</a>
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Value iteration</a>
+      <button class="done-btn" data-ch="ch4"></button>
+    </div>
+  </div>
+  <p class="lead">If you know the model \(p(s',r\mid s,a)\), you can compute optimal policies by turning the Bellman equations into <b>update rules</b>. <b>Policy evaluation</b> computes \(v_\pi\), <b>policy improvement</b> acts greedily with respect to it, and alternating the two gives <b>policy iteration</b>. <b>Value iteration</b> folds them into a single max-backup. The pattern where evaluation and improvement push each other toward optimality is called <b>Generalized Policy Iteration (GPI)</b>, and it underlies everything that follows.</p>
+
+  <div class="grid3">
+    <div class="key"><b>Iterative policy evaluation</b><p>\(v_{k+1}(s) = \sum_a \pi(a|s) \sum_{s',r} p(s',r|s,a)[r + \gamma v_k(s')]\)</p></div>
+    <div class="key"><b>Policy improvement</b><p>\(\pi'(s) = \arg\max_a \sum_{s',r} p(s',r|s,a)[r + \gamma v_\pi(s')]\)</p></div>
+    <div class="key"><b>Value iteration</b><p>\(v_{k+1}(s) = \max_a \sum_{s',r} p(s',r|s,a)[r + \gamma v_k(s')]\)</p></div>
+  </div>
+
+  <div class="card widget">
+    <h3>🗺️ DP gridworld playground <span class="tag">paint walls · goals · fire pits</span></h3>
+    <p class="sub">Pick a preset or paint your own world, then step through the algorithms. <b>Sutton 4×4</b> reproduces Example 4.1: press "Eval 1 sweep" repeatedly to watch Figure 4.1 unfold. Arrows show the policy π; arrow length is proportional to probability.</p>
+    <div class="controls">
+      <label class="ctrl">preset <select id="dp-preset"><option value="sutton">Sutton 4×4 (Ex. 4.1)</option><option value="maze">Maze with fire pits (slippery)</option><option value="cliff">Cliff (4×12)</option><option value="windyish">Tiny slippery world</option></select></label>
+      <span class="ctrl">paint:</span>
+      <span class="tabs paint-tools" id="dp-tools" style="margin:0"><button class="sel" data-tool="wall">🧱 wall</button><button data-tool="goal">🏁 goal</button><button data-tool="pit">🔥 pit</button><button data-tool="term">■ terminal</button><button data-tool="empty">⬜ erase</button></span>
+      <label class="check"><input type="checkbox" id="dp-showq"> show q(s,a) triangles</label>
+    </div>
+    <div class="controls">
+      <label class="ctrl">γ <input type="range" id="dp-gamma" min="0" max="1" step="0.01" value="1"><output for="dp-gamma"></output></label>
+      <label class="ctrl">step reward <input type="range" id="dp-step" min="-2" max="1" step="0.01" value="-1"><output for="dp-step"></output></label>
+      <label class="ctrl">slip prob <input type="range" id="dp-slip" min="0" max="0.8" step="0.05" value="0"><output for="dp-slip"></output></label>
+      <label class="ctrl">goal bonus <input type="range" id="dp-goal" min="0" max="10" step="0.5" value="0"><output for="dp-goal"></output></label>
+      <label class="ctrl">pit penalty <input type="range" id="dp-pit" min="-100" max="0" step="1" value="0"><output for="dp-pit"></output></label>
+    </div>
+    <div class="controls" id="dp-controls">
+      <button id="dp-eval1">Eval 1 sweep</button>
+      <button id="dp-evalall">Evaluate π fully</button>
+      <button id="dp-improve">Improve π (greedy)</button>
+      <button id="dp-pi" class="primary">▶ Policy iteration</button>
+      <button id="dp-vi1">VI 1 sweep</button>
+      <button id="dp-viall" class="cyan">▶ Value iteration</button>
+      <button id="dp-stop" class="ghost">⏹ stop</button>
+      <button id="dp-reset" class="ghost">↺ reset values</button>
+    </div>
+    <div class="grid2" style="grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr)">
+      <div><canvas class="grid" id="dp-grid"></canvas></div>
+      <div>
+        <div class="stats"><div class="stat"><div class="k">sweeps</div><div class="v" id="dp-sweeps">0</div></div><div class="stat"><div class="k">last Δ</div><div class="v" id="dp-delta">—</div></div></div>
+        <div class="callout" id="dp-status"></div>
+        <canvas class="plot" id="dp-dchart" data-h="200"></canvas>
+        <div class="callout amber">Experiments to try: (1) In the maze, raise the slip probability and watch the policy move away from the fire pits. (2) Make the step reward positive with γ = 1 and see what goes wrong (no incentive to finish!). (3) Compare how many sweeps policy iteration and value iteration need.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card widget">
+    <h3>🎲 Gambler's problem <span class="tag">Example 4.3</span></h3>
+    <p class="sub">A gambler bets on coin flips (heads with probability p_h) and wants to reach $100. Value iteration finds the probability of winning from each amount of capital, and the optimal stakes have a strange fractal-like shape. Drag p_h: above 0.5, the optimal play is to make timid bets of $1.</p>
+    <div class="controls"><label class="ctrl">p_h <input type="range" id="gam-p" min="0.05" max="0.95" step="0.01" value="0.4"><output for="gam-p"></output></label></div>
+    <div class="grid2"><canvas class="plot" id="gam-v" data-h="260"></canvas><canvas class="plot" id="gam-pi" data-h="260"></canvas></div>
+  </div>
+
+  <div class="card"><h3>🧠 Quiz</h3><div class="quiz" data-quiz="ch4"></div></div>
+</section>
+
+<!-- ======================================================= CH 5 -->
+<section class="chapter" id="ch5" data-ch="ch5" style="--accent:#c4673f">
+  <div class="ch-head">
+    <div><div class="kicker">Chapter 5</div><h2>Monte Carlo Methods</h2></div>
+    <div class="ch-actions">
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Ch. 5</a>
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 MC control</a>
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Importance sampling</a>
+      <button class="done-btn" data-ch="ch5"></button>
+    </div>
+  </div>
+  <p class="lead">You don't need a model: just <b>average the returns you actually observe</b>. MC methods learn from complete episodes and don't bootstrap. Each state's estimate is independent of the others, which is good when the model is unknown but slow when episodes are long. Control follows GPI, using either <b>exploring starts</b> or ε-soft policies to keep exploring. <b>Off-policy</b> learning uses importance sampling to learn about one policy from data generated by another.</p>
+  <div class="grid3">
+    <div class="key"><b>MC prediction</b><p>\(V(S_t) \leftarrow \text{average}(\text{Returns}(S_t))\), or with a constant step size: \(V(S_t) \leftarrow V(S_t) + \alpha[G_t - V(S_t)]\)</p></div>
+    <div class="key"><b>Importance-sampling ratio</b><p>\(\rho_{t:T-1} = \prod_{k=t}^{T-1} \frac{\pi(A_k|S_k)}{b(A_k|S_k)}\)</p></div>
+    <div class="key"><b>Ordinary vs weighted IS</b><p>\(V(s) = \frac{\sum \rho\, G}{|\mathcal{T}(s)|}\) &nbsp;vs&nbsp; \(V(s) = \frac{\sum \rho\, G}{\sum \rho}\)</p></div>
+  </div>
+
+  <div class="card widget" id="bj">
+    <h3>🃏 Monte Carlo Blackjack <span class="tag">Examples 5.1, 5.3, 5.4</span></h3>
+    <p class="sub">States are (player sum 12–21, dealer's showing card, usable ace?). The deck is infinite, the dealer sticks on 17+, and the reward is +1 / 0 / −1.</p>
+    <div class="tabs"><button class="sel" data-tab="pred">MC prediction</button><button data-tab="ctrl">MC control (ES)</button><button data-tab="play">🎮 Play a hand</button><button data-tab="is">Off-policy IS</button></div>
+
+    <div class="tabpanel on" data-tab="pred">
+      <p class="sub">Evaluate the policy "stick only on 20 or 21" (Fig. 5.1). After 10k episodes the surface is noisy; after 500k it is smooth. Notice the cliff at sums 20–21, and how a dealer ace hurts you.</p>
+      <div class="controls" id="bj-pred-btns"><button data-n="10000" class="cyan">+10k episodes</button><button data-n="100000">+100k</button><button data-n="500000" class="primary">+500k</button><button id="bj-pred-reset" class="ghost">reset</button><span class="ctrl">episodes: <span class="val" id="bj-pred-ep">0</span></span></div>
+      <div class="grid2"><canvas class="plot" id="bj-pred-u" data-h="330"></canvas><canvas class="plot" id="bj-pred-n" data-h="330"></canvas></div>
+    </div>
+
+    <div class="tabpanel" data-tab="ctrl">
+      <p class="sub">Monte Carlo with Exploring Starts (Fig. 5.2). Every episode starts from a random state and action, then follows the current greedy policy. Purple <b>H</b> = hit, teal <b>S</b> = stick. Run 1M+ episodes to approach the book's figure.</p>
+      <div class="controls" id="bj-ctrl-btns"><button data-n="50000" class="cyan">+50k episodes</button><button data-n="500000">+500k</button><button data-n="2000000" class="primary">+2M</button><button id="bj-ctrl-reset" class="ghost">reset</button><span class="ctrl">episodes: <span class="val" id="bj-c-ep">0</span></span></div>
+      <div class="grid2"><canvas class="plot" id="bj-c-pu" data-h="300"></canvas><canvas class="plot" id="bj-c-vu" data-h="300"></canvas></div>
+      <div class="grid2"><canvas class="plot" id="bj-c-pn" data-h="300"></canvas><canvas class="plot" id="bj-c-vn" data-h="300"></canvas></div>
+    </div>
+
+    <div class="tabpanel" data-tab="play">
+      <div class="grid2">
+        <div class="table-felt">
+          <div class="felt-label">Dealer — <span id="bj-dsum"></span></div>
+          <div class="hand" id="bj-dealer"></div>
+          <div class="felt-label" style="margin-top:14px">You — <span id="bj-psum"></span></div>
+          <div class="hand" id="bj-player"></div>
+          <div class="controls"><button id="bj-hit" class="primary">Hit</button><button id="bj-stick" class="cyan">Stick</button><button id="bj-new">New hand</button><span class="mono" id="bj-tally" style="color:#e7f3ea"></span></div>
+        </div>
+        <div><div class="callout pink" id="bj-advice" style="min-height:100px"></div><p class="sub">The advisor uses the q-table learned in the <b>MC control</b> tab. Train it with a few million episodes and it plays close to optimal "basic strategy". Its advice comes from nothing but averaged experience, with no knowledge of the rules.</p></div>
+      </div>
+    </div>
+
+    <div class="tabpanel" data-tab="is">
+      <p class="sub">Example 5.4: estimate the value of a single state (sum 13 with a usable ace, dealer shows 2) under the target policy "stick on 20/21", using episodes from a <b>random behaviour policy</b>. Ordinary IS is unbiased but has huge variance; weighted IS is biased early on but far more stable.</p>
+      <div class="controls"><button id="is-run" class="primary">▶ Run 100 runs × 10k episodes</button><span class="ctrl" id="is-status"></span></div>
+      <canvas class="plot" id="is-chart" data-h="280"></canvas>
+    </div>
+  </div>
+
+  <div class="card"><h3>🧠 Quiz</h3><div class="quiz" data-quiz="ch5"></div></div>
+</section>
+
+<!-- ======================================================= CH 6 -->
+<section class="chapter" id="ch6" data-ch="ch6" style="--accent:#a8701a">
+  <div class="ch-head">
+    <div><div class="kicker">Chapter 6</div><h2>Temporal-Difference Learning</h2></div>
+    <div class="ch-actions">
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Ch. 6</a>
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Sarsa</a>
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Q-learning</a>
+      <button class="done-btn" data-ch="ch6"></button>
+    </div>
+  </div>
+  <p class="lead">"If one had to identify one idea as central and novel to reinforcement learning, it would undoubtedly be temporal-difference learning." TD combines MC's <b>sampling</b> (no model needed) with DP's <b>bootstrapping</b> (update from other estimates). It learns online, after every step, from incomplete episodes.</p>
+
+  <div class="grid3">
+    <div class="key"><b>TD(0)</b><p>\(V(S_t) \leftarrow V(S_t) + \alpha\big[\underbrace{R_{t+1} + \gamma V(S_{t+1}) - V(S_t)}_{\delta_t \text{ (TD error)}}\big]\)</p></div>
+    <div class="key"><b>Sarsa (on-policy)</b><p>\(Q(S,A) \leftarrow Q(S,A) + \alpha[R + \gamma Q(S',A') - Q(S,A)]\)</p></div>
+    <div class="key"><b>Q-learning (off-policy)</b><p>\(Q(S,A) \leftarrow Q(S,A) + \alpha[R + \gamma \max_a Q(S',a) - Q(S,A)]\)</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Backup diagrams: DP vs MC vs TD</h3>
+    <div class="grid3">
+      <div class="backup"><b>DP</b>: full expected backup, one step deep (needs a model)
+        <svg viewBox="0 0 200 150"><g class="hi"><line x1="100" y1="18" x2="50" y2="62"/><line x1="100" y1="18" x2="150" y2="62"/><line x1="50" y1="62" x2="25" y2="118"/><line x1="50" y1="62" x2="75" y2="118"/><line x1="150" y1="62" x2="125" y2="118"/><line x1="150" y1="62" x2="175" y2="118"/></g>
+          <circle class="s" cx="100" cy="16" r="10"/><circle class="a" cx="50" cy="62" r="6"/><circle class="a" cx="150" cy="62" r="6"/>
+          <circle class="s" cx="25" cy="120" r="9"/><circle class="s" cx="75" cy="120" r="9"/><circle class="s" cx="125" cy="120" r="9"/><circle class="s" cx="175" cy="120" r="9"/></svg></div>
+      <div class="backup"><b>MC</b>: one sampled trajectory, all the way to the end
+        <svg viewBox="0 0 200 150"><line class="hi" x1="100" y1="12" x2="100" y2="140"/><line x1="100" y1="12" x2="60" y2="40"/><line x1="100" y1="40" x2="140" y2="66"/>
+          <circle class="s" cx="100" cy="12" r="8"/><circle class="a" cx="100" cy="34" r="5"/><circle class="s" cx="100" cy="56" r="8"/><circle class="a" cx="100" cy="78" r="5"/><circle class="s" cx="100" cy="100" r="8"/><circle class="a" cx="100" cy="120" r="5"/><rect x="88" y="132" width="24" height="12" fill="#475569" stroke="#232220"/></svg></div>
+      <div class="backup"><b>TD(0)</b>: one sampled step, then bootstrap from V(S′)
+        <svg viewBox="0 0 200 150"><line class="hi" x1="100" y1="20" x2="100" y2="110"/><line x1="100" y1="110" x2="100" y2="145" stroke-dasharray="4 4"/>
+          <circle class="s" cx="100" cy="20" r="11"/><circle class="a" cx="100" cy="64" r="6"/><circle class="s" cx="100" cy="110" r="11"/><text x="118" y="114" fill="#a8701a" font-size="13">V(S′) estimate</text></svg></div>
+    </div>
+    <table class="cmp" style="margin-top:12px">
+      <tr><th></th><th>needs model?</th><th>bootstraps?</th><th>samples?</th><th>online / incomplete episodes?</th></tr>
+      <tr><td>Dynamic Programming</td><td class="yes">yes</td><td class="yes">yes</td><td class="no">no</td><td>— (sweeps)</td></tr>
+      <tr><td>Monte Carlo</td><td class="no">no</td><td class="no">no</td><td class="yes">yes</td><td class="no">no</td></tr>
+      <tr><td>Temporal-Difference</td><td class="no">no</td><td class="yes">yes</td><td class="yes">yes</td><td class="yes">yes</td></tr>
+    </table>
+  </div>
+
+  <div class="card widget">
+    <h3>🚶 Random walk: TD vs MC <span class="tag">Example 6.2</span></h3>
+    <p class="sub">Start at C and step left or right with equal probability. Reaching the right end gives +1; everything else gives 0. True values are 1/6 … 5/6. Watch one episode animate: <b>TD</b> updates every step using the next state's estimate, while <b>MC</b> waits until the episode ends.</p>
+    <div class="controls" id="rw-btns">
+      <label class="ctrl">method <select id="rw-method"><option value="td">TD(0)</option><option value="mc">constant-α MC</option></select></label>
+      <label class="ctrl">α <input type="range" id="rw-alpha" min="0.01" max="0.5" step="0.01" value="0.1"><output for="rw-alpha"></output></label>
+      <button id="rw-one" class="primary">▶ 1 episode (animated)</button><button data-n="10">+10</button><button data-n="100">+100</button><button id="rw-reset" class="ghost">reset</button>
+    </div>
+    <canvas class="plot" id="rw-walk" data-h="150"></canvas>
+    <div class="callout" id="rw-log">Press play to watch an episode.</div>
+    <div class="grid2">
+      <canvas class="plot" id="rw-vals" data-h="260"></canvas>
+      <div><canvas class="plot" id="rw-rms" data-h="230"></canvas><div class="controls"><button id="rw-curves" class="cyan">Compute learning curves (100 runs)</button></div></div>
+    </div>
+  </div>
+
+  <div class="card widget">
+    <h3>🧗 Cliff walking race: Sarsa vs Q-learning vs Expected Sarsa <span class="tag">Example 6.6 &amp; 6.5</span></h3>
+    <p class="sub">Each agent learns in its own copy of the world. The coloured line is the current <b>greedy path</b> and the white dot is the agent. On the cliff, Q-learning learns the optimal path along the edge, but its ε-exploration keeps throwing it off, so <b>Sarsa earns more reward online</b> by taking the safe route. Switch to the <b>Windy gridworld</b> for a different challenge. Set speed to 1 to watch individual steps.</p>
+    <div class="controls">
+      <label class="ctrl">world <select id="td-env"><option value="cliff">Cliff walking (Ex. 6.6)</option><option value="windy">Windy gridworld (Ex. 6.5)</option></select></label>
+      <label class="ctrl">ε <input type="range" id="td-eps" min="0" max="0.5" step="0.01" value="0.1"><output for="td-eps"></output></label>
+      <label class="ctrl">α <input type="range" id="td-alpha" min="0.01" max="1" step="0.01" value="0.5"><output for="td-alpha"></output></label>
+      <label class="ctrl">speed <input type="range" id="td-speed" min="0" max="3" step="0.1" value="1.3"><output for="td-speed"></output></label>
+    </div>
+    <div class="controls">
+      <label class="check"><input type="checkbox" id="td-show-sarsa" checked> Sarsa</label>
+      <label class="check"><input type="checkbox" id="td-show-q" checked> Q-learning</label>
+      <label class="check"><input type="checkbox" id="td-show-esarsa"> Expected Sarsa</label>
+      <button id="td-run" class="primary">▶ Run</button><button id="td-reset" class="ghost">↺ reset</button>
+    </div>
+    <div class="grid2"><div id="td-grids"></div><canvas class="plot" id="td-chart" data-h="300"></canvas></div>
+    <div class="eqbox">$$\text{Expected Sarsa:}\quad Q(S,A) \leftarrow Q(S,A) + \alpha\Big[R + \gamma \sum_a \pi(a\mid S')\,Q(S',a) - Q(S,A)\Big]$$</div>
+  </div>
+
+  <div class="card"><h3>🧠 Quiz</h3><div class="quiz" data-quiz="ch6"></div></div>
+</section>
+
+<!-- ======================================================= CH 9-10 -->
+<section class="chapter" id="ch9" data-ch="ch9" style="--accent:#5a8fb8">
+  <div class="ch-head">
+    <div><div class="kicker">Chapters 9–10 (final ed.) · Ch. 9 in your draft</div><h2>Function Approximation</h2></div>
+    <div class="ch-actions">
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Ch. 9</a>
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Gradient methods</a>
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Linear / tile coding</a>
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Control (Mountain Car)</a>
+      <button class="done-btn" data-ch="ch9"></button>
+    </div>
+  </div>
+  <p class="lead">Real problems have far too many states for a table. Instead we learn a parameterized \(\hat v(s,\mathbf w)\) with far fewer weights than states, so an update to one state <b>generalizes</b> to others. We minimize the μ-weighted value error with stochastic gradient descent. With bootstrapped targets, the update is only a <b>semi-gradient</b>. For linear methods, feature construction (aggregation, polynomials, Fourier, tile coding) is where the craft lies.</p>
+
+  <div class="grid3">
+    <div class="key"><b>Objective</b><p>\(\overline{VE}(\mathbf w) = \sum_s \mu(s)\,[v_\pi(s) - \hat v(s,\mathbf w)]^2\)</p></div>
+    <div class="key"><b>(Semi-)gradient update</b><p>\(\mathbf w \leftarrow \mathbf w + \alpha\,[U_t - \hat v(S_t,\mathbf w)]\,\nabla \hat v(S_t,\mathbf w)\)<br>\(U_t = G_t\) (MC) or \(R_{t+1} + \gamma\hat v(S_{t+1},\mathbf w)\) (TD)</p></div>
+    <div class="key"><b>Linear</b><p>\(\hat v(s,\mathbf w) = \mathbf w^\top \mathbf x(s)\), \(\nabla\hat v = \mathbf x(s)\). TD converges to the TD fixed point, with \(\overline{VE}(\mathbf w_{TD}) \le \frac{1}{1-\gamma}\min_{\mathbf w}\overline{VE}(\mathbf w)\)</p></div>
+  </div>
+
+  <div class="card widget">
+    <h3>📈 1000-state random walk <span class="tag">Examples 9.1–9.2, Fig. 9.1–9.5</span></h3>
+    <p class="sub">There are 1000 states. From each one you jump uniformly 1–100 states left or right; leaving the left edge gives −1 and the right edge gives +1. Pick a feature construction and watch \(\hat v\) (cyan) approach the true value (dashed yellow). The lower-left plot shows what the individual features look like.</p>
+    <div class="controls">
+      <label class="ctrl">features <select id="fa-type"><option value="agg">State aggregation</option><option value="poly">Polynomial basis</option><option value="fourier">Fourier basis</option><option value="tile" selected>Tile coding</option></select></label>
+      <label class="ctrl"><span id="fa-k-lbl">tilings</span> <input type="range" id="fa-k" min="1" max="50" step="1" value="50"><output for="fa-k"></output></label>
+      <label class="ctrl">α <input type="range" id="fa-alpha" min="-6" max="-1" step="0.1" value="-5"><output for="fa-alpha"></output></label>
+      <label class="ctrl">target <select id="fa-method"><option value="mc">Gradient MC</option><option value="td">Semi-gradient TD(0)</option></select></label>
+    </div>
+    <div class="controls" id="fa-btns"><button data-n="100" class="cyan">+100 episodes</button><button data-n="1000" class="primary">+1000</button><button data-n="5000">+5000</button><button id="fa-reset" class="ghost">reset w</button>
+      <div class="stat"><div class="k">episodes</div><div class="v" id="fa-ep">0</div></div><div class="stat"><div class="k">√VE</div><div class="v" id="fa-rms">—</div></div><div class="stat"><div class="k"># weights</div><div class="v" id="fa-nf">—</div></div></div>
+    <canvas class="plot" id="fa-plot" data-h="300"></canvas>
+    <div class="grid2" style="margin-top:12px"><canvas class="plot" id="fa-basis" data-h="200"></canvas><canvas class="plot" id="fa-rmschart" data-h="200"></canvas></div>
+    <div class="callout amber">Try: aggregation with 10 groups gives a staircase (Fig. 9.1). Semi-gradient TD with aggregation is visibly biased near the edges compared with MC. A polynomial of order 20 is unstable unless α is tiny, while Fourier order 20 copes. Tile coding with 1 tiling vs 50 tilings shows the gain in resolution from overlapping offsets.</div>
+  </div>
+
+  <div class="card widget">
+    <h3>🚗 Mountain Car: semi-gradient Sarsa + tile coding <span class="tag">Example 10.1 (final) / Sec. 9.4 (draft)</span></h3>
+    <p class="sub">The car's engine is too weak to drive straight up the hill, so it must rock back and forth to build momentum. The agent gets −1 per step, uses 8 tilings of 8×8 tiles over (position, velocity), and starts with optimistic q = 0, so it explores even with ε = 0. The right-hand heatmap is the learned <b>cost-to-go</b> \(-\max_a \hat q(s,a,\mathbf w)\) (Fig. 10.1); the white trace is the current trajectory in phase space.</p>
+    <div class="controls">
+      <button id="mc-run" class="primary">▶ Run</button>
+      <button id="mc-fast" class="cyan">⚡ +50 episodes (fast)</button>
+      <button id="mc-reset" class="ghost">↺ reset</button>
+      <label class="ctrl">α <input type="range" id="mc-alpha" min="-4" max="1" step="0.5" value="-1"><output for="mc-alpha"></output></label>
+      <label class="ctrl">speed <input type="range" id="mc-speed" min="0" max="3" step="0.1" value="0.5"><output for="mc-speed"></output></label>
+      <div class="stat"><div class="k">episodes</div><div class="v" id="mc-ep">0</div></div><div class="stat"><div class="k">last length</div><div class="v" id="mc-last">—</div></div>
+    </div>
+    <div class="grid2"><canvas class="plot" id="mc-car" data-h="280"></canvas><canvas class="plot" id="mc-cost" data-h="280"></canvas></div>
+    <canvas class="plot" id="mc-steps" data-h="200" style="margin-top:12px"></canvas>
+    <div class="eqbox">$$\mathbf w \leftarrow \mathbf w + \alpha\big[R_{t+1} + \gamma\,\hat q(S_{t+1},A_{t+1},\mathbf w) - \hat q(S_t,A_t,\mathbf w)\big]\nabla \hat q(S_t,A_t,\mathbf w)$$</div>
+  </div>
+
+  <div class="card"><h3>🧠 Quiz</h3><div class="quiz" data-quiz="ch9"></div></div>
+</section>
+
+<!-- ======================================================= CH 13 -->
+<section class="chapter" id="ch13" data-ch="ch13" style="--accent:#b8452f">
+  <div class="ch-head">
+    <div><div class="kicker">Chapter 13 (final ed.) · Ch. 11 in your draft</div><h2>Policy Gradient Methods</h2></div>
+    <div class="ch-actions">
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Draft Ch. 11 Actor–Critic</a>
+      <a class="btn book" target="_blank" href="http://incompleteideas.net/book/the-book-2nd.html" rel="noopener">📖 Gradient bandits</a>
+      <button class="done-btn" data-ch="ch13"></button>
+    </div>
+  </div>
+  <p class="lead">Instead of learning values and acting greedily, <b>parameterize the policy directly</b> as \(\pi(a\mid s,\boldsymbol\theta)\) and do gradient <b>ascent</b> on performance \(J(\boldsymbol\theta)\). Policies can become arbitrarily stochastic, handle continuous actions naturally, and change smoothly. The <b>policy gradient theorem</b> gives a gradient that does not require differentiating the state distribution.</p>
+  <div class="grid3">
+    <div class="key"><b>Policy gradient theorem</b><p>\(\nabla J(\boldsymbol\theta) \propto \sum_s \mu(s) \sum_a q_\pi(s,a)\,\nabla \pi(a\mid s,\boldsymbol\theta)\)</p></div>
+    <div class="key"><b>REINFORCE (with baseline)</b><p>\(\boldsymbol\theta \leftarrow \boldsymbol\theta + \alpha\,\gamma^t\,\big(G_t - b(S_t)\big)\,\nabla \ln \pi(A_t\mid S_t,\boldsymbol\theta)\)</p></div>
+    <div class="key"><b>One-step actor–critic</b><p>\(\delta = R + \gamma \hat v(S',\mathbf w) - \hat v(S,\mathbf w)\)<br>\(\boldsymbol\theta \leftarrow \boldsymbol\theta + \alpha\,\delta\,\nabla \ln\pi(A\mid S,\boldsymbol\theta)\)</p></div>
+  </div>
+
+  <div class="card widget">
+    <h3>🍕 Softmax policy &amp; the ∇ln π trick <span class="tag">Eq. 13.2, 13.9</span></h3>
+    <p class="sub">\(\pi(a) = e^{h(a)/\tau} / \sum_b e^{h(b)/\tau}\). Give a 👍 (R = +1) or 👎 (R = −1) to an action and watch the REINFORCE update \(\theta \mathrel{+}= \alpha R\,\nabla\ln\pi(a)\). For a softmax policy, \(\nabla \ln\pi(a) = \mathbf{1}_a - \pi\), so the chosen action goes up and all the others go down.</p>
+    <div class="controls">
+      <label class="ctrl">temperature τ <input type="range" id="sm-tau" min="0.1" max="3" step="0.05" value="1"><output for="sm-tau"></output></label>
+      <label class="ctrl">α <input type="range" id="sm-alpha" min="0.05" max="2" step="0.05" value="0.5"><output for="sm-alpha"></output></label>
+      <button id="sm-sample" class="cyan">🎲 sample an action</button><button id="sm-reset" class="ghost">reset</button>
+    </div>
+    <div class="softmax-bars" id="sm-rows"></div>
+    <p class="sub" style="margin-top:10px">preferences h = [<span class="mono" id="sm-h"></span>]</p>
+    <div class="callout" id="sm-log">Try lowering τ: the policy becomes nearly deterministic, like a greedy one.</div>
+  </div>
+
+  <div class="card widget">
+    <h3>🎯 Short corridor with switched actions <span class="tag">Example 13.1, Fig. 13.1–13.2</span></h3>
+    <p class="sub">There are three non-terminal states and every step costs −1. In the <b>second state the actions are reversed</b>. The agent's features can't tell the states apart, so all it can choose is a single probability p of going right. Any ε-greedy policy is stuck at the red dots, but the best <i>stochastic</i> policy (p ≈ 0.59) does far better. Train a policy-gradient agent and watch it climb J(θ).</p>
+    <div class="controls">
+      <label class="ctrl">algorithm <select id="pg-algo"><option value="reinforce">REINFORCE</option><option value="reinforce-b">REINFORCE + baseline</option><option value="ac">One-step actor–critic</option></select></label>
+      <label class="ctrl">α_θ <input type="range" id="pg-la" min="-16" max="-3" step="1" value="-13"><output for="pg-la"></output></label>
+      <label class="ctrl">α_w <input type="range" id="pg-lw" min="-10" max="-1" step="1" value="-6"><output for="pg-lw"></output></label>
+      <label class="ctrl">speed <input type="range" id="pg-speed" min="1" max="50" step="1" value="5"><output for="pg-speed"></output></label>
+      <button id="pg-run" class="primary">▶ Train</button><button id="pg-reset" class="ghost">↺ reset</button>
+    </div>
+    <div class="controls">
+      <label class="ctrl">explore J(p) by hand: p(right) <input type="range" id="pg-p" min="0.02" max="0.98" step="0.01" value="0.5"><output for="pg-p"></output></label>
+      <div class="stat"><div class="k">J(slider p)</div><div class="v" id="pg-jslider">—</div></div>
+      <div class="stat"><div class="k">agent p(right)</div><div class="v" id="pg-pr">—</div></div><div class="stat"><div class="k">episodes</div><div class="v" id="pg-eps">0</div></div>
+    </div>
+    <div class="grid2"><canvas class="plot" id="pg-J" data-h="300"></canvas><canvas class="plot" id="pg-rets" data-h="300"></canvas></div>
+    <div class="controls" style="margin-top:12px"><button id="pg-watch" class="cyan">👀 Watch one episode with the current policy</button><span class="ctrl" id="pg-corr-log"></span></div>
+    <canvas class="plot" id="pg-corr" data-h="120"></canvas>
+    <div class="callout amber">Compare: REINFORCE with α = 2⁻¹³ is slow and noisy. Adding a baseline lets you use a much bigger step (2⁻⁹) and converge faster (Fig. 13.2). Actor–critic bootstraps with a learned critic and updates online, during the episode.</div>
+  </div>
+
+  <div class="card"><h3>🧠 Quiz</h3><div class="quiz" data-quiz="ch13"></div></div>
+</section>
+
+<!-- ======================================================= ADVANCED A -->
+<section class="chapter" id="advA" data-ch="advA" data-nav="Fundamentals for robots" style="--accent:#3e6fb0">
+  <div class="ch-head">
+    <div><div class="kicker">Advanced · A</div><h2>Fundamentals, with a robot in the loop</h2></div>
+    <div class="ch-actions"><button class="done-btn" data-ch="advA"></button></div>
+  </div>
+  <p class="lead">The tabular chapters cover the ideas. This part revisits six of them with the questions a real robot raises: which value function do you actually need, whose data can you learn from, how do you explore without breaking a gearbox, what reward do you write, how do you get out of simulation, and why copying an expert isn't enough.</p>
+
+  <!-- 1 · V, Q and the advantage -->
+  <h3 class="topic"><span>1</span>Bellman, V vs Q, and the advantage</h3>
+  <p><b>V</b> scores a state, <b>Q</b> scores a state and a first action. Both average over everything the policy does afterwards:</p>
+  <div class="eqbox">$$V^\pi(s)=\mathbb E_\pi\big[G_t\mid S_t=s\big],\qquad Q^\pi(s,a)=\mathbb E_\pi\big[G_t\mid S_t=s,\,A_t=a\big],\qquad G_t=\sum_{k\ge0}\gamma^k R_{t+k+1}$$</div>
+  <p>They are tied together by two one-line identities. Chain them and you get the Bellman equations from Chapter 3:</p>
+  <div class="grid3">
+    <div class="key"><b>Q from V (one step of the world)</b><p>\(Q^\pi(s,a)=\mathbb E\big[R+\gamma V^\pi(S')\mid s,a\big]\)</p></div>
+    <div class="key"><b>V from Q (one step of the policy)</b><p>\(V^\pi(s)=\sum_a\pi(a\mid s)\,Q^\pi(s,a)\)</p></div>
+    <div class="key"><b>Optimality</b><p>\(Q^*(s,a)=\mathbb E\big[R+\gamma\max_{a'}Q^*(S',a')\big]\)</p></div>
+  </div>
+  <p><b>Why Q matters for control.</b> With Q you act by \(\arg\max_a Q(s,a)\), no model needed. With only V you have to look one step ahead, \(\arg\max_a\sum_{s'}p(s'\mid s,a)\,[r+\gamma V(s')]\), which needs the dynamics \(p\). That is the whole reason model-free control learns Q.</p>
+  <p><b>The advantage</b> \(A^\pi(s,a)=Q^\pi(s,a)-V^\pi(s)\) says how much better an action is than the policy's average. By construction it averages to zero under the policy, \(\sum_a\pi(a\mid s)A^\pi(s,a)=0\). That is exactly what makes it a good learning signal: it is the Q-value with the state's baseline subtracted, so policy gradients use it to push good actions up and bad ones down without the noise of "this state was good anyway".</p>
+
+  <div class="card widget">
+    <h3>📊 Advantage meter <span class="tag">A = Q − V</span></h3>
+    <p class="sub">A gripper hovers over a cup and has five options. <b>Drag the bars</b> to set each Q-value. The policy is a softmax over Q with temperature τ; the dashed line is \(V=\sum_a\pi(a)Q(a)\). Bars above the line have positive advantage, and the policy gradient raises their probability. Notice that the π-weighted advantages always cancel.</p>
+    <div class="controls">
+      <label class="ctrl">temperature τ <input type="range" id="adv-tau" min="0.05" max="3" step="0.05" value="0.8"><output for="adv-tau"></output></label>
+      <button id="adv-shift" class="ghost">+1 to every Q</button><button id="adv-shiftdown" class="ghost">−1 to every Q</button>
+      <button id="adv-reset" class="ghost">reset</button>
+    </div>
+    <canvas class="plot" id="adv-canvas" data-h="300" style="touch-action:none;cursor:ns-resize"></canvas>
+    <div class="stats">
+      <div class="stat"><div class="k">V = Σ π·Q</div><div class="v" id="adv-v">—</div></div>
+      <div class="stat"><div class="k">max Q (greedy value)</div><div class="v" id="adv-max">—</div></div>
+      <div class="stat"><div class="k">Σ π·A</div><div class="v" id="adv-sum">—</div></div>
+    </div>
+    <div class="callout">Press "+1 to every Q": V moves, every Q moves, but the advantages and the policy don't change. That is why subtracting a baseline is free: it changes the variance of the gradient, not its direction on average.</div>
+  </div>
+
+  <!-- 2 · on- vs off-policy -->
+  <h3 class="topic"><span>2</span>On-policy vs off-policy</h3>
+  <p>An <b>on-policy</b> method learns only from data the current policy collected; after each update, the old batch describes a policy that no longer exists and is thrown away. An <b>off-policy</b> method learns from any transitions, kept in a replay buffer.</p>
+  <p>You can reuse old data with <b>importance sampling</b>, which reweights samples from the old policy to estimate an expectation under the new one:</p>
+  <div class="eqbox">$$\mathbb E_{a\sim\pi_\text{new}}\big[f(a)\big]=\mathbb E_{a\sim\pi_\text{old}}\Big[\underbrace{\tfrac{\pi_\text{new}(a)}{\pi_\text{old}(a)}}_{r(a)}\,f(a)\Big],\qquad \text{ESS}=\frac{\big(\sum_i r_i\big)^2}{\sum_i r_i^2}$$</div>
+  <p>This is exact in expectation, but as the policies drift apart a handful of samples get huge weights and the <b>effective sample size</b> collapses. PPO is on-policy for exactly this reason: its ratio \(r=\pi_\theta/\pi_{\theta_\text{old}}\) is only trustworthy near 1, and the clip to \([1-\epsilon,1+\epsilon]\) keeps it there. <b>SAC and MPO</b> sidestep the ratio. They learn a Q-function with Bellman backups, \(Q(s,a)\leftarrow r+\gamma\,\mathbb E_{a'\sim\pi}Q(s',a')\), and that target is valid for any stored transition \((s,a,r,s')\), whoever collected it.</p>
+  <div class="grid2">
+    <div class="key"><b>On-policy (PPO, TRPO, A2C)</b><p>Stable and simple, but sample-hungry. Fine when a GPU simulator hands you millions of steps an hour.</p></div>
+    <div class="key"><b>Off-policy (SAC, MPO, TD3, DQN)</b><p>Reuses every transition, so far more sample-efficient, but bootstrapping on stale data is less stable. The usual choice on real hardware.</p></div>
+  </div>
+
+  <div class="card widget">
+    <h3>⚖️ When does old data stop being useful? <span class="tag">importance ratio · ESS · PPO clip</span></h3>
+    <p class="sub">The grey curve is the old policy, a Gaussian over a 1-D action, and the ticks are 300 actions it took. Move the new policy away and watch the weights (tick heights) explode and the effective sample size fall. The shaded band is where PPO would trust the ratio, \(1-\epsilon\le r\le1+\epsilon\).</p>
+    <div class="controls">
+      <label class="ctrl">new mean μ <input type="range" id="is-mu" min="-2.5" max="2.5" step="0.05" value="0.4"><output for="is-mu"></output></label>
+      <label class="ctrl">new std σ <input type="range" id="is-sig" min="0.3" max="2" step="0.05" value="1"><output for="is-sig"></output></label>
+      <label class="ctrl">clip ε <input type="range" id="is-eps" min="0.05" max="0.5" step="0.01" value="0.2"><output for="is-eps"></output></label>
+      <button id="is-resample" class="ghost">🎲 resample</button>
+    </div>
+    <canvas class="plot" id="is-canvas" data-h="280"></canvas>
+    <div class="stats">
+      <div class="stat"><div class="k">ESS / N</div><div class="v" id="is-ess">—</div></div>
+      <div class="stat"><div class="k">true E_new[reward]</div><div class="v" id="is-true">—</div></div>
+      <div class="stat"><div class="k">IS estimate</div><div class="v" id="is-est">—</div></div>
+      <div class="stat"><div class="k">samples inside clip</div><div class="v" id="is-in">—</div></div>
+    </div>
+    <div class="callout amber">The reward here is a bump at a = 1.5 (thin line). Push μ past 2 with σ = 0.4: the estimate starts to jump every time you resample, because it rests on two or three samples. That variance, not bias, is what kills naive off-policy policy gradients.</div>
+  </div>
+
+  <!-- 3 · exploration -->
+  <h3 class="topic"><span>3</span>Exploration vs exploitation, for a body</h3>
+  <p>The trade-off is the bandit one from Chapter 2: exploit the best-known action, or try others and learn. What changes on a robot is that actions are continuous, the system has inertia, and the hardware has opinions. The usual tools:</p>
+  <div class="grid3">
+    <div class="key"><b>Action noise</b><p>\(a=\mu_\theta(s)+\sigma\,\xi\), with \(\xi\sim\mathcal N(0,I)\). The continuous cousin of ε-greedy.</p></div>
+    <div class="key"><b>Maximum entropy</b><p>\(J=\mathbb E\big[\sum_t r_t+\alpha\,\mathcal H(\pi(\cdot\mid s_t))\big]\). Exploration becomes part of the objective (SAC).</p></div>
+    <div class="key"><b>Intrinsic reward</b><p>\(r_t+\beta\,\lVert\hat f(s_t,a_t)-s_{t+1}\rVert^2\). Bonus for surprise or novelty (curiosity, RND).</p></div>
+  </div>
+  <p>Independent Gaussian noise at 50 Hz mostly cancels itself out: the arm buzzes in place, wears the gears and goes nowhere. <b>Temporally correlated noise</b> such as an Ornstein–Uhlenbeck process explores much further for the same per-step spread. Simple <b>action smoothing</b> mostly buys gentleness: it cuts the action rate by an order of magnitude, at some cost in reach.</p>
+  <div class="eqbox">$$x_{t+1}=x_t+\theta(0-x_t)\,\Delta t+\sigma\sqrt{\Delta t}\,\xi_t \qquad\qquad a_t=\beta\,a_{t-1}+(1-\beta)\,\tilde a_t$$</div>
+  <p>Other structured options: demonstrations to start near something sensible, initialising from a BC policy, auxiliary tasks (SAC-X), and keeping exploration inside safe joint and torque limits.</p>
+
+  <div class="card widget">
+    <h3>🦾 Three ways to wiggle an arm <span class="tag">white · OU · smoothed</span></h3>
+    <p class="sub">A gripper tip is driven by velocity commands that are pure exploration noise. All three draw the same white noise each step. OU keeps the command's spread at σ with correlation \(\rho=1-\theta\Delta t\); smoothing shrinks it. Watch how much of the workspace each one visits, and how violently the commands change (the action rate, which the motors feel).</p>
+    <div class="controls">
+      <label class="ctrl">noise σ <input type="range" id="ex-sig" min="0.2" max="2" step="0.05" value="1"><output for="ex-sig"></output></label>
+      <label class="ctrl">correlation (ρ for OU, β for smoothing) <input type="range" id="ex-corr" min="0.5" max="0.98" step="0.01" value="0.9"><output for="ex-corr"></output></label>
+      <button id="ex-run" class="primary">▶ Explore</button><button id="ex-reset" class="ghost">↺ reset</button>
+    </div>
+    <canvas class="plot" id="ex-canvas" data-h="300"></canvas>
+    <div class="callout">Higher correlation means the commands keep their direction for longer, so the tip travels further per unit of noise. Too much and it explores one direction for ages. This is also why many robot policies penalise the action rate \(\lVert a_t-a_{t-1}\rVert^2\) in the reward.</div>
+  </div>
+
+  <!-- 4 · reward shaping -->
+  <h3 class="topic"><span>4</span>Reward shaping and sparse rewards</h3>
+  <p>A <b>sparse</b> reward, 1 on success and 0 otherwise, says exactly what you want but gives almost no signal until the agent stumbles on success by chance. A <b>dense, shaped</b> reward learns faster, but any loophole will be found: that is <b>reward hacking</b>.</p>
+  <p><b>Potential-based shaping</b> (Ng, Harada &amp; Russell, 1999) is the one kind of shaping that is guaranteed safe. Pick any potential \(\Phi(s)\) over states and add</p>
+  <div class="eqbox">$$F(s,s')=\gamma\,\Phi(s')-\Phi(s)\qquad\Rightarrow\qquad\sum_{t=0}^{T-1}\gamma^tF(s_t,s_{t+1})=\gamma^T\Phi(s_T)-\Phi(s_0)$$</div>
+  <p>The sum telescopes. Every return from \(s_0\) shifts by the same \(-\Phi(s_0)\) (taking \(\Phi=0\) at terminal states), so \(Q'(s,a)=Q(s,a)-\Phi(s)\) and the argmax, the optimal policy, cannot change. In tabular Q-learning, shaping with Φ is the same as initialising Q to Φ (Wiewiora, 2003), so the best potential is your best guess of the optimal value. Here that is \(\Phi(s)=\gamma^{d(s)}\), where \(d\) is the walking distance to the goal. A plain "bonus for being close" has no such guarantee: hovering next to the goal forever earns \(b/(1-\gamma)\), which can beat finishing.</p>
+  <p>Other fixes for sparse rewards: <b>Hindsight Experience Replay</b> (relabel a failed episode as a success for the goal it actually reached), demonstrations, curricula and auxiliary tasks. On humanoids the reward is a long sum of hand-tuned terms (velocity tracking, energy, action rate, feet air-time, contact penalties), and tuning those weights is a large part of the job.</p>
+
+  <div class="card widget">
+    <h3>🍪 Three rewards, one gridworld <span class="tag">sparse · bonus · potential-based</span></h3>
+    <p class="sub">Three Q-learning agents train side by side on the same 9×9 room with a wall. Sparse gets +1 at the goal. "Closeness bonus" also gets \(b\cdot(1-d/d_{\max})\) every step. "Potential" gets \(\gamma\Phi(s')-\Phi(s)\) with \(\Phi(s)=\gamma^{d(s)}\). Here \(d\) is the walking distance around the wall. Episodes time out after 150 steps. The small maps show each agent's greedy path after training.</p>
+    <div class="controls">
+      <label class="ctrl">bonus b <input type="range" id="rs-b" min="0" max="0.2" step="0.01" value="0.1"><output for="rs-b"></output></label>
+      <label class="ctrl">γ <input type="range" id="rs-g" min="0.8" max="0.99" step="0.01" value="0.95"><output for="rs-g"></output></label>
+      <button id="rs-run" class="primary">▶ Train 300 episodes</button><button id="rs-reset" class="ghost">↺ reset</button>
+    </div>
+    <div class="grid2">
+      <canvas class="plot" id="rs-curve" data-h="260"></canvas>
+      <canvas class="plot" id="rs-maps" data-h="260"></canvas>
+    </div>
+    <div class="callout amber">With b = 0.1 and γ = 0.95, camping on the cell next to the goal earns about 0.094 every step, worth 0.094 / (1 − 0.95) ≈ 1.9 in total, more than the +1 for arriving. Watch the bonus agent learn to camp. Set b to 0.02, or γ to 0.8, and it behaves again. Potential-based shaping never needs that tuning, and it learns in a couple of dozen episodes where sparse needs a hundred.</div>
+  </div>
+
+  <!-- 5 · sim-to-real -->
+  <h3 class="topic"><span>5</span>Sim-to-real</h3>
+  <p>A policy trained in simulation meets a robot whose masses, friction, motor strength and delays are all a bit different. Two complementary tools:</p>
+  <div class="grid2">
+    <div class="key"><b>System identification</b><p>Fit the simulator's parameters to real data, \(\hat\xi=\arg\min_\xi\sum_t\lVert s^\text{real}_{t+1}-f_\text{sim}(s_t,a_t;\xi)\rVert^2\). Shrinks the gap itself.</p></div>
+    <div class="key"><b>Domain randomisation</b><p>Train on a distribution, \(\max_\theta\,\mathbb E_{\xi\sim p(\xi)}\big[J(\pi_\theta;\xi)\big]\). The policy becomes robust across the range, and you hope reality is inside it.</p></div>
+  </div>
+  <p>The rule of thumb: <b>system ID narrows the gap, randomisation covers what remains.</b> Randomise mass, friction, motor strength, sensor noise, terrain, external pushes and above all <b>latency</b>, which is often the single biggest gap. Beyond that:</p>
+  <ul class="tight">
+    <li><b>Actuator networks</b> (Hwangbo et al., 2019, ANYmal): learn the motor's torque response from real logs and put that network inside the simulator.</li>
+    <li><b>Online adaptation</b> (RMA): an encoder turns the last few seconds of observations into a latent estimate \(z_t\approx g(\xi)\) of the hidden parameters, and the policy conditions on it.</li>
+    <li><b>Delta-action models</b> (ASAP, 2025): collect real data, learn the residual \(\Delta a\) that makes the simulator match reality, then fine-tune in that corrected simulator.</li>
+  </ul>
+
+  <div class="card widget">
+    <h3>🤖 Train in sim, deploy to "real" <span class="tag">domain randomisation · system ID</span></h3>
+    <p class="sub">The policy is a PD controller \(u=K_p(q^*-q)-K_d\dot q\) that moves a joint to a target, and training means picking the gains with the lowest average cost over the training distribution. The map shows how well the trained gains do on every possible robot (mass × sensing delay). The box is what training saw; the hidden real robot is somewhere on the map.</p>
+    <div class="controls">
+      <label class="ctrl">randomisation width <input type="range" id="s2r-w" min="0" max="1" step="0.05" value="0"><output for="s2r-w"></output></label>
+      <button id="s2r-train" class="primary">▶ Train in sim</button>
+      <button id="s2r-deploy" class="cyan">🚀 Deploy to the real robot</button>
+      <button id="s2r-sysid" class="ghost">🔧 Run system ID</button>
+      <button id="s2r-new" class="ghost">🎲 New real robot</button>
+    </div>
+    <div class="grid2">
+      <canvas class="plot" id="s2r-map" data-h="300"></canvas>
+      <canvas class="plot" id="s2r-step" data-h="300"></canvas>
+    </div>
+    <div class="explain" id="s2r-log" style="min-height:0"></div>
+  </div>
+
+  <!-- 6 · why BC fails -->
+  <h3 class="topic"><span>6</span>Why behaviour cloning fails, and what fixes it</h3>
+  <p>Behaviour cloning is supervised learning on the expert's state–action pairs, \(\min_\theta\,\mathbb E_{s\sim d_{\pi^*}}\big[\ell(\pi_\theta(s),\pi^*(s))\big]\). The catch is in the subscript: it is trained on states <i>the expert</i> visits, then tested on states <i>it</i> visits. A small mistake moves it somewhere the expert never went, where its mistakes are bigger, which moves it further away. If it errs with probability ε per step, the expected cost over horizon T can grow like</p>
+  <div class="eqbox">$$J(\hat\pi)\;\le\;J(\pi^*)+T^2\epsilon\quad\text{(BC)}\qquad\qquad J(\hat\pi)\;\le\;J(\pi^*)+O(T\epsilon)\quad\text{(DAgger)}$$</div>
+  <div class="grid3">
+    <div class="key"><b>DAgger</b><p>Roll out the learner, ask the expert what it <i>would</i> have done on the states the learner visited, add those labels, retrain (Ross et al., 2011).</p></div>
+    <div class="key"><b>Noise injection</b><p>Perturb the expert while recording (DART), so the data already contains recoveries from small mistakes.</p></div>
+    <div class="key"><b>RL</b><p>Optimises on its own state distribution with a reward, so recovery is learned. And unlike BC, it can exceed the demonstrator.</p></div>
+  </div>
+
+  <div class="card widget">
+    <h3>🏎️ Clone a driver, then DAgger it <span class="tag">compounding error · data coverage</span></h3>
+    <p class="sub">The expert steers back to the centre line. The learner is a lookup table over (lateral offset, heading error): it copies the expert's average correction in every cell it has data for, and does nothing extra in empty cells. Every rollout has a little steering noise. On the right, blue cells have expert labels (darker = more) and dots are where the clone actually drove.</p>
+    <div class="controls">
+      <label class="ctrl"><input type="checkbox" id="bc-noise"> inject noise into the expert demos</label>
+      <button id="bc-demo" class="primary">① Record 3 expert laps</button>
+      <button id="bc-drive" class="cyan">② Let the clone drive</button>
+      <button id="bc-dagger" class="ghost">③ DAgger iteration</button>
+      <button id="bc-reset" class="ghost">↺ reset</button>
+    </div>
+    <div class="grid2">
+      <canvas class="plot" id="bc-road" data-h="300"></canvas>
+      <canvas class="plot" id="bc-cover" data-h="300"></canvas>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="k">labelled states</div><div class="v" id="bc-n">0</div></div>
+      <div class="stat"><div class="k">laps finished (of 10)</div><div class="v" id="bc-ok">—</div></div>
+      <div class="stat"><div class="k">avg distance before crash</div><div class="v" id="bc-dist">—</div></div>
+      <div class="stat"><div class="k">DAgger iterations</div><div class="v" id="bc-it">0</div></div>
+    </div>
+    <div class="callout pink">The clean demos only cover the middle cell or two, so the moment the clone drifts it has no idea how to come back. Two or three DAgger iterations fill in exactly the cells it actually visits. Noise injection gets part of the way there before the learner ever drives.</div>
+  </div>
+
+  <div class="card"><h3>🧠 Quiz</h3><div class="quiz" data-quiz="advA"></div></div>
+</section>
+
+<!-- ======================================================= ADVANCED B -->
+<section class="chapter" id="advB" data-ch="advB" data-nav="Deep RL workhorses" style="--accent:#6b4fa8">
+  <div class="ch-head">
+    <div><div class="kicker">Advanced · B</div><h2>The deep RL workhorses</h2></div>
+    <div class="ch-actions"><button class="done-btn" data-ch="advB"></button></div>
+  </div>
+  <p class="lead">Three families do almost all of the work in robot learning today. <b>PPO</b> is the on-policy default when a GPU simulator gives you unlimited data. <b>SAC and MPO</b> are the off-policy choices when every sample costs wall-clock time on hardware. <b>Model-based</b> methods (Dreamer, TD-MPC2) learn a model of the world and plan or practise inside it.</p>
+
+  <!-- 7 · PPO -->
+  <h3 class="topic"><span>7</span>PPO internals: clipping, GAE, and why it rules robotics</h3>
+  <p>Vanilla policy gradient takes one step per batch, then throws the batch away. PPO wants several epochs of minibatch updates on the same data, which means estimating the new policy's performance from the old policy's samples. Importance sampling gives the <b>surrogate objective</b>:</p>
+  <div class="eqbox">$$L^{\text{CPI}}(\theta)=\hat{\mathbb E}_t\big[r_t(\theta)\,\hat A_t\big],\qquad r_t(\theta)=\frac{\pi_\theta(a_t\mid s_t)}{\pi_{\theta_\text{old}}(a_t\mid s_t)}$$</div>
+  <p>Maximised freely, that objective is happy to put all the probability on the single luckiest sample. PPO's fix is to take the more pessimistic of the plain and the clipped term:</p>
+  <div class="eqbox">$$L^{\text{CLIP}}(\theta)=\hat{\mathbb E}_t\Big[\min\big(r_t\hat A_t,\;\operatorname{clip}(r_t,1-\epsilon,1+\epsilon)\,\hat A_t\big)\Big]$$</div>
+  <p>Read it case by case. If \(\hat A_t>0\), increasing \(r_t\) pays off only up to \(1+\epsilon\); beyond that the gradient is <b>zero</b>, so there is no reason to push further. If \(\hat A_t&lt;0\), the same happens below \(1-\epsilon\). The min means the clip only ever removes incentives, never adds them. The full loss adds a value loss and an entropy bonus, \(L=L^{\text{CLIP}}-c_1\,(V_\phi(s_t)-\hat V^{\text{targ}}_t)^2+c_2\,\mathcal H[\pi_\theta(\cdot\mid s_t)]\).</p>
+  <p><b>Generalised Advantage Estimation</b> builds \(\hat A_t\) from TD errors, mixing short and long look-aheads with one knob \(\lambda\):</p>
+  <div class="eqbox">$$\delta_t=r_t+\gamma V(s_{t+1})-V(s_t),\qquad \hat A^{\text{GAE}(\gamma,\lambda)}_t=\sum_{l=0}^{\infty}(\gamma\lambda)^l\,\delta_{t+l}$$</div>
+  <p>\(\lambda=0\) gives the one-step TD error: low variance, but as biased as the critic. \(\lambda=1\) gives \(G_t-V(s_t)\): unbiased, but it carries the noise of every future reward. Robotics codebases almost always sit at \(\lambda\approx0.95\).</p>
+  <div class="grid3">
+    <div class="key"><b>Normalise advantages</b><p>Per minibatch, \(\hat A\leftarrow(\hat A-\mu)/\sigma\). Keeps the step size meaningful as rewards change scale.</p></div>
+    <div class="key"><b>Adaptive learning rate</b><p>rsl_rl watches the KL after each update: above \(2\times\) target it divides the rate by 1.5, below half the target it multiplies by 1.5.</p></div>
+    <div class="key"><b>Why it dominates</b><p>With thousands of simulated robots on one GPU, samples are nearly free. Stability and simplicity matter more than sample efficiency, which is exactly PPO's trade.</p></div>
+  </div>
+
+  <div class="card widget">
+    <h3>✂️ Clipped vs unclipped, same data budget <span class="tag">PPO surrogate · KL</span></h3>
+    <p class="sub">Two agents learn a 1-D Gaussian policy to hit a narrow reward bump at a = 2 from noisy rewards. Each iteration collects 32 actions, then runs K epochs of gradient ascent on its surrogate. One uses the clip; the other optimises \(r\hat A\) unclipped. Both have the same entropy bonus. Run a few iterations and watch the KL per update and where each policy ends up.</p>
+    <div class="controls">
+      <label class="ctrl">epochs K <input type="range" id="ppo-k" min="1" max="50" step="1" value="20"><output for="ppo-k"></output></label>
+      <label class="ctrl">clip ε <input type="range" id="ppo-eps" min="0.05" max="0.5" step="0.01" value="0.2"><output for="ppo-eps"></output></label>
+      <button id="ppo-one" class="primary">▶ 1 iteration</button><button id="ppo-ten" class="cyan">▶▶ 10 iterations</button><button id="ppo-reset" class="ghost">↺ reset</button>
+    </div>
+    <canvas class="plot" id="ppo-pol" data-h="230"></canvas>
+    <div class="grid2"><canvas class="plot" id="ppo-j" data-h="220"></canvas><canvas class="plot" id="ppo-kl" data-h="220"></canvas></div>
+    <div class="callout">Unclipped, K epochs on 32 noisy samples is K chances to overfit them: σ collapses onto whichever sample got lucky, and the KL per update is often hundreds of times larger. With the clip, every sample whose ratio has left \([1-\epsilon,1+\epsilon]\) in its favour stops contributing, so the update stops by itself. With K = 1 the ratio is exactly 1 on the only epoch, so the clip never fires and the two agents run the same algorithm.</div>
+  </div>
+
+  <div class="card widget">
+    <h3>🎚️ Picking λ <span class="tag">GAE bias–variance</span></h3>
+    <p class="sub">A robot walks 60 steps down a corridor; each step pays \(0.1+\sigma\xi\). Its critic is lazy, \(V_\phi=(1-e)\,V\), as critics early in training are. Here the bias and variance of the GAE estimate have closed forms. The left plot shows them against λ; the right shows the weights \((\gamma\lambda)^l\) that GAE puts on each future TD error.</p>
+    <div class="controls">
+      <label class="ctrl">λ <input type="range" id="gae-l" min="0" max="1" step="0.01" value="0.95"><output for="gae-l"></output></label>
+      <label class="ctrl">γ <input type="range" id="gae-g" min="0.9" max="0.999" step="0.001" value="0.98"><output for="gae-g"></output></label>
+      <label class="ctrl">critic error e <input type="range" id="gae-e" min="0" max="0.8" step="0.01" value="0.3"><output for="gae-e"></output></label>
+      <label class="ctrl">reward noise σ <input type="range" id="gae-s" min="0" max="1" step="0.01" value="0.3"><output for="gae-s"></output></label>
+    </div>
+    <div class="grid2"><canvas class="plot" id="gae-curve" data-h="260"></canvas><canvas class="plot" id="gae-w" data-h="260"></canvas></div>
+    <div class="stats">
+      <div class="stat"><div class="k">best λ (min MSE)</div><div class="v" id="gae-best">—</div></div>
+      <div class="stat"><div class="k">effective horizon 1/(1−γλ)</div><div class="v" id="gae-h">—</div></div>
+      <div class="stat"><div class="k">MSE at chosen λ</div><div class="v" id="gae-mse">—</div></div>
+    </div>
+    <div class="callout amber">Set the critic error to 0 and the best λ drops to 0: a perfect critic makes bootstrapping free. Turn the reward noise down and it climbs towards 1. Real training has both a rough critic and noisy returns, and 0.9 to 0.97 is where the curve bottoms out.</div>
+  </div>
+
+  <!-- 8 · SAC / MPO -->
+  <h3 class="topic"><span>8</span>SAC and MPO: maximum entropy and KL-regularised RL</h3>
+  <p><b>Soft Actor-Critic</b> changes the objective itself. The agent is paid for reward <i>and</i> for staying random:</p>
+  <div class="eqbox">$$J(\pi)=\sum_t\mathbb E\Big[r(s_t,a_t)+\alpha\,\mathcal H\big(\pi(\cdot\mid s_t)\big)\Big],\qquad \mathcal H(\pi)=-\mathbb E_{a\sim\pi}\big[\log\pi(a)\big]$$</div>
+  <p>This gives soft versions of the Bellman equations. Their optimal policy is a Boltzmann distribution over Q, so the temperature α decides how greedy it is:</p>
+  <div class="eqbox">$$Q(s,a)=r+\gamma\,\mathbb E_{s'}\big[V(s')\big],\qquad V(s)=\mathbb E_{a\sim\pi}\big[Q(s,a)-\alpha\log\pi(a\mid s)\big],\qquad \pi^*(a\mid s)\propto\exp\!\big(Q(s,a)/\alpha\big)$$</div>
+  <div class="grid3">
+    <div class="key"><b>Twin critics</b><p>Learn \(Q_1,Q_2\) and bootstrap from \(\min(Q_1,Q_2)\). A max over noisy estimates is biased upwards; the min cancels most of it.</p></div>
+    <div class="key"><b>Automatic α</b><p>Pick a target entropy \(\bar{\mathcal H}\) (often \(-\dim\mathcal A\)) and minimise \(\alpha\,(\mathcal H(\pi)-\bar{\mathcal H})\). If the policy gets too certain, α grows.</p></div>
+    <div class="key"><b>Reparameterisation</b><p>\(a=\tanh(\mu_\theta(s)+\sigma_\theta(s)\,\xi)\), so the actor gets gradients through \(Q(s,a)\) directly.</p></div>
+  </div>
+  <p><b>MPO</b> (Maximum a-posteriori Policy Optimisation, from DeepMind's control group) reaches a similar place by an EM-style loop. It never follows a policy gradient: it builds a better policy non-parametrically, then fits the network to it.</p>
+  <div class="eqbox">$$\textbf{E-step: }\ q(a\mid s)\propto\pi_\text{old}(a\mid s)\,\exp\!\big(Q(s,a)/\eta\big),\quad \operatorname{KL}(q\,\|\,\pi_\text{old})\le\epsilon$$</div>
+  <div class="eqbox">$$\textbf{M-step: }\ \max_\theta\ \mathbb E_{q}\big[\log\pi_\theta(a\mid s)\big],\quad \operatorname{KL}(\pi_\text{old}\,\|\,\pi_\theta)\le\epsilon_m$$</div>
+  <p>The temperature η is not a hyperparameter here: it is solved for, via a convex dual, so that the E-step moves exactly as far as ε allows. Both SAC and MPO learn Q with Bellman backups, so both are off-policy and reuse a replay buffer, which is why they are the usual picks for learning on real robots.</p>
+
+  <div class="card widget">
+    <h3>🌡️ Temperature and the soft-optimal policy <span class="tag">π ∝ exp(Q/α) · auto-α</span></h3>
+    <p class="sub">One state, a 1-D action, and a Q-function with a sharp tall peak and a broad lower one. The soft-optimal policy is \(\pi(a)\propto e^{Q(a)/\alpha}\). Slide α, or set a target entropy and let SAC's α update, \(\log\alpha\leftarrow\log\alpha-\beta\,(\mathcal H-\bar{\mathcal H})\), find the temperature for you.</p>
+    <div class="controls">
+      <label class="ctrl">log₁₀ α <input type="range" id="sac-a" min="-2" max="0.3" step="0.01" value="-0.7"><output for="sac-a"></output></label>
+      <label class="ctrl">target entropy <input type="range" id="sac-t" min="-2" max="1.7" step="0.05" value="0"><output for="sac-t"></output></label>
+      <button id="sac-auto" class="primary">▶ auto-tune α</button>
+    </div>
+    <canvas class="plot" id="sac-c" data-h="260"></canvas>
+    <div class="stats">
+      <div class="stat"><div class="k">α</div><div class="v" id="sac-av">—</div></div>
+      <div class="stat"><div class="k">entropy H(π)</div><div class="v" id="sac-h">—</div></div>
+      <div class="stat"><div class="k">E_π[Q]</div><div class="v" id="sac-q">—</div></div>
+      <div class="stat"><div class="k">mass on the sharp peak</div><div class="v" id="sac-m">—</div></div>
+    </div>
+    <div class="callout">At high α the policy hedges between both hills; at low α it commits to the sharp one. This is a continuous-action entropy, so it can go negative once the policy is narrower than a unit-wide uniform. That is why target entropies like \(-\dim\mathcal A\) are negative numbers.</div>
+  </div>
+
+  <div class="card widget">
+    <h3>🪜 MPO, one trust-region step at a time <span class="tag">E-step · M-step · η from the dual</span></h3>
+    <p class="sub">Same Q-function. The grey Gaussian is the current policy. The E-step reweights it by \(e^{Q/\eta}\) (shaded), with η solved by bisection so that \(\operatorname{KL}(q\|\pi_\text{old})=\epsilon\) exactly. The M-step fits a new Gaussian to that shape (blue). Step a few times.</p>
+    <div class="controls">
+      <label class="ctrl">KL bound ε <input type="range" id="mpo-e" min="0.01" max="1.5" step="0.01" value="0.1"><output for="mpo-e"></output></label>
+      <label class="ctrl">start mean <input type="range" id="mpo-m" min="-2.5" max="2.5" step="0.05" value="0"><output for="mpo-m"></output></label>
+      <button id="mpo-step" class="primary">▶ E + M step</button><button id="mpo-reset" class="ghost">↺ reset</button>
+    </div>
+    <canvas class="plot" id="mpo-c" data-h="260"></canvas>
+    <div class="stats">
+      <div class="stat"><div class="k">η (solved)</div><div class="v" id="mpo-eta">—</div></div>
+      <div class="stat"><div class="k">policy μ, σ</div><div class="v" id="mpo-ms">—</div></div>
+      <div class="stat"><div class="k">E_π[Q]</div><div class="v" id="mpo-q">—</div></div>
+      <div class="stat"><div class="k">steps</div><div class="v" id="mpo-n">0</div></div>
+    </div>
+    <div class="callout amber">From the middle with ε = 0.1, MPO climbs the nearest broad hill and never finds the taller, sharper one at a = 1.6: every step is a small, safe move. Start the mean at 1 and it does. Now try ε = 1 from the middle: q becomes two-humped, and a Gaussian fitted to it can only straddle both, sitting in the valley. That is one reason MPO bounds the M-step too, and why richer policy classes help.</div>
+  </div>
+
+  <div class="card widget">
+    <h3>🎲 Why two critics <span class="tag">overestimation · clipped double Q</span></h3>
+    <p class="sub">Every action has true value 0. A critic's estimates are 0 plus noise. The Bellman target uses the max, \(\max_a\hat Q(s',a)\), which is positive on average even though every true value is 0. Twin critics take the second critic's estimate at the first critic's chosen action and keep the smaller, \(\min(\hat Q_1,\hat Q_2)\).</p>
+    <div class="controls">
+      <label class="ctrl">number of actions <input type="range" id="tq-k" min="2" max="60" step="1" value="10"><output for="tq-k"></output></label>
+      <label class="ctrl">estimate noise σ <input type="range" id="tq-s" min="0.1" max="2" step="0.05" value="1"><output for="tq-s"></output></label>
+    </div>
+    <canvas class="plot" id="tq-c" data-h="240"></canvas>
+    <div class="stats">
+      <div class="stat"><div class="k">E[max Q̂] (single)</div><div class="v" id="tq-a">—</div></div>
+      <div class="stat"><div class="k">E[min(Q̂₁,Q̂₂)] (twin)</div><div class="v" id="tq-b">—</div></div>
+      <div class="stat"><div class="k">single, compounded over γ=0.99</div><div class="v" id="tq-c2">—</div></div>
+    </div>
+    <div class="callout pink">The bias feeds itself: each target is built from estimates that were already inflated, so in the worst case it adds up as \(\sum_k\gamma^k\,b=b/(1-\gamma)\), a hundred times the per-step bias at γ = 0.99. Clipped double Q is slightly pessimistic instead, and pessimism is much safer: the policy doesn't chase actions that only look good.</div>
+  </div>
+
+  <!-- 9 · model-based -->
+  <h3 class="topic"><span>9</span>Model-based RL: Dreamer and TD-MPC2</h3>
+  <p>Learn a model of the dynamics, then either <b>plan</b> with it or <b>practise</b> in it. Planning with a model usually means model-predictive control: optimise a short action sequence in imagination, execute only the first action, observe, and replan.</p>
+  <div class="eqbox">$$a^*_{t:t+H}=\arg\max_{a_{t:t+H}}\ \sum_{k=0}^{H-1}\gamma^k\,\hat r(\hat s_k,a_k)+\gamma^H\,\hat V(\hat s_H),\qquad \hat s_{k+1}=\hat f_\psi(\hat s_k,a_k),\ \hat s_0=s_t$$</div>
+  <div class="grid2">
+    <div class="key"><b>DreamerV3</b><p>A recurrent world model in a learned latent space (RSSM). The actor and critic train entirely on imagined latent rollouts, using λ-returns, with robust tricks (symlog, return normalisation) that let one set of hyperparameters work across very different domains.</p></div>
+    <div class="key"><b>TD-MPC2</b><p>A latent model trained only to predict reward, value and the next latent (no pixel reconstruction), plus MPPI planning over a short horizon with a learned Q as the terminal value \(\hat V(\hat s_H)\). Strong on continuous control, scales to many tasks.</p></div>
+  </div>
+  <p>The upside is sample efficiency: every real transition trains a model that can generate many imagined ones. The downside is <b>model exploitation</b>. A planner is an optimiser, and it finds the places where the model is wrong in its favour. Fixes: keep collecting real data where the plans go, penalise model uncertainty (ensembles, MOPO), plan over short horizons, and let a learned value function handle everything past the horizon. The trend is towards world models as simulators, including video world models used to evaluate robot policies before they ever touch hardware.</p>
+
+  <div class="card widget">
+    <h3>🧭 A planner, a learned model, and a wall it hasn't met <span class="tag">MPC · CEM · model exploitation</span></h3>
+    <p class="sub">The robot's model was learned from random wandering near the start, so it believes the room is empty. The real room has a wall (dashed). Each real step, CEM optimises H moves in the model (the imagined plan is dotted) and executes the first. With "learn online" on, a move that stops dead teaches the model a wall cell (dark).</p>
+    <div class="controls">
+      <label class="ctrl">horizon H <input type="range" id="mb-h" min="4" max="24" step="1" value="16"><output for="mb-h"></output></label>
+      <label class="ctrl"><input type="checkbox" id="mb-learn" checked> learn online from real steps</label>
+      <button id="mb-go" class="primary">▶ Drive</button><button id="mb-reset" class="ghost">↺ fresh model</button>
+    </div>
+    <canvas class="plot" id="mb-c" data-h="340"></canvas>
+    <div class="stats">
+      <div class="stat"><div class="k">real steps</div><div class="v" id="mb-t">0</div></div>
+      <div class="stat"><div class="k">wall cells learned</div><div class="v" id="mb-w">0</div></div>
+      <div class="stat"><div class="k">status</div><div class="v" id="mb-s">ready</div></div>
+    </div>
+    <div class="callout">Turn learning off: the planner pushes into the wall forever, because in its model the straight line works. Turn it on with H = 6: it learns the wall but still dithers, since no 6-step plan around it looks better than waiting. A longer horizon, or a learned value at the end of a short one (the TD-MPC2 recipe), gets it around.</div>
+  </div>
+
+  <div class="card"><h3>🧠 Quiz</h3><div class="quiz" data-quiz="advB"></div></div>
+</section>
+
+<!-- ======================================================= ADVANCED C -->
+<section class="chapter" id="advC" data-ch="advC" data-nav="The robot RL pipeline" style="--accent:#2f7d5f">
+  <div class="ch-head">
+    <div><div class="kicker">Advanced · C</div><h2>The robot RL pipeline, 2026 edition</h2></div>
+    <div class="ch-actions"><button class="done-btn" data-ch="advC"></button></div>
+  </div>
+  <p class="lead">A locomotion policy that walks on a real quadruped or humanoid is mostly the product of four engineering choices around a fairly plain PPO: simulate thousands of robots at once, train with information the real robot will never have, design the action space so the network has an easy job, and order the tasks so there is always something to learn.</p>
+
+  <!-- 10 · parallel simulation -->
+  <h3 class="topic"><span>10</span>Massively parallel GPU simulation</h3>
+  <p>The shift that made robot RL practical was moving the physics onto the GPU and running thousands of copies of the robot in one batched step. Observations, rewards and actions never leave the device, so the policy, the simulator and the PPO update all share the same tensors. On a single GPU a quadruped learns to walk on rough terrain in minutes to hours, not days.</p>
+  <div class="grid3">
+    <div class="key"><b>Simulators</b><p>Isaac Lab (on Isaac Sim), MuJoCo MJX and MuJoCo Playground, Genesis, and Newton (NVIDIA, Google DeepMind and Disney Research).</p></div>
+    <div class="key"><b>Reference code</b><p>legged_gym + rsl_rl (ETH Zürich): the compact PPO most legged-robot work still starts from.</p></div>
+    <div class="key"><b>The batch</b><p>\(N_\text{env}\times T\) samples per iteration, e.g. \(4096\times24\approx98\text{k}\), so short rollouts per env are fine.</p></div>
+  </div>
+  <p>A GPU step costs a fixed launch overhead plus a per-environment cost, until the device is full. Throughput in environment steps per second is therefore</p>
+  <div class="eqbox">$$\text{throughput}_\text{GPU}(N)=\frac{N}{t_0+N/R_{\max}}\ \xrightarrow{\;N\to\infty\;}\ R_{\max},\qquad \text{throughput}_\text{CPU}(N)=\frac{N}{\lceil N/n_\text{cores}\rceil\,t_\text{env}}$$</div>
+  <p>Short rollouts bring one subtlety. With \(T=24\) almost every rollout ends on a <b>time limit</b>, not a real terminal state, and the robot wasn't dead, just interrupted. Bootstrapping from 0 there would teach the critic that the world ends every 24 steps. The fix is to treat time-outs differently from failures:</p>
+  <div class="eqbox">$$y_t=\begin{cases}r_t & \text{true terminal (fell over)}\\ r_t+\gamma\,V(s_{t+1}) & \text{time-out or rollout boundary}\end{cases}$$</div>
+
+  <div class="card widget">
+    <h3>🐜 How many robots at once? <span class="tag">throughput · wall-clock</span></h3>
+    <p class="sub">Slide the number of parallel environments. The fleet on the left is drawn one dot per robot (up to 4096). The plot uses illustrative numbers: a GPU with 4 ms of launch overhead per step and a ceiling of 400k env-steps per second, against a 32-core CPU at 1.2 ms per env-step. The target is a 150M-step locomotion run.</p>
+    <div class="controls">
+      <label class="ctrl">environments N <input type="range" id="gpu-n" min="0" max="14" step="1" value="12"><output for="gpu-n"></output></label>
+      <label class="ctrl">CPU cores <input type="range" id="gpu-c" min="4" max="128" step="4" value="32"><output for="gpu-c"></output></label>
+    </div>
+    <div class="grid2"><canvas class="plot" id="gpu-fleet" data-h="260"></canvas><canvas class="plot" id="gpu-plot" data-h="260"></canvas></div>
+    <div class="stats">
+      <div class="stat"><div class="k">GPU env-steps / s</div><div class="v" id="gpu-g">—</div></div>
+      <div class="stat"><div class="k">CPU env-steps / s</div><div class="v" id="gpu-cp">—</div></div>
+      <div class="stat"><div class="k">150M steps on GPU</div><div class="v" id="gpu-t">—</div></div>
+      <div class="stat"><div class="k">… on CPU</div><div class="v" id="gpu-tc">—</div></div>
+    </div>
+    <div class="callout">Below a few hundred environments the GPU loses: you are paying launch overhead to simulate almost nothing. Past a few thousand it saturates and more environments only make the batch bigger. That cheap, huge batch is exactly the regime where on-policy PPO beats sample-efficient off-policy methods on wall-clock time.</div>
+  </div>
+
+  <!-- 11 · asymmetric AC, teacher–student -->
+  <h3 class="topic"><span>11</span>Asymmetric actor-critic and teacher–student distillation</h3>
+  <p>In simulation you know everything: true base velocity, friction, contact states, terrain heights, motor strengths. On the robot you have joint encoders, an IMU and maybe a camera. Two standard ways to exploit the difference:</p>
+  <div class="grid2">
+    <div class="key"><b>Asymmetric actor-critic</b><p>The critic sees privileged state, \(V_\phi(s^\text{priv}_t)\); the actor sees only what the robot will see, \(\pi_\theta(a_t\mid o_{t-k:t})\). Better value estimates mean better advantages. The critic is thrown away at deployment, so it may cheat.</p></div>
+    <div class="key"><b>Teacher–student</b><p>Train a teacher \(\pi_T(a\mid s^\text{priv})\) with RL, then distil it into a student that sees only sensor history: \(\min_\psi\ \mathbb E_{o\sim d_{\pi_S}}\big\lVert\pi_S(o_{t-k:t})-\pi_T(s^\text{priv}_t)\big\rVert^2\), collected DAgger-style on the student's own states.</p></div>
+  </div>
+  <p><b>RMA</b> (Rapid Motor Adaptation) makes the hidden part explicit. The teacher compresses environment parameters \(e_t\) (friction, payload, terrain) into a latent \(z_t=\mu(e_t)\); the student learns an <b>adaptation module</b> that recovers it from recent history, \(\hat z_t=\phi(o_{t-k:t},a_{t-k-1:t-1})\). That is system identification done implicitly, online, at 50 Hz. It is also why history length matters: a short window is noisy, a long one is slow to notice the ground has changed.</p>
+
+  <div class="card widget">
+    <h3>🛷 Teacher, student and blind policy on changing ground <span class="tag">privileged info · history window</span></h3>
+    <p class="sub">A sled must hold speed 1 while the ground goes carpet → ice → mud → carpet. Holding speed needs the drag c as a feed-forward term. The <b>teacher</b> reads c from the simulator. The <b>blind</b> policy assumes c = 1. The <b>student</b> estimates c by least squares over its last k noisy speed readings, \(\hat c=\sum v\,(u-\Delta v/\Delta t)/\sum v^2\).</p>
+    <div class="controls">
+      <label class="ctrl">history window k <input type="range" id="ad-k" min="2" max="300" step="1" value="10"><output for="ad-k"></output></label>
+      <label class="ctrl">speed sensor noise <input type="range" id="ad-n" min="0" max="0.1" step="0.005" value="0.04"><output for="ad-n"></output></label>
+      <button id="ad-run" class="ghost">🎲 re-run</button>
+    </div>
+    <div class="grid2"><canvas class="plot" id="ad-c" data-h="250"></canvas><canvas class="plot" id="ad-v" data-h="250"></canvas></div>
+    <div class="stats">
+      <div class="stat"><div class="k">speed error, teacher</div><div class="v" id="ad-et">—</div></div>
+      <div class="stat"><div class="k">student</div><div class="v" id="ad-es">—</div></div>
+      <div class="stat"><div class="k">blind</div><div class="v" id="ad-eb">—</div></div>
+    </div>
+    <div class="callout amber">Find the best window for the default noise: somewhere around 10 to 20 steps. Shorter and the estimate is a blur of sensor noise; longer and it is still averaging the carpet while the sled is on ice. Set the noise to 0 and the shortest window wins. A learned adaptation module faces the same trade-off and learns where to sit on it.</div>
+  </div>
+
+  <!-- 12 · action space -->
+  <h3 class="topic"><span>12</span>Action space and control design</h3>
+  <p>Almost every legged and humanoid policy outputs <b>joint position targets</b>, not torques. A PD loop on the motor driver turns them into torque at a much higher rate:</p>
+  <div class="eqbox">$$q^\text{target}_t=q^\text{default}+s\cdot a_t,\qquad \tau=K_p\big(q^\text{target}-q\big)-K_d\,\dot q,\qquad |\tau|\le\tau_{\max}$$</div>
+  <p>The policy runs at 50–100 Hz and the PD loop at 1 kHz or more, so the network only has to say where each joint should be, and the stiff, fast part is done in firmware. The gains set the joint's character. For a joint with inertia I, the closed loop is a spring and damper:</p>
+  <div class="eqbox">$$\omega_n=\sqrt{K_p/I},\qquad \zeta=\frac{K_d}{2\sqrt{K_p\,I}}$$</div>
+  <div class="grid3">
+    <div class="key"><b>Gains and scale</b><p>Stiff gains track well but amplify every jitter in the policy; soft gains are compliant and forgiving. The action scale s sets how far one unit of output moves a joint.</p></div>
+    <div class="key"><b>History and latency</b><p>Feed the last few observations and actions back in. It handles partial observability and lets the policy model its own delay.</p></div>
+    <div class="key"><b>Smoothness</b><p>Penalise \(\lVert a_t-a_{t-1}\rVert^2\) and \(\lVert\ddot q\rVert^2\), or low-pass the actions. Jitter that is harmless in sim cooks real gearboxes.</p></div>
+  </div>
+
+  <div class="card widget">
+    <h3>🦵 Tune a leg joint <span class="tag">PD targets · rate · latency</span></h3>
+    <p class="sub">An ideal policy sends position targets that follow a swing-leg trajectory (dashed). The targets are held between policy steps (purple staircase), arrive after the latency, and are tracked by a 1 kHz PD loop against gravity with a 12 N·m torque limit (ink).</p>
+    <div class="controls">
+      <label class="ctrl">K<sub>p</sub> <input type="range" id="pd-kp" min="5" max="300" step="1" value="40"><output for="pd-kp"></output></label>
+      <label class="ctrl">K<sub>d</sub> <input type="range" id="pd-kd" min="0.1" max="6" step="0.05" value="1"><output for="pd-kd"></output></label>
+      <label class="ctrl">policy rate (Hz) <input type="range" id="pd-hz" min="5" max="200" step="1" value="50"><output for="pd-hz"></output></label>
+      <label class="ctrl">latency (ms) <input type="range" id="pd-lat" min="0" max="60" step="1" value="0"><output for="pd-lat"></output></label>
+      <label class="ctrl">action smoothing β <input type="range" id="pd-b" min="0" max="0.95" step="0.01" value="0"><output for="pd-b"></output></label>
+    </div>
+    <div class="grid2"><canvas class="plot" id="pd-q" data-h="250"></canvas><canvas class="plot" id="pd-t" data-h="250"></canvas></div>
+    <div class="stats">
+      <div class="stat"><div class="k">ω_n / ζ</div><div class="v" id="pd-wz">—</div></div>
+      <div class="stat"><div class="k">tracking RMSE (rad)</div><div class="v" id="pd-r">—</div></div>
+      <div class="stat"><div class="k">time at torque limit</div><div class="v" id="pd-s">—</div></div>
+      <div class="stat"><div class="k">target jumps Σ(Δq*)²</div><div class="v" id="pd-j">—</div></div>
+    </div>
+    <div class="callout">Things to try. Raise K<sub>p</sub> to 160 with K<sub>d</sub> 0.5: ζ falls below 0.1 and the joint buzzes at the torque limit. Keep K<sub>p</sub> 80, K<sub>d</sub> 1.5 and add 20 ms of latency: the error nearly doubles. Push the policy rate from 50 to 200 Hz: almost nothing changes, because the PD loop already handles the fast part. Smoothing lowers the target jumps, but costs tracking.</div>
+  </div>
+
+  <!-- 13 · curriculum -->
+  <h3 class="topic"><span>13</span>Curriculum learning</h3>
+  <p>Start where the policy can sometimes succeed, and raise the difficulty (terrain roughness, stair height, command range, randomisation strength) as it gets better. Without that, a hard task gives no learning signal at all. A useful way to see why: if a batch of episodes succeeds with probability p, the information in their outcomes, and the variance that a policy gradient can exploit, is</p>
+  <div class="eqbox">$$\operatorname{Var}[\text{success}]=p\,(1-p),\qquad \text{maximal at }p=\tfrac12,\ \text{zero at }p=0\text{ and }p=1$$</div>
+  <p>The <b>terrain game</b> from legged_gym keeps every environment near that sweet spot automatically: each robot has a level; if it walks far enough it moves up a level, if it covers less than half the distance it moves down. Fancier automatic curricula pick tasks by measured learning progress (ALP-GMM, prioritised level replay), but the principle is the same: train where success is uncertain.</p>
+
+  <div class="card widget">
+    <h3>🪜 Three ways to pick terrain <span class="tag">p(1−p) · terrain game</span></h3>
+    <p class="sub">256 environments share one policy with a scalar skill s. At level ℓ an episode succeeds with \(p=\sigma\big(2.2\,(s-\ell)\big)\), and each iteration the skill grows in proportion to the summed \(p(1-p)\). One run trains everyone on the hardest level 10, one samples levels uniformly, and one plays the terrain game (up on success, down on failure). The stairs show where the terrain-game robots currently are.</p>
+    <div class="controls"><button id="cu-run" class="primary">▶ Train 300 iterations</button><button id="cu-reset" class="ghost">↺ reset</button></div>
+    <div class="grid2"><canvas class="plot" id="cu-sk" data-h="260"></canvas><canvas class="plot" id="cu-st" data-h="260"></canvas></div>
+    <div class="callout pink">"Hardest only" never moves: p ≈ 0 everywhere means zero signal. Uniform learns, but most of its robots sit on levels that are far too easy or far too hard. The terrain game parks every robot on the frontier, and the whole staircase climbs with the skill.</div>
+  </div>
+
+  <div class="card"><h3>🧠 Quiz</h3><div class="quiz" data-quiz="advC"></div></div>
+</section>
+
+<!-- ======================================================= ADVANCED D -->
+<section class="chapter" id="advD" data-ch="advD" data-nav="Humanoids" style="--accent:#a8701a">
+  <div class="ch-head">
+    <div><div class="kicker">Advanced · D</div><h2>Humanoids</h2></div>
+    <div class="ch-actions"><button class="done-btn" data-ch="advD"></button></div>
+  </div>
+  <p class="lead">A humanoid is the hardest place to write a reward by hand: "walk naturally" has no formula. The current recipe takes motion from people, teaches a fast low-level controller to track it, and puts a slower, smarter model on top to decide what to track. Then it tries to do all that while carrying something.</p>
+
+  <!-- 14 · motion imitation -->
+  <h3 class="topic"><span>14</span>Motion imitation from human data</h3>
+  <p>The pipeline: capture human motion (mocap suits, or increasingly plain video with a pose estimator), <b>retarget</b> it to the robot's body (scale limbs, solve inverse kinematics so hands, feet and torso land where the human's did, respect joint limits), then train a policy with RL to reproduce it under real physics.</p>
+  <p><b>DeepMimic</b> (Peng et al., 2018) makes the reward a product of tracking kernels. Every term is an exponential of a squared error, so the reward is in [0, 1], smooth, and informative even when the robot is far off:</p>
+  <div class="eqbox">$$r_t=w_p\,e^{-k_p\sum_j\lVert\hat q_j-q_j\rVert^2}+w_v\,e^{-k_v\sum_j\lVert\hat{\dot q}_j-\dot q_j\rVert^2}+w_e\,e^{-k_e\sum_e\lVert\hat p_e-p_e\rVert^2}+w_c\,e^{-k_c\lVert\hat p_c-p_c\rVert^2}$$</div>
+  <p>Pose, velocity, end-effectors (hands and feet) and centre of mass, against the reference \(\hat{\cdot}\) at the current phase. Two training tricks matter as much as the reward: <b>reference state initialisation</b> (start episodes at random points along the clip, so the policy sees the hard middle of a backflip and not just the start) and <b>early termination</b> (stop when the torso touches the ground, so the policy doesn't learn to flail on the floor).</p>
+  <p><b>AMP</b> (Adversarial Motion Priors, Peng et al., 2021) drops the explicit tracking. A discriminator learns to tell dataset transitions \((s,s')\) from the policy's, and its output becomes a <b>style reward</b> added to whatever task reward you like:</p>
+  <div class="eqbox">$$\min_D\ \mathbb E_{\mathcal M}\big[(D(s,s')-1)^2\big]+\mathbb E_{\pi}\big[(D(s,s')+1)^2\big],\qquad r^\text{style}=\max\!\big(0,\ 1-\tfrac14\,(D(s,s')-1)^2\big),\qquad r=w_g\,r^\text{task}+w_s\,r^\text{style}$$</div>
+  <p>The policy no longer has to follow one clip frame by frame; it only has to move in a way the discriminator can't tell from the data. The cost is everything that makes GANs hard: an unstable game, and mode collapse onto one style. Today's humanoid work mostly tracks: H2O and OmniH2O, HumanPlus, ExBody, BeyondMimic, and <b>general motion trackers</b> trained on thousands of clips (e.g. AMASS) so one policy can follow almost any human motion it is given.</p>
+
+  <div class="card widget">
+    <h3>🕺 Be the policy <span class="tag">DeepMimic tracking reward</span></h3>
+    <p class="sub">The ghost walks a reference gait. The solid figure is you: <b>drag its knees and feet</b> to match the ghost at the paused phase, or let a PD tracker follow on its own. The reward is \(0.7\,r_p+0.3\,r_e\) (pose and feet; velocity left out while paused). Change the kernel scales and feel how sharp or forgiving the reward becomes.</p>
+    <div class="controls">
+      <label class="ctrl">phase φ <input type="range" id="mm-ph" min="0" max="0.99" step="0.01" value="0.15"><output for="mm-ph"></output></label>
+      <label class="ctrl">pose kernel k<sub>p</sub> <input type="range" id="mm-kp" min="0.2" max="20" step="0.1" value="2"><output for="mm-kp"></output></label>
+      <label class="ctrl">feet kernel k<sub>e</sub> <input type="range" id="mm-ke" min="2" max="200" step="1" value="40"><output for="mm-ke"></output></label>
+      <button id="mm-play" class="primary">▶ let a PD tracker walk</button><button id="mm-reset" class="ghost">↺ scramble pose</button>
+    </div>
+    <div class="grid2"><canvas class="plot" id="mm-fig" data-h="300" style="touch-action:none"></canvas><canvas class="plot" id="mm-r" data-h="300"></canvas></div>
+    <div class="stats">
+      <div class="stat"><div class="k">pose term r_p</div><div class="v" id="mm-rp">—</div></div>
+      <div class="stat"><div class="k">feet term r_e</div><div class="v" id="mm-re">—</div></div>
+      <div class="stat"><div class="k">reward r</div><div class="v" id="mm-rr">—</div></div>
+    </div>
+    <div class="callout">Push k<sub>p</sub> to 20: the reward is near zero unless you are almost exactly right, which is a sparse reward in disguise. Drop it to 0.2 and sloppy poses score almost as well as perfect ones. The scales in DeepMimic (2 for pose, 40 for end-effectors in metres) are chosen so typical early errors still give a usable gradient.</div>
+  </div>
+
+  <div class="card widget">
+    <h3>🎭 A discriminator as a reward <span class="tag">AMP · mode collapse</span></h3>
+    <p class="sub">The dataset holds two styles of gait, walking and jogging, as points in (stride, cadence). The policy is a small Gaussian blob. Each round the discriminator (an RBF network trained with the LSGAN loss) learns to separate data from policy, and the policy takes a policy-gradient step on the style reward (shaded). Watch where it ends up.</p>
+    <div class="controls">
+      <button id="amp-run" class="primary">▶ run 300 rounds</button>
+      <button id="amp-reset" class="ghost">↺ restart near the middle</button>
+      <button id="amp-far" class="ghost">↺ restart far away</button>
+    </div>
+    <canvas class="plot" id="amp-c" data-h="320"></canvas>
+    <div class="callout amber">It settles on one style and ignores the other: mode collapse, the classic GAN failure, and why AMP setups add latent skill codes or diversity terms when they need several styles. Restart far away and nothing happens at all: the discriminator wins outright, the style reward is zero everywhere the policy goes, and there is no gradient to follow.</div>
+  </div>
+
+  <!-- 15 · whole-body control under a VLA -->
+  <h3 class="topic"><span>15</span>Whole-body control as the layer under a VLA</h3>
+  <p>A vision-language-action model is good at deciding <i>what</i> to do and too slow and too far from the physics to keep a humanoid upright. The working split is a hierarchy:</p>
+  <div class="grid2">
+    <div class="key"><b>High level: the VLA</b><p>1–10 Hz, sometimes slower. Reads cameras and language; outputs <i>targets</i>: end-effector poses, base velocity, keypoints, often as a chunk of future targets.</p></div>
+    <div class="key"><b>Low level: an RL whole-body controller</b><p>50 Hz policy over a 1 kHz PD loop. Trained in simulation to track arbitrary commands \(g\) while balancing: \(\pi_\text{low}(a\mid o_{t-k:t},g_t)\).</p></div>
+  </div>
+  <p>Examples: <b>HOVER</b> trains one controller with a masked, multi-mode command interface (track joint angles, or root velocity, or hand keypoints, or any mix), and NVIDIA's GR00T stack puts a learned whole-body controller under the VLA. Why the split is forced becomes obvious from the simplest balance model, the <b>linear inverted pendulum</b>. With the centre of mass at height z and the zero-moment point p (where the ground reaction acts, inside the foot):</p>
+  <div class="eqbox">$$\ddot x=\omega^2\,(x-p),\qquad \omega=\sqrt{g/z}\approx3.3\ \text{s}^{-1}\ \text{for}\ z=0.9\ \text{m},\qquad \xi=x+\dot x/\omega\ \ \text{(capture point)}$$</div>
+  <p>The system is unstable with a time constant \(1/\omega\approx0.3\) s: any error doubles in about 0.2 s. A controller that only updates every 300 ms, or sees the state 100 ms late, is always correcting a fall that has already grown. A fast controller that keeps the capture point \(\xi\) where it should be can hold balance easily, and then it doesn't matter much how slowly the target changes.</p>
+
+  <div class="card widget">
+    <h3>🧍 A slow brain on a fast spine <span class="tag">LIPM · rates · latency</span></h3>
+    <p class="sub">The VLA wants the body to lean to a few targets in turn (dashed). In <b>direct</b> mode it computes the balance action itself, at its own rate and latency. In <b>hierarchical</b> mode it only sends the target, and a 50 Hz capture-point controller does the balancing. The ZMP is limited to a 20 cm foot.</p>
+    <div class="controls">
+      <span class="tabs" id="wb-mode" style="margin:0"><button class="sel" data-m="direct">direct</button><button data-m="hier">hierarchical</button></span>
+      <label class="ctrl">VLA rate (Hz) <input type="range" id="wb-hz" min="1" max="50" step="1" value="5"><output for="wb-hz"></output></label>
+      <label class="ctrl">VLA latency (ms) <input type="range" id="wb-lat" min="0" max="400" step="10" value="0"><output for="wb-lat"></output></label>
+    </div>
+    <div class="grid2"><canvas class="plot" id="wb-fig" data-h="280"></canvas><canvas class="plot" id="wb-plot" data-h="280"></canvas></div>
+    <div class="stats"><div class="stat"><div class="k">result</div><div class="v" id="wb-res">—</div></div><div class="stat"><div class="k">mean tracking error</div><div class="v" id="wb-err">—</div></div></div>
+    <div class="callout">Direct mode survives at 10 Hz with no latency and falls at 3 Hz, or at 10 Hz with 100 ms of latency. Switch to hierarchical and even 1 Hz with 300 ms of latency stays up: the targets arrive late, so tracking is sloppier, but balance never depends on the slow loop.</div>
+  </div>
+
+  <!-- 16 · loco-manipulation -->
+  <h3 class="topic"><span>16</span>Loco-manipulation</h3>
+  <p>Walking while carrying a box, opening a door, or pushing a cart couples the two halves of the body: every force the arms apply, and every kilogram they hold away from the body, moves the centre of mass and the zero-moment point the legs must keep inside the feet:</p>
+  <div class="eqbox">$$x_c=\frac{M\,x_\text{body}+m\,x_\text{load}}{M+m},\qquad p=x_c-\frac{z_c}{g}\,\ddot x_c,\qquad |p|\le\ell_\text{foot}$$</div>
+  <p>The hard parts are the coupled dynamics, contact-rich interaction (the box can slip, the door pushes back), and the size of the problem: a full humanoid has 30-odd actuated joints and an observation that now includes the object. Two designs are common. A <b>unified</b> whole-body policy learns everything at once and can discover coordinated tricks like leaning back while lifting. A <b>decoupled</b> design gives the upper body to a manipulation policy (often the VLA's targets) and the lower body to a locomotion policy, joined by a shared balance term, which is easier to train and debug but leaves some coordination on the table.</p>
+
+  <div class="card widget">
+    <h3>📦 Carry the box <span class="tag">centre of mass · ZMP</span></h3>
+    <p class="sub">A 60 kg humanoid holds a box in front of it. Change the box's mass and reach, and the walking acceleration. With the balance term on, the controller leans the body back by just enough to bring the combined centre of mass over the ankle, the behaviour a unified policy learns by itself.</p>
+    <div class="controls">
+      <label class="ctrl">box mass (kg) <input type="range" id="cb-m" min="0" max="25" step="0.5" value="10"><output for="cb-m"></output></label>
+      <label class="ctrl">reach (m) <input type="range" id="cb-d" min="0.1" max="0.7" step="0.01" value="0.45"><output for="cb-d"></output></label>
+      <label class="ctrl">walking accel (m/s²) <input type="range" id="cb-a" min="-1.5" max="1.5" step="0.05" value="0"><output for="cb-a"></output></label>
+      <label class="ctrl"><input type="checkbox" id="cb-bal"> balance term (lean back)</label>
+    </div>
+    <canvas class="plot" id="cb-c" data-h="320"></canvas>
+    <div class="stats"><div class="stat"><div class="k">centre of mass</div><div class="v" id="cb-x">—</div></div><div class="stat"><div class="k">ZMP</div><div class="v" id="cb-p">—</div></div><div class="stat"><div class="k">status</div><div class="v" id="cb-s">—</div></div></div>
+    <div class="callout pink">20 kg at 0.6 m tips the robot forward without the balance term. With it, the lean fixes standing still, but speeding up or braking hard (±1.5 m/s²) still pushes the ZMP out of the foot: to the heel when accelerating, to the toes when braking. That is why loco-manipulation policies watch the load and the walking command together, not one at a time.</div>
+  </div>
+
+  <div class="card"><h3>🧠 Quiz</h3><div class="quiz" data-quiz="advD"></div></div>
+</section>
+
+<!-- ======================================================= ADVANCED E -->
+<section class="chapter" id="advE" data-ch="advE" data-nav="Imitation meets RL" style="--accent:#c4673f">
+  <div class="ch-head">
+    <div><div class="kicker">Advanced · E</div><h2>Imitation meets RL</h2></div>
+    <div class="ch-actions"><button class="done-btn" data-ch="advE"></button></div>
+  </div>
+  <p class="lead">Demonstrations and hand-written controllers get a robot most of the way; reinforcement learning is how it gets the last stretch: the contact-rich, millimetre-precise, never-quite-the-same part. This chapter is about combining the two, so RL starts from something that already works instead of from noise.</p>
+
+  <!-- 17 · residual RL -->
+  <h3 class="topic"><span>17</span>Residual RL</h3>
+  <p>Keep a base controller and learn only a correction on top of it:</p>
+  <div class="eqbox">$$a_t=a^\text{base}(s_t)+a^\text{res}_\theta(s_t),\qquad \lVert a^\text{res}_\theta\rVert\le\delta,\qquad \max_\theta\ J\big(a^\text{base}+a^\text{res}_\theta\big)$$</div>
+  <p>The base can be a scripted trajectory, an inverse-kinematics or impedance controller, or a behaviour-cloned policy. RL only has to learn the part the base gets wrong (Silver et al., 2018; Johannink et al., 2019). Three things make that much easier than learning from scratch:</p>
+  <div class="grid3">
+    <div class="key"><b>Exploration starts near success</b><p>With \(a^\text{res}=0\) the robot already does something sensible, so even early rollouts reach the interesting states: here, the peg touching the hole.</p></div>
+    <div class="key"><b>Safety by construction</b><p>Bounding the residual, \(\lVert a^\text{res}\rVert\le\delta\), bounds how far the learner can drag the robot from a behaviour you trust.</p></div>
+    <div class="key"><b>A small problem</b><p>The residual only needs the inputs that explain the base's mistakes, often a handful, so a tiny network and a few minutes of search can be enough.</p></div>
+  </div>
+  <p><b>The task below.</b> A Franka arm holds a 24 mm peg over a hole with 1.5 mm of clearance. The base is a Cartesian impedance controller, a virtual spring–damper on the peg tip, with the posture handled in the null space:</p>
+  <div class="eqbox">$$\tau=J^\top\big[K(x^*-x)-D\,\dot x\big]+\underbrace{c(q,\dot q)+g(q)}_{\text{gravity, Coriolis}}+\big(I-J^\top J^{+\top}\big)\,\tau_\text{posture}$$</div>
+  <p>Its script is simple: move above where perception says the hole is, then descend. But perception is off by a few millimetres, as it always is. A flat-bottomed peg landing beside a hole feels only a vertical push, so a position controller has no idea which way to go and stalls on the surface.</p>
+  <p>The peg is not completely blind, though. When it rests half over the hole, the table pushes up only on the side that is still on the surface, so the wrist feels a <b>torque</b>. Dividing by the normal force gives the lever arm of that push, the <b>centre of pressure</b>, which points away from the hole:</p>
+  <div class="eqbox">$$\boldsymbol\tau=\mathbf r_c\times\mathbf F\quad\Rightarrow\quad \mathbf r_c^{xy}\approx\frac{1}{F_z}\begin{pmatrix}-\tau_y\\ \tau_x\end{pmatrix}$$</div>
+  <p>The residual is a 5 → 8 → 2 tanh network with no bias terms, 56 parameters in all. No biases means zero input gives exactly zero output, so until the peg touches something the residual stays out of the way. Every 20 ms it reads the centre of pressure, the normal force and its own current offset, and outputs a sideways velocity for the target, capped at 3 cm/s and 14 mm in total. It was trained with the cross-entropy method, a derivative-free policy search, on random perception errors up to 9 mm: 64 candidate networks per iteration, 16 attempts each, 40 iterations, about 12 minutes on a 24-core desktop CPU. On 100 perception errors it never trained on, the scripted controller alone inserts the peg 6 times, a hand-tuned linear "follow the torque" law 75 times, and the learned residual 82 times.</p>
+
+  <div class="card widget" id="peg-widget" data-base="franka/" data-mujoco="../assets/mujoco/" data-three="/assets/vendor/three/three.module.js">
+    <h3>🔩 Franka peg-in-hole, with and without the residual <span class="tag">MuJoCo in your browser</span></h3>
+    <p class="sub">Real physics: MuJoCo running as WebAssembly, with the Franka Emika Panda model from MuJoCo Menagerie. Each attempt draws a new perception error. Untick the residual to watch the scripted controller alone. Drag to orbit, scroll to zoom.</p>
+    <div class="peg-gate">
+      <button id="peg-load" class="primary">▶ Load the simulator</button>
+      <span class="ctrl" id="peg-status">about 3 MB, loaded only when you press the button</span>
+    </div>
+    <div class="peg-live">
+      <div class="controls">
+        <label class="ctrl"><input type="checkbox" id="peg-res" checked> learned residual on</label>
+        <button id="peg-again" class="primary">↻ try again</button>
+        <button id="peg-new" class="cyan">🎲 new perception error</button>
+        <button id="peg-speed" class="ghost">🐢 slow motion</button>
+        <button id="peg-close" class="ghost">🔍 close-up</button>
+      </div>
+      <div class="peg-stage">
+        <canvas id="peg-canvas"></canvas>
+        <div class="peg-side">
+          <canvas id="peg-top"></canvas>
+          <div class="stats">
+            <div class="stat"><div class="k">perception error</div><div class="v" id="peg-err">—</div></div>
+            <div class="stat"><div class="k">depth</div><div class="v" id="peg-depth">—</div></div>
+          </div>
+          <div class="callout" id="peg-result" style="margin:0">—</div>
+        </div>
+      </div>
+      <div class="controls" style="margin-top:12px">
+        <button id="peg-batch" class="ghost">⚡ test 20 random errors, both ways</button>
+        <span class="ctrl" id="peg-batchout"></span>
+      </div>
+    </div>
+    <p class="sub" style="margin-top:10px">Panda model: <a href="https://github.com/google-deepmind/mujoco_menagerie/tree/main/franka_emika_panda" target="_blank" rel="noopener">MuJoCo Menagerie</a>, Apache-2.0, meshes simplified for the web. Physics: <a href="https://github.com/google-deepmind/mujoco" target="_blank" rel="noopener">MuJoCo</a> 3.16, Apache-2.0. Both are served from this site.</p>
+  </div>
+
+  <p>Two things to notice. First, the network rediscovered a classic, roughly "move away from the centre of pressure", a learned cousin of the spiral and tilt searches assembly engineers hand-tune. It beats the hand-written linear version of the same idea mostly by easing off once the peg starts to drop in, instead of overshooting the hole. It still misses some attempts, usually the largest errors, where the peg barely overlaps the hole and the torque signal is faint. Second, the residual never sees a camera or the true hole position; it only fixes what the base controller can't. That division of labour is the whole point.</p>
+
+  <!-- 18 · offline-to-online -->
+  <h3 class="topic"><span>18</span>Offline-to-online RL</h3>
+  <p>Pretrain on a fixed dataset (logs, teleoperation, earlier experiments), then keep improving with live interaction. The offline half has one central problem: a Q-function trained by Bellman backups is queried at \(\max_{a'}Q(s',a')\), and the max happily picks actions that <b>never appear in the data</b>, where the network's value is pure extrapolation. Online, a wrong optimistic guess gets tried and corrected. Offline, nothing ever corrects it, and the error propagates through every backup.</p>
+  <div class="grid2">
+    <div class="key"><b>CQL (conservative Q-learning)</b><p>Push Q down on whatever actions the current Q likes, up on the actions in the data: \(\min_Q\ \alpha\big(\mathbb E_s\log\sum_a e^{Q(s,a)}-\mathbb E_{(s,a)\sim\mathcal D}Q(s,a)\big)+\tfrac12\,\mathbb E\big[(Q-\mathcal B Q)^2\big]\)</p></div>
+    <div class="key"><b>IQL (implicit Q-learning)</b><p>Never query Q off the data. Fit \(V\) as an upper expectile of \(Q\) over dataset actions, \(L^\tau_2(u)=|\tau-\mathbb 1(u&lt;0)|\,u^2\), and extract the policy by advantage-weighted regression: \(\max_\pi\mathbb E_{\mathcal D}\big[e^{\beta(Q-V)}\log\pi(a\mid s)\big]\).</p></div>
+  </div>
+  <p>Switching to online brings a second problem. A conservative Q underestimates, so the first online samples look surprisingly good, the critic recalibrates, and performance <b>dips</b> before it climbs. <b>Cal-QL</b> fixes that by never letting the conservative Q fall below a reference value, such as the Monte Carlo return of the behaviour policy. <b>RLPD</b> takes the opposite approach and skips offline pretraining entirely: plain SAC that samples each batch 50/50 from the offline and online buffers, with LayerNorm in the critics, a critic ensemble, and many gradient steps per environment step. It is simple, and it is what most real-robot systems now build on.</p>
+
+  <div class="card widget">
+    <h3>🗄️ What the data doesn't say <span class="tag">extrapolation · CQL · IQL</span></h3>
+    <p class="sub">One state, a 1-D action. The logged actions (dots) cover only the middle. A degree-6 Q-network is fitted to them: plainly, with the CQL penalty, and with IQL's in-data policy extraction. The thin dashed curve is the true Q, which no method sees. Each method's chosen action is marked on the axis.</p>
+    <div class="controls">
+      <label class="ctrl">CQL α <input type="range" id="of-a" min="0.01" max="0.5" step="0.01" value="0.1"><output for="of-a"></output></label>
+      <label class="ctrl">IQL expectile τ <input type="range" id="of-t" min="0.5" max="0.99" step="0.01" value="0.8"><output for="of-t"></output></label>
+      <button id="of-new" class="primary">🎲 new dataset</button>
+    </div>
+    <canvas class="plot" id="of-c" data-h="300"></canvas>
+    <div class="stats">
+      <div class="stat"><div class="k">plain: true Q of its pick</div><div class="v" id="of-p">—</div></div>
+      <div class="stat"><div class="k">CQL</div><div class="v" id="of-q">—</div></div>
+      <div class="stat"><div class="k">IQL + AWR</div><div class="v" id="of-i">—</div></div>
+    </div>
+    <div class="callout">Draw a few datasets. The plain fit often curls upwards at an edge where there is no data, and its argmax goes there, with a true value of zero. CQL bends those edges down; IQL never looks outside the data at all. The price is the same for both: they can't find a better action the data never tried, which is exactly what the online phase is for.</div>
+  </div>
+
+  <!-- 19 · RL fine-tuning of diffusion policies and VLAs -->
+  <h3 class="topic"><span>19</span>RL fine-tuning of diffusion policies and VLAs</h3>
+  <p>Large robot policies are pretrained by imitation, so they inherit everything about their demonstrations: the operator's hesitations, the failed grasps that were never cut out, the compounding errors of behaviour cloning. Fine-tuning them with RL is how they get past demonstrator level. Two routes, depending on what the policy is.</p>
+  <p><b>DPPO</b> (Diffusion Policy Policy Optimisation, Ren et al., 2024) treats the denoising chain as part of the MDP. A diffusion policy samples \(a^K\sim\mathcal N(0,I)\) and refines it K times; each step is a Gaussian with a learned mean, so each has a log-likelihood, and PPO can push all of them at once:</p>
+  <div class="eqbox">$$a^{k-1}\sim\mathcal N\big(\mu_\theta(a^k,k,s),\ \sigma_k^2 I\big),\qquad \nabla_\theta J=\mathbb E\Big[\hat A(s,a^0)\sum_{k=1}^{K}\nabla_\theta\log\mathcal N\big(a^{k-1};\mu_\theta(a^k,k,s),\sigma_k^2\big)\Big]$$</div>
+  <p>For big VLAs, running PPO on billions of parameters is impractical, so the newer recipe keeps the training loss supervised and lets a <b>learned value function</b> decide what to learn from. Physical Intelligence's π*0.6 with <b>RECAP</b> trains a value function on autonomous rollouts and human corrections, labels every action with whether its advantage was positive, and conditions the policy on that label. At deployment it asks for "positive", with a guidance weight, much like classifier-free guidance in image models:</p>
+  <div class="eqbox">$$\pi_w(a\mid s)\ \propto\ \pi(a\mid s)\ \cdot\ p\big(I=1\mid s,a\big)^{\,w},\qquad I=\mathbb 1\big[\hat A(s,a)>\epsilon\big]$$</div>
+
+  <div class="card widget">
+    <h3>🧭 Ask for the good half <span class="tag">advantage conditioning · guidance</span></h3>
+    <p class="sub">Grasp offsets from 300 demonstrations: a careful operator (35%) and a sloppy one. Each attempt succeeded or failed. Behaviour cloning copies everything; the guided policy multiplies it by the learned probability of success, raised to the guidance weight w.</p>
+    <div class="controls"><label class="ctrl">guidance weight w <input type="range" id="rc-w" min="0" max="10" step="0.1" value="2"><output for="rc-w"></output></label><button id="rc-new" class="ghost">🎲 new demos</button></div>
+    <div class="grid2"><canvas class="plot" id="rc-bc" data-h="260"></canvas><canvas class="plot" id="rc-g" data-h="260"></canvas></div>
+    <div class="stats"><div class="stat"><div class="k">success, behaviour cloning</div><div class="v" id="rc-sb">—</div></div><div class="stat"><div class="k">success, guided</div><div class="v" id="rc-sg">—</div></div></div>
+  </div>
+
+  <div class="card widget">
+    <h3>🌫️ Policy gradient through the denoiser <span class="tag">DPPO</span></h3>
+    <p class="sub">A 6-step "diffusion" policy, pretrained to produce actions around 0 like its demonstrations. Each line is one sample's path from noise (left) to action (right). The reward sits at a = 1.3. Fine-tuning applies the policy gradient above to all six steps at once.</p>
+    <div class="controls"><button id="dp-run" class="primary">▶ fine-tune 200 updates</button><button id="dp-reset" class="ghost">↺ back to the pretrained policy</button></div>
+    <div class="grid2"><canvas class="plot" id="dp-chain" data-h="260"></canvas><canvas class="plot" id="dp-r" data-h="260"></canvas></div>
+  </div>
+
+  <!-- 20 · real-world RL -->
+  <h3 class="topic"><span>20</span>Real-world RL</h3>
+  <p>On hardware, every sample costs seconds of robot time, and every reset costs a person walking over. So real-world RL is an exercise in squeezing the most learning out of the fewest interactions. <b>SERL</b> and <b>HIL-SERL</b> (Luo et al., 2024) put the pieces together: an RLPD-style off-policy learner, a handful of demonstrations sampled 50/50 with online data, a <b>learned reward classifier</b> on camera images so nobody has to label success by hand, and <b>human interventions</b>: when the robot is about to do something useless or unsafe, an operator takes over with a spacemouse, and those corrective transitions go into both buffers. With all of that, precise tasks like inserting connectors or assembling parts reach near-perfect success in one to two hours of real interaction.</p>
+  <div class="grid3">
+    <div class="key"><b>Update-to-data ratio</b><p>Several gradient steps per robot step. Compute is cheap and robot time is not; LayerNorm and critic ensembles keep high ratios stable.</p></div>
+    <div class="key"><b>Reward from a classifier</b><p>\(r=\mathbb 1\big[c_\phi(o)>0.5\big]\), trained on a few hundred labelled success and failure images.</p></div>
+    <div class="key"><b>Collect, then infer</b><p>Riedmiller's framing: separate data collection from learning and keep every transition, so any later learner, on any objective, can reuse it.</p></div>
+  </div>
+
+  <div class="card widget">
+    <h3>⏱️ An hour of robot time <span class="tag">demos · interventions · UTD</span></h3>
+    <p class="sub">A real-robot run in miniature: a maze-like reaching task with a sparse reward, 10% slip, 0.5 s per step and a reset after every episode. The learner is off-policy Q-learning from replay. Pick a configuration and press run to add its curve; it averages three seeds. The x-axis is <b>robot wall-clock time</b>, including demos and resets.</p>
+    <div class="controls">
+      <label class="ctrl">demos <input type="range" id="rw-d" min="0" max="10" step="1" value="0"><output for="rw-d"></output></label>
+      <label class="ctrl">updates per step <input type="range" id="rw-u" min="1" max="8" step="1" value="1"><output for="rw-u"></output></label>
+      <label class="ctrl">reset (s) <input type="range" id="rw-r" min="3" max="30" step="1" value="20"><output for="rw-r"></output></label>
+      <label class="ctrl"><input type="checkbox" id="rw-i"> human interventions</label>
+      <button id="rw-run" class="primary">▶ run</button><button id="rw-clear" class="ghost">clear</button>
+    </div>
+    <canvas class="plot" id="rw-c" data-h="280"></canvas>
+    <div class="callout pink">From scratch the sparse reward is almost never found in 30 minutes. Interventions alone already get there; two demos do it faster; more updates per step faster still. Cut the reset time and everything speeds up, which is why so much real-robot RL engineering goes into automatic resets.</div>
+  </div>
+
+  <div class="card"><h3>🧠 Quiz</h3><div class="quiz" data-quiz="advE"></div></div>
+</section>
+
+<!-- ======================================================= ADVANCED F -->
+<section class="chapter" id="advF" data-ch="advF" data-nav="Deployment" style="--accent:#b8452f">
+  <div class="ch-head">
+    <div><div class="kicker">Advanced · F</div><h2>Deployment: safe, and on time</h2></div>
+    <div class="ch-actions"><button class="done-btn" data-ch="advF"></button></div>
+  </div>
+  <p class="lead">A policy that works in simulation has two more exams to pass. It must never do the one thing that breaks the robot or hurts someone, even while it is still learning. And it must produce the right action at the right moment, every cycle, on a small computer bolted inside the robot.</p>
+
+  <!-- 21 · safety -->
+  <h3 class="topic"><span>21</span>Safety and constraints</h3>
+  <p>Shaping a penalty into the reward ("−10 for hitting the table") only says that collisions are expensive, and a strong enough incentive will buy one anyway. A <b>constrained MDP</b> separates what you want from what you must not exceed:</p>
+  <div class="eqbox">$$\max_\theta\ J_r(\pi_\theta)\quad\text{s.t.}\quad J_c(\pi_\theta)=\mathbb E\Big[\sum_t\gamma^t c(s_t,a_t)\Big]\le d$$</div>
+  <p>The standard solver is the <b>Lagrangian</b>: turn the constraint into a penalty whose weight is learned, and climb in θ while descending in λ. The multiplier rises while the constraint is violated and decays to zero once it is comfortably satisfied, so you set the limit d, not the penalty:</p>
+  <div class="eqbox">$$\mathcal L(\theta,\lambda)=J_r(\theta)-\lambda\,\big(J_c(\theta)-d\big),\qquad \theta\leftarrow\theta+\eta_\theta\nabla_\theta\mathcal L,\qquad \lambda\leftarrow\max\!\big(0,\ \lambda+\eta_\lambda\,(J_c(\theta)-d)\big)$$</div>
+  <p>Constraints that hold only on average are not enough for hardware, so a deployed system layers several mechanisms, from soft to hard:</p>
+  <div class="grid3">
+    <div class="key"><b>In the policy</b><p>Action and torque limits, joint-limit and self-collision penalties, action-rate and energy terms, constrained RL for the expected costs.</p></div>
+    <div class="key"><b>Around the policy</b><p>A <b>safety filter</b>: a control barrier function \(h(x)\ge0\) defines the safe set, and a tiny QP edits each action as little as possible to keep \(\dot h+\alpha h\ge0\).</p></div>
+    <div class="key"><b>Outside the software</b><p>Watchdogs that cut torque when the loop stalls, a hardware e-stop, and health monitoring: motor temperatures, tracking error, contact forces, logged and alarmed across the fleet.</p></div>
+  </div>
+  <div class="eqbox">$$u^\text{safe}=\arg\min_u\ \lVert u-u^\text{RL}\rVert^2\quad\text{s.t.}\quad \nabla h(x)^\top f(x,u)+\alpha\,h(x)\ge0$$</div>
+
+  <div class="card widget">
+    <h3>⚖️ Let the multiplier find the penalty <span class="tag">Lagrangian · dual ascent</span></h3>
+    <p class="sub">A policy parameter θ trades task reward \(J_r=\theta-0.1\theta^2\) against a cost \(J_c=0.05\theta^2\) (say, mean contact force). Set the limit d and watch θ and λ settle; the dashed line is the true constrained optimum. Or switch to a fixed penalty and try to hit the limit by hand.</p>
+    <div class="controls">
+      <label class="ctrl">cost limit d <input type="range" id="lg-d" min="0.05" max="1.5" step="0.01" value="0.2"><output for="lg-d"></output></label>
+      <label class="ctrl">λ learning rate <input type="range" id="lg-l" min="0.05" max="3" step="0.05" value="0.5"><output for="lg-l"></output></label>
+      <label class="ctrl"><input type="checkbox" id="lg-fix"> fixed penalty instead</label>
+      <label class="ctrl">fixed λ <input type="range" id="lg-fl" min="0" max="10" step="0.1" value="2"><output for="lg-fl"></output></label>
+    </div>
+    <div class="grid2"><canvas class="plot" id="lg-t" data-h="250"></canvas><canvas class="plot" id="lg-c" data-h="250"></canvas></div>
+    <div class="callout">The multiplier overshoots, then settles exactly on the limit, for any d. A fixed penalty satisfies one particular limit only, and you find out which by trial and error. Raise the λ learning rate to see the classic Lagrangian oscillation, the reason practical versions add PID-style damping to λ.</div>
+  </div>
+
+  <div class="card widget">
+    <h3>🛡️ A safety filter on an RL policy <span class="tag">control barrier function</span></h3>
+    <p class="sub">The "RL policy" drives straight at the goal with exploration noise, through an obstacle it was never told about. The filter solves the QP above in closed form at every step: if the action would shrink the safe set too fast, it removes just the offending component. Four noise seeds per setting.</p>
+    <div class="controls">
+      <label class="ctrl"><input type="checkbox" id="cbf-on" checked> safety filter on</label>
+      <label class="ctrl">α (how close it may get) <input type="range" id="cbf-a" min="0.2" max="10" step="0.1" value="1"><output for="cbf-a"></output></label>
+    </div>
+    <canvas class="plot" id="cbf-c" data-h="300"></canvas>
+    <div class="stats"><div class="stat"><div class="k">collisions (of 4)</div><div class="v" id="cbf-hit">—</div></div><div class="stat"><div class="k">closest approach</div><div class="v" id="cbf-min">—</div></div><div class="stat"><div class="k">mean time to goal</div><div class="v" id="cbf-t">—</div></div></div>
+    <div class="callout amber">Small α keeps a wide margin and costs time; large α lets the robot skim the surface. The filter never needs to know what the policy was trying to do, which is exactly why it works around a learned policy you can't fully trust. Its guarantee is only as good as the model inside it: here, the obstacle's position and the robot's dynamics.</div>
+  </div>
+
+  <!-- 22 · edge deployment -->
+  <h3 class="topic"><span>22</span>Deploying policies on edge hardware</h3>
+  <p>A locomotion or whole-body policy is a small MLP: a few hundred thousand parameters, tens of microseconds on an embedded CPU or GPU. The network is almost never the bottleneck. The <b>pipeline</b> is: reading sensors over the fieldbus, state estimation, preprocessing, writing targets, and above all the occasional slow iteration. A control loop is judged by its worst case, not its average:</p>
+  <div class="eqbox">$$t_\text{loop}=t_\text{read}+t_\text{estimate}+t_\text{policy}+t_\text{write}\ \le\ T=\frac1{f_\text{ctrl}}\quad\text{every cycle},\qquad P(\text{miss})=P\big(t_\text{loop}>T\big)$$</div>
+  <p>Hence the deployment rules of thumb. Run the loop at a fixed rate on an isolated core with real-time priority. Keep anything slow, such as the VLA or perception, <b>asynchronous</b>, publishing targets that the loop reads without waiting. Check <b>observation parity</b>: normalisation statistics, units, joint ordering, default poses and action scaling must match training exactly. Log real observations and replay them through the simulator policy to compare outputs. Quantise where it pays: the VLA, whose billions of weights make it memory-bandwidth bound, goes to INT8, FP8 or 4-bit weights. The whole-body controller is tiny, gains nothing measurable from quantisation, and feeds its errors straight into a feedback loop, so it stays in FP16 or FP32.</p>
+  <div class="eqbox">$$\hat w=s\cdot\operatorname{round}(w/s),\qquad s=\frac{\max|w|}{2^{b-1}-1},\qquad \mathbb E\big[(\hat w-w)^2\big]\approx\frac{s^2}{12}$$</div>
+
+  <div class="card widget">
+    <h3>⏲️ The control-loop budget <span class="tag">deadline misses · jitter</span></h3>
+    <p class="sub">4,000 simulated loop iterations. Each stage has a typical time and lognormal jitter, plus a rare OS hiccup. The VLA (≈45 ms) can run inside the loop or asynchronously. CPU load stretches every stage and makes hiccups more likely.</p>
+    <div class="controls">
+      <label class="ctrl">control rate (Hz) <input type="range" id="lp-hz" min="20" max="1000" step="10" value="50"><output for="lp-hz"></output></label>
+      <label class="ctrl">background CPU load <input type="range" id="lp-c" min="0" max="1" step="0.05" value="0"><output for="lp-c"></output></label>
+      <label class="ctrl"><input type="checkbox" id="lp-a"> VLA asynchronous</label>
+    </div>
+    <canvas class="plot" id="lp-h" data-h="260"></canvas>
+    <div class="stats"><div class="stat"><div class="k">period</div><div class="v" id="lp-p">—</div></div><div class="stat"><div class="k">deadline misses</div><div class="v" id="lp-m">—</div></div><div class="stat"><div class="k">p99.9 loop time</div><div class="v" id="lp-q">—</div></div></div>
+    <div class="callout">With the VLA in the loop, every 50 Hz cycle misses. Make it asynchronous and the loop takes about 1.4 ms, of which the neural network is about 0.15. Now push the rate towards 1 kHz and add load: the average still fits, the tail doesn't. That tail is what real-time kernels, core isolation and watchdogs are for.</div>
+  </div>
+
+  <div class="card widget">
+    <h3>🔢 Precision vs parity <span class="tag">quantisation · observation normalisation</span></h3>
+    <p class="sub">A 2 → 16 → 1 network distilled from the capture-point balance controller of topic 15 keeps the inverted pendulum upright through three pushes. Quantise its weights, or feed it observations normalised with the wrong statistics, and see which one breaks it first.</p>
+    <div class="controls">
+      <span class="tabs" id="qt-b" style="margin:0"><button class="sel" data-b="32">FP32</button><button data-b="8">INT8</button><button data-b="6">INT6</button><button data-b="4">INT4</button><button data-b="3">INT3</button><button data-b="2">INT2</button></span>
+      <span class="tabs" id="qt-n" style="margin:0"><button class="sel" data-n="ok">normalisation matches training</button><button data-n="forgot">forgot to normalise</button><button data-n="stale">stale stats (2×)</button></span>
+    </div>
+    <canvas class="plot" id="qt-c" data-h="260"></canvas>
+    <div class="stats"><div class="stat"><div class="k">result</div><div class="v" id="qt-r">—</div></div><div class="stat"><div class="k">mean |x|</div><div class="v" id="qt-e">—</div></div></div>
+    <div class="callout pink">This little controller survives INT8 and even INT4, and falls at INT3. But keep FP32 weights and simply forget the normalisation, or use statistics from an older training run, and it falls within two seconds. On real robots parity bugs are far more common than precision bugs, and they look exactly like this: a policy that was perfect in simulation, falling over on the first push.</div>
+  </div>
+
+  <!-- wrap-up -->
+  <h3 class="topic"><span>✦</span>The whole stack, in one table</h3>
+  <div class="card">
+    <table class="cmp">
+      <tr><th>Problem on a real robot</th><th>Tool</th><th>Topic</th></tr>
+      <tr><td>Sim and robot disagree</td><td>System ID, domain randomisation, actuator models, history-based adaptation</td><td>5, 11</td></tr>
+      <tr><td>Copying a demonstrator drifts</td><td>DAgger, noise injection, RL on the policy's own states</td><td>6</td></tr>
+      <tr><td>Data is free (simulation)</td><td>PPO with GAE, thousands of parallel environments, curricula</td><td>7, 10, 13</td></tr>
+      <tr><td>Data is expensive (hardware)</td><td>SAC / MPO / RLPD, demos, interventions, high update-to-data ratio</td><td>8, 18, 20</td></tr>
+      <tr><td>Sparse or unnatural behaviour</td><td>Potential-based shaping, motion imitation (DeepMimic, AMP, trackers)</td><td>4, 14</td></tr>
+      <tr><td>The robot sees less than the simulator</td><td>Asymmetric actor-critic, teacher–student distillation</td><td>11</td></tr>
+      <tr><td>Reasoning is slow, balance is fast</td><td>VLA on top, RL whole-body controller underneath, PD targets at 1 kHz</td><td>12, 15</td></tr>
+      <tr><td>A good controller is almost good enough</td><td>Residual RL; RL fine-tuning of diffusion policies and VLAs</td><td>17, 19</td></tr>
+      <tr><td>Learned policies can't be fully trusted</td><td>Constrained RL, safety filters, watchdogs and e-stops</td><td>21</td></tr>
+      <tr><td>It has to run, every cycle, on the robot</td><td>Asynchronous slow models, fixed-rate loops, parity checks, quantise the big model only</td><td>22</td></tr>
+    </table>
+  </div>
+
+  <div class="card"><h3>🧠 Quiz</h3><div class="quiz" data-quiz="advF"></div></div>
+</section>
+
+<!-- ======================================================= CHEAT SHEET -->
+<section class="chapter" id="cheat" data-ch="cheat" style="--accent:#a3e635">
+  <div class="ch-head">
+    <div><div class="kicker">Review</div><h2>Cheat sheet &amp; flashcards</h2></div>
+    <div class="ch-actions"><button class="done-btn" data-ch="cheat"></button></div>
+  </div>
+  <p class="lead">Click a card to flip it. Try to recall the equation before you look.</p>
+  <div class="deck">
+    <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><b>Bellman expectation equation for v_π</b><small>Ch. 3</small></div><div class="flip-face flip-back">\(v_\pi(s)=\sum_a\pi(a|s)\sum_{s',r}p(s',r|s,a)[r+\gamma v_\pi(s')]\)</div></div></div>
+    <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><b>Bellman optimality for q*</b><small>Ch. 3</small></div><div class="flip-face flip-back">\(q_*(s,a)=\sum_{s',r}p(s',r|s,a)[r+\gamma\max_{a'}q_*(s',a')]\)</div></div></div>
+    <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><b>Value iteration backup</b><small>Ch. 4</small></div><div class="flip-face flip-back">\(v_{k+1}(s)=\max_a\sum_{s',r}p(s',r|s,a)[r+\gamma v_k(s')]\)</div></div></div>
+    <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><b>Policy improvement theorem</b><small>Ch. 4</small></div><div class="flip-face flip-back">If \(q_\pi(s,\pi'(s))\ge v_\pi(s)\ \forall s\) then \(v_{\pi'}(s)\ge v_\pi(s)\ \forall s\).</div></div></div>
+    <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><b>Constant-α MC update</b><small>Ch. 5</small></div><div class="flip-face flip-back">\(V(S_t)\leftarrow V(S_t)+\alpha[G_t-V(S_t)]\). The target is the full return, so there is no bootstrapping.</div></div></div>
+    <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><b>Weighted importance sampling</b><small>Ch. 5</small></div><div class="flip-face flip-back">\(V(s)=\dfrac{\sum_{t\in\mathcal T(s)}\rho_{t:T(t)-1}G_t}{\sum_{t\in\mathcal T(s)}\rho_{t:T(t)-1}}\)</div></div></div>
+    <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><b>TD error δ</b><small>Ch. 6</small></div><div class="flip-face flip-back">\(\delta_t=R_{t+1}+\gamma V(S_{t+1})-V(S_t)\). The MC error is a sum of TD errors: \(G_t-V(S_t)=\sum_k\gamma^{k-t}\delta_k\) (if V is held fixed).</div></div></div>
+    <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><b>Q-learning update</b><small>Ch. 6</small></div><div class="flip-face flip-back">\(Q(S,A)\leftarrow Q(S,A)+\alpha[R+\gamma\max_aQ(S',a)-Q(S,A)]\). It is off-policy and learns q* directly.</div></div></div>
+    <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><b>Semi-gradient TD(0)</b><small>Ch. 9</small></div><div class="flip-face flip-back">\(\mathbf w\leftarrow\mathbf w+\alpha[R+\gamma\hat v(S',\mathbf w)-\hat v(S,\mathbf w)]\nabla\hat v(S,\mathbf w)\)</div></div></div>
+    <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><b>TD fixed point (linear)</b><small>Ch. 9</small></div><div class="flip-face flip-back">\(\mathbf w_{TD}=\mathbf A^{-1}\mathbf b\), with \(\mathbf A=\mathbb E[\mathbf x_t(\mathbf x_t-\gamma\mathbf x_{t+1})^\top]\) and \(\mathbf b=\mathbb E[R_{t+1}\mathbf x_t]\)</div></div></div>
+    <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><b>Policy gradient theorem</b><small>Ch. 13</small></div><div class="flip-face flip-back">\(\nabla J(\boldsymbol\theta)\propto\sum_s\mu(s)\sum_aq_\pi(s,a)\nabla\pi(a|s,\boldsymbol\theta)=\mathbb E_\pi[G_t\nabla\ln\pi(A_t|S_t,\boldsymbol\theta)]\)</div></div></div>
+    <div class="flip"><div class="flip-inner"><div class="flip-face flip-front"><b>Softmax eligibility vector</b><small>Ch. 13</small></div><div class="flip-face flip-back">\(\nabla\ln\pi(a|s,\boldsymbol\theta)=\mathbf x(s,a)-\sum_b\pi(b|s,\boldsymbol\theta)\mathbf x(s,b)\)</div></div></div>
+  </div>
+
+  <div class="card" style="margin-top:22px">
+    <h3>🗺️ How it all fits together</h3>
+    <table class="cmp">
+      <tr><th>Method</th><th>Learns</th><th>Target</th><th>On/off-policy</th><th>Chapter</th></tr>
+      <tr><td>Policy / value iteration</td><td>v_π, v*</td><td>expected one-step backup (model)</td><td>—</td><td>4</td></tr>
+      <tr><td>MC prediction / ES control</td><td>V, Q</td><td>G_t</td><td>on</td><td>5</td></tr>
+      <tr><td>Off-policy MC</td><td>Q</td><td>ρ · G_t</td><td>off</td><td>5</td></tr>
+      <tr><td>TD(0)</td><td>V</td><td>R + γV(S′)</td><td>on</td><td>6</td></tr>
+      <tr><td>Sarsa</td><td>Q</td><td>R + γQ(S′,A′)</td><td>on</td><td>6</td></tr>
+      <tr><td>Q-learning</td><td>Q → q*</td><td>R + γ max Q(S′,·)</td><td>off</td><td>6</td></tr>
+      <tr><td>Expected Sarsa</td><td>Q</td><td>R + γ Σπ Q(S′,·)</td><td>either</td><td>6</td></tr>
+      <tr><td>Gradient MC / semi-grad TD</td><td>v̂(s,w)</td><td>G_t / R + γv̂(S′,w)</td><td>on</td><td>9</td></tr>
+      <tr><td>Semi-gradient Sarsa</td><td>q̂(s,a,w)</td><td>R + γq̂(S′,A′,w)</td><td>on</td><td>10</td></tr>
+      <tr><td>REINFORCE (+baseline)</td><td>π(a|s,θ)</td><td>G_t (− b(s))</td><td>on</td><td>13</td></tr>
+      <tr><td>Actor–critic</td><td>π(a|s,θ) + v̂(s,w)</td><td>δ = R + γv̂(S′) − v̂(S)</td><td>on</td><td>13 (draft 11)</td></tr>
+    </table>
+  </div>
+</section>
+
+<footer>Built for studying <i>Reinforcement Learning: An Introduction</i> (Sutton &amp; Barto). All simulations run locally in your browser. Progress is saved in localStorage.</footer>
+</main>
+
+<script src="js/common.js"></script>
+<script src="js/ch1.js"></script>
+<script src="js/ch3.js"></script>
+<script src="js/ch4.js"></script>
+<script src="js/ch5.js"></script>
+<script src="js/ch6.js"></script>
+<script src="js/ch9.js"></script>
+<script src="js/ch13.js"></script>
+<script src="js/advA.js"></script>
+<script src="js/advB.js"></script>
+<script src="js/advC.js"></script>
+<script src="js/advD.js"></script>
+<script src="js/advE.js"></script>
+<script src="js/advF.js"></script>
+<script src="js/app.js"></script>
+<script type="module" src="franka/peg.js"></script>
+</body>
+</html>

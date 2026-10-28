@@ -34,3 +34,8 @@
   kind: Touch
   summary: "Learning one representation from very different touch sensors with per-sensor stems, a shared transformer and the DINOv2 recipe."
   tags: "tactile · DINOv2 · iBOT · KoLeo"
+- title: "RL playground"
+  url: /notes/rl-playground/
+  kind: Learning
+  summary: "Sutton & Barto with something to play with in every chapter, then an advanced track for robots: PPO, SAC and world models, sim-to-real, humanoids, residual RL on a Franka running live in MuJoCo, offline and real-world RL, safety and edge deployment."
+  tags: "reinforcement learning · robot learning · MuJoCo"
