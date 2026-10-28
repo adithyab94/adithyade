@@ -247,7 +247,7 @@ if (typeof document !== 'undefined') (() => {
 
   // ============================================================ 19b · DPPO
   (() => {
-    const cv = document.getElementById('dp-chain');
+    const cv = document.getElementById('dpo-chain');
     if (!cv) return;
     const P = ADVE.dppo;
     let th = P.init(), curve = [], timer = 0;
@@ -262,14 +262,14 @@ if (typeof document !== 'undefined') (() => {
         ctx.beginPath(); c.forEach((a, k) => (k ? ctx.lineTo(X(k), Y(a)) : ctx.moveTo(X(k), Y(a)))); ctx.stroke();
       });
       lbl(ctx, 'noise a^K', X(0), h - 6, { align: 'center', font: C.mono }); lbl(ctx, 'action a^0', X(P.K), h - 6, { align: 'center', font: C.mono });
-      RL.lineChart(RL.$('#dp-r'), [{ data: curve, color: C.green, label: 'mean reward' }], { xLabel: 'PPO update', yMin: 0, yMax: 1, xMin: 0, xMax: Math.max(20, curve.length) });
+      RL.lineChart(RL.$('#dpo-r'), [{ data: curve, color: C.green, label: 'mean reward' }], { xLabel: 'PPO update', yMin: 0, yMax: 1, xMin: 0, xMax: Math.max(20, curve.length) });
     }
-    RL.$('#dp-run').addEventListener('click', () => {
+    RL.$('#dpo-run').addEventListener('click', () => {
       if (timer) return;
       let n = 0;
       timer = setInterval(() => { for (let k = 0; k < 4; k++) curve.push(P.step(th, { lr: 0.3 })); draw(); if ((n += 4) >= 200) { clearInterval(timer); timer = 0; } }, 30);
     });
-    RL.$('#dp-reset').addEventListener('click', () => { clearInterval(timer); timer = 0; th = P.init(); curve = []; draw(); });
+    RL.$('#dpo-reset').addEventListener('click', () => { clearInterval(timer); timer = 0; th = P.init(); curve = []; draw(); });
     addEventListener('resize', draw);
     RL.onVisible(cv, draw);
   })();

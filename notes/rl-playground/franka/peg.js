@@ -26,8 +26,8 @@ async function load() {
     const get = (f, t) => fetch(BASE + f).then((r) => { if (!r.ok) throw new Error(f); return r[t](); });
     const [mjb, res, vis, bin] = await Promise.all([get('peg.mjb', 'arrayBuffer'), get('residual.json', 'json'), get('panda_vis.json', 'json'), get('panda_vis.bin', 'arrayBuffer')]);
     sim = new PegSim(mujoco, new Uint8Array(mjb), res);
+    root.classList.add('is-live');               // show the stage first, so the canvas has a size when the renderer is built
     build(vis, bin);
-    root.classList.add('is-live');
     status.textContent = '';
     newError(); attempt();
   } catch (e) {
@@ -84,6 +84,7 @@ function build(vis, bin) {
   }
   orbit(cv);
   addEventListener('resize', resize); resize();
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(cv);
   requestAnimationFrame(frame);
 }
 
@@ -121,10 +122,11 @@ function orbit(cv) {
     if (pinch) view.r = Math.max(0.35, Math.min(3, view.r * pinch / dd));
     pinch = dd; e.preventDefault();
   }, { passive: false });
-  $('#peg-close').addEventListener('click', () => Object.assign(view, view.r > 0.6 ? { r: 0.42, el: 0.35, tgt: [...sim.hole] } : { r: 1.75, el: 0.38, tgt: [0.42, 0, 0.36] }));
+  $('#peg-close').addEventListener('click', () => Object.assign(view, view.r > 0.6 ? { r: 0.6, el: 0.32, tgt: [sim.hole[0], sim.hole[1], sim.hole[2] + 0.07] } : { r: 1.75, el: 0.38, tgt: [0.42, 0, 0.36] }));
 }
 function resize() {
   const cv = renderer.domElement, w = cv.clientWidth, h = Math.round(Math.min(460, Math.max(300, w * 0.62)));
+  if (!w) return;
   renderer.setSize(w, h, false); cv.style.height = h + 'px';
   camera.aspect = w / h; camera.updateProjectionMatrix();
   inset();

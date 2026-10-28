@@ -1218,8 +1218,8 @@
   <div class="card widget">
     <h3>🌫️ Policy gradient through the denoiser <span class="tag">DPPO</span></h3>
     <p class="sub">A 6-step "diffusion" policy, pretrained to produce actions around 0 like its demonstrations. Each line is one sample's path from noise (left) to action (right). The reward sits at a = 1.3. Fine-tuning applies the policy gradient above to all six steps at once.</p>
-    <div class="controls"><button id="dp-run" class="primary">▶ fine-tune 200 updates</button><button id="dp-reset" class="ghost">↺ back to the pretrained policy</button></div>
-    <div class="grid2"><canvas class="plot" id="dp-chain" data-h="260"></canvas><canvas class="plot" id="dp-r" data-h="260"></canvas></div>
+    <div class="controls"><button id="dpo-run" class="primary">▶ fine-tune 200 updates</button><button id="dpo-reset" class="ghost">↺ back to the pretrained policy</button></div>
+    <div class="grid2"><canvas class="plot" id="dpo-chain" data-h="260"></canvas><canvas class="plot" id="dpo-r" data-h="260"></canvas></div>
   </div>
 
   <!-- 20 · real-world RL -->
